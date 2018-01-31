@@ -14,7 +14,6 @@ import blockies from 'blockies';
 export class AppComponent implements OnInit {
 
   blockies = blockies;
-  accounts: string[];
   account = 'loading';
   searchForm: FormGroup;
   searchValueFormControl: FormControl;
@@ -39,8 +38,7 @@ export class AppComponent implements OnInit {
 
   watchAccount() {
     this.web3Service.accountsObservable.subscribe(accounts => {
-      this.accounts = accounts;
-      this.account = accounts[0];
+      this.account = accounts ? accounts[0] : null;
     });
   }
 

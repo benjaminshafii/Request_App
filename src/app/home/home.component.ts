@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit {
       this.account = this.web3Service.accounts[0];
     }
     this.web3Service.accountsObservable.subscribe(accounts => {
-      this.account = accounts[0];
+      this.account = accounts ? accounts[0] : null;
       this.payeeFormControl.setValue(this.account);
       this.payerFormControl.updateValueAndValidity();
     });
@@ -93,6 +93,7 @@ export class HomeComponent implements OnInit {
 
     const callback = response => {
       this.createLoading = false;
+      // this.web3Service.waitingForTxApproval = false;
       if (response && response.transaction) {
         this.web3Service.openSnackBar('The request is being created. Please wait a few moments for it to appear on the Blockchain.', 'Ok', 'info-snackbar');
 

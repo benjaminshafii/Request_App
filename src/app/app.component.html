@@ -26,9 +26,14 @@
           <button (click)="search(account)" mat-menu-item>
             <small>{{account}}</small>
           </button>
+          <hr class="m-0" style="border-color: #617B9F;
+    opacity: 0.1;"/>
+          <button (click)="web3Service.connectLedger()" mat-menu-item>
+            Connect Ledger
+          </button>
         </mat-menu>
-        <button type="button" mat-button class="accountMenuButton" [matMenuTriggerFor]="accountMenu" *ngIf="accounts.length; else connectAccount">
-          <img *ngIf="account" [src]="blockies({ seed: account.toLowerCase() }).toDataURL()" style="width: 24px; height: 24px; image-rendering: pixelated; border-radius: 12px" />
+        <button type="button" mat-button class="accountMenuButton" [matMenuTriggerFor]="accountMenu" *ngIf="account; else connectAccount">
+          <img [src]="blockies({ seed: account.toLowerCase() }).toDataURL()" style="width: 24px; height: 24px; image-rendering: pixelated; border-radius: 12px" />
           <span style="text-overflow: ellipsis; overflow: hidden;">&nbsp;{{ account }}</span>
           <mat-icon>expand_more</mat-icon>
         </button>
@@ -55,6 +60,9 @@
   </header>
   <div class="content">
     <router-outlet></router-outlet>
+    <!--     <div class="m-5 p-5">
+      <h1 class="m-5">TESTMODE DO NOT COMMIT</h1>
+    </div> -->
   </div>
   <footer class="d-flex flex-wrap justify-content-between fc-primary p-3" *ngIf="!this.router.routerState.snapshot.url.startsWith('/contact')">
     <div class="d-flex flex-column m-3">

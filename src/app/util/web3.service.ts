@@ -2,8 +2,11 @@ import { Injectable, HostListener } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { MatSnackBar } from '@angular/material';
 
+import RequestNetwork from '@requestnetwork/request-network.js';
 import Web3 from 'web3';
-import RequestNetwork from '@requestnetwork/request-network.js/dist/src/requestNetwork';
+import ProviderEngine from 'web3-provider-engine';
+import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
+import LedgerWalletSubprovider from 'ledger-wallet-provider';
 
 /* beautify preserve:start */
 declare let window: any;
@@ -11,15 +14,15 @@ declare let window: any;
 
 @Injectable()
 export class Web3Service {
-  private web3: Web3;
+  private web3;
   private requestNetwork: RequestNetwork;
   private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
   private metamaskConnected = true;
 
-
   public etherscanUrl: string;
   public accounts: string[];
   public ready = false;
+  public waitingForTxApproval: boolean;
 
   public accountsObservable = new Subject < string[] > ();
   public searchValue = new Subject < string > ();
@@ -29,32 +32,50 @@ export class Web3Service {
   public BN;
   public isAddress;
 
-  web3NotReadyMsg = 'Error when trying to instanciate web3.';
-  requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Rinkeby Test Network.';
-  metamaskNotReadyMsg = 'Connect your Metamask wallet to create or interact with a Request.';
+  private web3NotReadyMsg = 'Error when trying to instanciate web3.';
+  private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Rinkeby Test Network.';
+  private metamaskNotReadyMsg = 'Connect your Metamask wallet to create or interact with a Request.';
 
 
-  constructor(public snackBar: MatSnackBar) {
-    window.addEventListener('load', event => {
+  constructor(private snackBar: MatSnackBar) {
+    window.addEventListener('load', async event => {
       console.log('web3service instantiate web3');
       this.checkAndInstantiateWeb3();
     });
+
+    setInterval(_ => this.refreshAccounts(), 1000);
   }
 
 
-  private checkAndInstantiateWeb3() {
+  public async connectLedger() {
+    const engine = new ProviderEngine();
+    this.web3 = new Web3(engine);
+    const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => 4, `44'/60'/0'/0`);
+    engine.addProvider(ledgerWalletSubProvider);
+    engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
+    // engine.addProvider(new FetchSubprovider({ rpcUrl: this.infuraNodeUrl }));
+    engine.start();
+
+    this.checkAndInstantiateWeb3(true);
+  }
+
+
+  private async checkAndInstantiateWeb3(test ? ) {
+
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (typeof window.web3 !== 'undefined') {
-      console.log(`Using web3 detected from external source. If you find that your accounts don\'t
-         appear, ensure you\'ve configured that source properly.`);
-      this.web3 = new Web3(window.web3.currentProvider);
+      console.log(`Using web3 detected from external source. If you find that your accounts don\'t appear, ensure you\'ve configured that source properly.`);
+
+      if (!test)
+        this.web3 = new Web3(window.web3.currentProvider);
 
       // Start requestnetwork Library
       this.web3.eth.net.getId().then(
         networkId => {
           try {
             this.setEtherscanUrl(networkId);
-            this.requestNetwork = new RequestNetwork(this.web3.givenProvider, networkId);
+            this.requestNetwork = new RequestNetwork(this.web3.currentProvider, networkId);
+            // this.requestNetwork.setMaxListeners(1000);
             this.ready = true;
           } catch (err) {
             if (this.web3) { this.openSnackBar(this.requestNetworkNotReadyMsg); }
@@ -66,7 +87,7 @@ export class Web3Service {
     } else {
       console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
-      this.requestNetwork = new RequestNetwork(this.web3.givenProvider, 4);
+      this.requestNetwork = new RequestNetwork(this.web3.currentProvider, 4);
       this.ready = true;
     }
 
@@ -74,12 +95,12 @@ export class Web3Service {
     this.toWei = this.web3.utils.toWei;
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
-
-    setInterval(_ => this.refreshAccounts(), 1000);
   }
 
-
   private refreshAccounts() {
+    // this.accountsObservable.next(['0x97B41AEBe3dD2321b567e4e00f3824A182Ce00c4']);
+    // return;
+    if (this.waitingForTxApproval || !this.web3) { return; }
     this.web3.eth.getAccounts((err, accs) => {
       if (err != null || accs.length === 0) {
         console.warn('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
@@ -88,13 +109,11 @@ export class Web3Service {
           this.openSnackBar(this.metamaskNotReadyMsg);
         }
         this.accounts = accs;
-        return this.accountsObservable.next(accs);
-      }
-
-      if (!this.accounts || this.accounts.length !== accs.length || this.accounts[0] !== accs[0]) {
-        console.log('Observed new accounts');
         this.accountsObservable.next(accs);
+      } else if (!this.accounts || this.accounts.length !== accs.length || this.accounts[0] !== accs[0]) {
+        console.log('Observed new accounts');
         this.accounts = accs;
+        this.accountsObservable.next(accs);
         if (accs.length) { this.metamaskConnected = true; }
       }
     });
@@ -137,7 +156,7 @@ export class Web3Service {
     }
 
     this.snackBar.open(msg, ok || 'Ok', {
-      duration: duration || 5000,
+      duration: duration || 10000000000,
       horizontalPosition: 'right',
       verticalPosition: 'top',
       panelClass: panelClass || 'warning-snackbar',
@@ -171,6 +190,7 @@ export class Web3Service {
   public createRequestAsPayee(payer: string, expectedAmount: string, data: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     if (!this.web3.utils.isAddress(payer)) { return callback({ message: 'payer\'s address is not a valid Ethereum address' }); }
+    this.waitingForTxApproval = true;
     const expectedAmountInWei = this.toWei(expectedAmount, 'ether');
     return this.requestNetwork.requestEthereumService.createRequestAsPayee(payer, expectedAmountInWei, data);
   }
@@ -178,18 +198,21 @@ export class Web3Service {
 
   public cancel(requestId: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
+    this.waitingForTxApproval = true;
     return this.requestNetwork.requestEthereumService.cancel(requestId);
   }
 
 
   public accept(requestId: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
+    this.waitingForTxApproval = true;
     return this.requestNetwork.requestEthereumService.accept(requestId);
   }
 
 
   public subtractAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
+    this.waitingForTxApproval = true;
     const amountInWei = this.toWei(amount.toString(), 'ether');
     return this.requestNetwork.requestEthereumService.subtractAction(requestId, amountInWei);
   }
@@ -197,6 +220,7 @@ export class Web3Service {
 
   public additionalAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
+    this.waitingForTxApproval = true;
     const amountInWei = this.toWei(amount.toString(), 'ether');
     return this.requestNetwork.requestEthereumService.additionalAction(requestId, amountInWei);
   }
@@ -204,12 +228,14 @@ export class Web3Service {
 
   public paymentAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
+    this.waitingForTxApproval = true;
     const amountInWei = this.toWei(amount.toString(), 'ether');
     return this.requestNetwork.requestEthereumService.paymentAction(requestId, amountInWei, 0);
   }
 
   public refundAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
+    this.waitingForTxApproval = true;
     const amountInWei = this.toWei(amount.toString(), 'ether');
     return this.requestNetwork.requestEthereumService.refundAction(requestId, amountInWei, 0);
   }

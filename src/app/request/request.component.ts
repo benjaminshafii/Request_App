@@ -126,7 +126,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       this.account = this.web3Service.accounts[0];
     }
     this.web3Service.accountsObservable.subscribe(accounts => {
-      this.account = accounts[0];
+      this.account = accounts ? accounts[0] : null;
       this.getRequestMode();
     });
   }
@@ -167,6 +167,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   callbackTx(response, msg ? ) {
+    this.web3Service.waitingForTxApproval = false;
     if (response.transaction) {
       this.web3Service.openSnackBar(msg || 'Transaction in progress.', 'Ok', 'info-snackbar');
       this.loading = response.transaction.hash;
