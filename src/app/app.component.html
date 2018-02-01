@@ -21,15 +21,17 @@
     </form>
     <div class="mr-3" [style.width]="'225px'">
       <mat-spinner class="pull-right mr-3" [diameter]="20" *ngIf="account === 'loading'; else accountBlock"></mat-spinner>
+      <!-- ACCOUNT BLOCK -->
       <ng-template #accountBlock>
         <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="accountMenu">
-          <button (click)="search(account)" mat-menu-item>
-            <small>{{account}}</small>
+          <button *ngIf="account" (click)="search(account)" mat-menu-item>
+            <i class="fa fa-search" aria-hidden="true"></i>
+            <small>&nbsp;{{account}}</small>
           </button>
-          <hr class="m-0" style="border-color: #617B9F;
-    opacity: 0.1;"/>
-          <button (click)="web3Service.connectLedger()" mat-menu-item>
-            Connect Ledger
+          <hr class="m-0" style="border-color: #617B9F; opacity: 0.1;" />
+          <button (click)="openLedgerDialog()" mat-menu-item>
+            <img style="width: 14px; position: relative; top: -2px" src="assets/img/ledger-logo.png">
+            <span>&nbsp;Connect Ledger Wallet</span>
           </button>
         </mat-menu>
         <button type="button" mat-button class="accountMenuButton" [matMenuTriggerFor]="accountMenu" *ngIf="account; else connectAccount">
@@ -37,22 +39,11 @@
           <span style="text-overflow: ellipsis; overflow: hidden;">&nbsp;{{ account }}</span>
           <mat-icon>expand_more</mat-icon>
         </button>
-        <!--  <mat-form-field *ngIf="accounts.length; else connectAccount" floatPlaceholder="never" class="w-100">
-          <mat-select name="account" placeholder="select account" [(ngModel)]="account">
-            <mat-option class="px-1 text-center" *ngFor="let account of accounts" [value]="account">
-              <small>{{ account }}</small>
-            </mat-option>
-          </mat-select>
-          <small matPrefix>
-            <img *ngIf="account" [src]="blockies({ seed: account.toLowerCase() }).toDataURL()" style="position: relative; top: -6px; width: 24px; height: 24px; image-rendering: pixelated; border-radius: 12px" />
-            <mat-icon *ngIf="!account">account_circle</mat-icon>
-            &nbsp;
-          </small>
-        </mat-form-field> -->
+        <!-- CONNECT ACCOUNT -->
         <ng-template #connectAccount>
-          <button type="button" mat-button class="pull-right fs-16" (click)="web3Service.openSnackBar()">
+          <button type="button" mat-button class="accountMenuButton" [matMenuTriggerFor]="accountMenu">
             <mat-icon>account_circle</mat-icon>
-            <span>Connect an account</span>
+            <span>&nbsp;Connect an account</span>
           </button>
         </ng-template>
       </ng-template>

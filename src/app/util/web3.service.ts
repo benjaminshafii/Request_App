@@ -6,6 +6,8 @@ import RequestNetwork from '@requestnetwork/request-network.js';
 import Web3 from 'web3';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
+import FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
+
 import LedgerWalletSubprovider from 'ledger-wallet-provider';
 
 /* beautify preserve:start */
@@ -50,7 +52,23 @@ export class Web3Service {
   public async connectLedger() {
     const engine = new ProviderEngine();
     this.web3 = new Web3(engine);
-    const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => 4, `44'/60'/0'/0`);
+    const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => 4);
+    const ledger = ledgerWalletSubProvider.ledger;
+
+    // console.log(ledgerWalletSubProvider.isSupported);
+    // console.log(ledger.askForOnDeviceConfirmation);
+    // console.log('connection opened?', ledger.connectionOpened);
+    // console.log(ledger.isU2FSupported);
+    // ledger.getAccounts(console.log);
+    // ledger.getAppConfig(console.log);
+    // ledger.getLedgerConnection(console.log);
+    // ledger.getMultipleAccounts(console.log);
+    // ledger.getNetworkId(console.log);
+
+    const delay = new Promise(resolve => setTimeout(resolve, 10000));
+    await delay;
+    console.log('reprise');
+
     engine.addProvider(ledgerWalletSubProvider);
     engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
     // engine.addProvider(new FetchSubprovider({ rpcUrl: this.infuraNodeUrl }));
@@ -60,14 +78,16 @@ export class Web3Service {
   }
 
 
-  private async checkAndInstantiateWeb3(test ? ) {
+  private async checkAndInstantiateWeb3(ledgerConnection ? ) {
 
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (typeof window.web3 !== 'undefined') {
       console.log(`Using web3 detected from external source. If you find that your accounts don\'t appear, ensure you\'ve configured that source properly.`);
 
-      if (!test)
+      if (!ledgerConnection) {
         this.web3 = new Web3(window.web3.currentProvider);
+      }
+
 
       // Start requestnetwork Library
       this.web3.eth.net.getId().then(
@@ -86,7 +106,7 @@ export class Web3Service {
         });
     } else {
       console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
-      this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
+      this.web3 = new Web3(this.infuraNodeUrl);
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, 4);
       this.ready = true;
     }

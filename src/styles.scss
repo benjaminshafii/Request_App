@@ -143,7 +143,7 @@ mat-toolbar.cta-toolbar {
 button.accountMenuButton {
   font-size: 16px;
   font-weight: initial;
-  width: 100%;
+  max-width: 100%;
   .mat-button-wrapper {
     display: flex;
     justify-content: space-between;

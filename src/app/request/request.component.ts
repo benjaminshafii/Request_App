@@ -188,7 +188,7 @@ export class RequestComponent implements OnInit, OnDestroy {
             this.web3Service.openSnackBar('Request successfully cancelled.', 'Ok', 'success-snackbar');
           }, 5000);
         }, err => {
-          console.log('Error:', err);
+          console.error('Error:', err);
           this.callbackTx(err);
         }
       );
@@ -206,7 +206,7 @@ export class RequestComponent implements OnInit, OnDestroy {
             this.web3Service.openSnackBar('Request successfully accepted.', 'Ok', 'success-snackbar');
           }, 5000);
         }, err => {
-          console.log('Error:', err);
+          console.error('Error:', err);
           this.callbackTx(err);
         });
   }
@@ -235,7 +235,7 @@ export class RequestComponent implements OnInit, OnDestroy {
                   this.web3Service.openSnackBar('Subtract done.', 'Ok', 'success-snackbar');
                 }, 5000);
               }, err => {
-                console.log('Error:', err);
+                console.error('Error:', err);
                 this.callbackTx(err);
               });
         }
@@ -266,7 +266,7 @@ export class RequestComponent implements OnInit, OnDestroy {
                   this.web3Service.openSnackBar('Additional done.', 'Ok', 'success-snackbar');
                 }, 5000);
               }, err => {
-                console.log('Error:', err);
+                console.error('Error:', err);
                 this.callbackTx(err);
               });
         }
@@ -297,7 +297,7 @@ export class RequestComponent implements OnInit, OnDestroy {
                   this.web3Service.openSnackBar('Payment done.', 'Ok', 'success-snackbar');
                 }, 5000);
               }, err => {
-                console.log('Error:', err);
+                console.error('Error:', err);
                 this.callbackTx(err);
               });
         }
@@ -328,7 +328,7 @@ export class RequestComponent implements OnInit, OnDestroy {
                   this.web3Service.openSnackBar('Refund done.', 'Ok', 'success-snackbar');
                 }, 5000);
               }, err => {
-                console.log('Error:', err);
+                console.error('Error:', err);
                 this.callbackTx(err);
               });
         }

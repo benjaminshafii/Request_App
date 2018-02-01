@@ -43,6 +43,19 @@ export class AppComponent implements OnInit {
   }
 
 
+  openLedgerDialog() {
+    this.dialog.open(BasicDialogComponent, {
+      hasBackdrop: true,
+      width: '300px',
+      data: {
+        title: 'Connect Ledger Wallet',
+        msg: 'test',
+        ok: 'Connect to Ledger Wallet',
+      }
+    });
+  }
+
+
   search(searchValue) {
     searchValue = searchValue.split(' ').join('');
     if (this.router.routerState.snapshot.url.startsWith('/request')) {
