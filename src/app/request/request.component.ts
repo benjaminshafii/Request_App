@@ -213,16 +213,13 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   subtractRequest() {
-    const subtractDialogRef = this.dialog.open(SubtractDialogComponent, {
+    this.dialog.open(SubtractDialogComponent, {
       hasBackdrop: true,
       width: '350px',
       data: {
         request: this.request
       }
-    });
-
-    subtractDialogRef
-      .afterClosed()
+    }).afterClosed()
       .subscribe(subtractValue => {
         if (subtractValue) {
           this.web3Service.subtractAction(this.request.requestId, subtractValue, this.callbackTx)
@@ -244,16 +241,13 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   additionalRequest() {
-    const additionalDialogRef = this.dialog.open(AdditionalDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        request: this.request
-      }
-    });
-
-    additionalDialogRef
-      .afterClosed()
+    this.dialog.open(AdditionalDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        data: {
+          request: this.request
+        }
+      }).afterClosed()
       .subscribe(subtractValue => {
         if (subtractValue) {
           this.web3Service.additionalAction(this.request.requestId, subtractValue, this.callbackTx)
@@ -275,16 +269,13 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   payRequest() {
-    const payDialogRef = this.dialog.open(PayDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        request: this.request
-      }
-    });
-
-    payDialogRef
-      .afterClosed()
+    this.dialog.open(PayDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        data: {
+          request: this.request
+        }
+      }).afterClosed()
       .subscribe(amountValue => {
         if (amountValue) {
           this.web3Service.paymentAction(this.request.requestId, amountValue, this.callbackTx)
@@ -306,16 +297,13 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   refundRequest() {
-    const refundDialogRef = this.dialog.open(RefundDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        request: this.request
-      }
-    });
-
-    refundDialogRef
-      .afterClosed()
+    this.dialog.open(RefundDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        data: {
+          request: this.request
+        }
+      }).afterClosed()
       .subscribe(amountValue => {
         if (amountValue) {
           this.web3Service.refundAction(this.request.requestId, amountValue, this.callbackTx)

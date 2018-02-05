@@ -51,29 +51,33 @@ export class Web3Service {
 
   public async connectLedger() {
     const engine = new ProviderEngine();
-    this.web3 = new Web3(engine);
+
     const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => 4);
     const ledger = ledgerWalletSubProvider.ledger;
 
-    // console.log(ledgerWalletSubProvider.isSupported);
-    // console.log(ledger.askForOnDeviceConfirmation);
-    // console.log('connection opened?', ledger.connectionOpened);
-    // console.log(ledger.isU2FSupported);
-    // ledger.getAccounts(console.log);
+    if (!ledger.isU2FSupported) {
+      return { error: 'Ledger Wallet uses U2F which is not supported by your browser.'};
+    }
+    console.log(ledgerWalletSubProvider.isSupported);
+    console.log(ledger.askForOnDeviceConfirmation);
+    console.log('connection opened?', ledger.connectionOpened);
+    console.log('U2F supported', ledger.isU2FSupported);
+    ledger.getAccounts(console.log);
     // ledger.getAppConfig(console.log);
     // ledger.getLedgerConnection(console.log);
     // ledger.getMultipleAccounts(console.log);
     // ledger.getNetworkId(console.log);
 
-    const delay = new Promise(resolve => setTimeout(resolve, 10000));
+    console.log('delay');
+    const delay = new Promise(resolve => setTimeout(resolve, 5000));
     await delay;
     console.log('reprise');
 
     engine.addProvider(ledgerWalletSubProvider);
     engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
-    // engine.addProvider(new FetchSubprovider({ rpcUrl: this.infuraNodeUrl }));
     engine.start();
 
+    this.web3 = new Web3(engine);
     this.checkAndInstantiateWeb3(true);
   }
 
@@ -94,7 +98,7 @@ export class Web3Service {
         networkId => {
           try {
             this.setEtherscanUrl(networkId);
-            this.requestNetwork = new RequestNetwork(this.web3.currentProvider, networkId);
+            this.requestNetwork = new RequestNetwork(this.web3.givenProvider, networkId);
             // this.requestNetwork.setMaxListeners(1000);
             this.ready = true;
           } catch (err) {
@@ -106,7 +110,7 @@ export class Web3Service {
         });
     } else {
       console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
-      this.web3 = new Web3(this.infuraNodeUrl);
+      this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, 4);
       this.ready = true;
     }
@@ -123,7 +127,7 @@ export class Web3Service {
     if (this.waitingForTxApproval || !this.web3) { return; }
     this.web3.eth.getAccounts((err, accs) => {
       if (err != null || accs.length === 0) {
-        console.warn('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
+        // console.warn('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
         if (this.requestNetwork && this.metamaskConnected) {
           this.metamaskConnected = false;
           this.openSnackBar(this.metamaskNotReadyMsg);
@@ -176,7 +180,7 @@ export class Web3Service {
     }
 
     this.snackBar.open(msg, ok || 'Ok', {
-      duration: duration || 10000000000,
+      duration: duration || 5000,
       horizontalPosition: 'right',
       verticalPosition: 'top',
       panelClass: panelClass || 'warning-snackbar',

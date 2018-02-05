@@ -1,0 +1,20 @@
+<div class="fc-primary">
+  <h1 mat-dialog-title>Connect Ledger Wallet</h1>
+  <mat-dialog-content>
+    <div class="fs-14">
+      <ul>
+        <li>Connect your ledger and open the ethereum app</li>
+        <li>Make sure you don't have any other apps that connect to your Ledger open</li>
+        <li>Make sure you have browser support turned ON.</li>
+        <li>Make sure you have contract data turned ON.</li>
+      </ul>
+    </div>
+    <div class="fs-12 fc-warn" *ngIf="error">
+      {{ error }}
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="mt-3 d-flex flex-wrap justify-content-around w-100">
+    <button mat-raised-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-raised-button type="button" color="accent" (click)="connectLedger()">Connect</button>
+  </mat-dialog-actions>
+</div>

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { Web3Service } from './util/web3.service';
-import { BasicDialogComponent } from './util/dialogs/basic-dialog.component';
+import { LedgerDialogComponent } from './util/dialogs/ledger-dialog.component';
 import blockies from 'blockies';
 
 @Component({
@@ -44,14 +44,9 @@ export class AppComponent implements OnInit {
 
 
   openLedgerDialog() {
-    this.dialog.open(BasicDialogComponent, {
+    this.dialog.open(LedgerDialogComponent, {
       hasBackdrop: true,
-      width: '300px',
-      data: {
-        title: 'Connect Ledger Wallet',
-        msg: 'test',
-        ok: 'Connect to Ledger Wallet',
-      }
+      width: '350px',
     });
   }
 

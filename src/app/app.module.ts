@@ -13,7 +13,7 @@ import { HomeComponent } from './home/home.component';
 import { RequestComponent } from './request/request.component';
 import { SearchComponent } from './search/search.component';
 
-import { BasicDialogComponent } from './util/dialogs/basic-dialog.component';
+import { LedgerDialogComponent } from './util/dialogs/ledger-dialog.component';
 import { PayDialogComponent } from './util/dialogs/pay-dialog.component';
 import { SubtractDialogComponent } from './util/dialogs/subtract-dialog.component';
 import { AdditionalDialogComponent } from './util/dialogs/additional-dialog.component';
@@ -28,7 +28,7 @@ import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
     RequestComponent,
     SearchComponent,
 
-    BasicDialogComponent,
+    LedgerDialogComponent,
     PayDialogComponent,
     SubtractDialogComponent,
     AdditionalDialogComponent,
@@ -47,7 +47,7 @@ import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
     AppRoutingModule,
   ],
   entryComponents: [
-    BasicDialogComponent,
+    LedgerDialogComponent,
     PayDialogComponent,
     SubtractDialogComponent,
     AdditionalDialogComponent,
