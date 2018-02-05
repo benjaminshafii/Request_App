@@ -56,22 +56,26 @@ export class Web3Service {
     const ledger = ledgerWalletSubProvider.ledger;
 
     if (!ledger.isU2FSupported) {
-      return { error: 'Ledger Wallet uses U2F which is not supported by your browser.'};
+      return { error: 'Ledger Wallet uses U2F which is not supported by your browser.' };
     }
-    console.log(ledgerWalletSubProvider.isSupported);
-    console.log(ledger.askForOnDeviceConfirmation);
-    console.log('connection opened?', ledger.connectionOpened);
-    console.log('U2F supported', ledger.isU2FSupported);
-    ledger.getAccounts(console.log);
+
+    // await ledger.getAccounts(async result => {
+    //   if (result === 'Invalid status 6801') {
+    //     return { error: 'Invalid status 6801. Check to make sure the right application is selected' };
+    //   }
+    // });
+
     // ledger.getAppConfig(console.log);
     // ledger.getLedgerConnection(console.log);
     // ledger.getMultipleAccounts(console.log);
     // ledger.getNetworkId(console.log);
 
-    console.log('delay');
-    const delay = new Promise(resolve => setTimeout(resolve, 5000));
-    await delay;
-    console.log('reprise');
+    // const test = await ledger.getAccounts();
+
+    // console.log('delay');
+    // const delay = new Promise(resolve => setTimeout(resolve, 5000));
+    // await delay;
+    // console.log('reprise');
 
     engine.addProvider(ledgerWalletSubProvider);
     engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
@@ -79,6 +83,7 @@ export class Web3Service {
 
     this.web3 = new Web3(engine);
     this.checkAndInstantiateWeb3(true);
+    return {};
   }
 
 
@@ -90,7 +95,7 @@ export class Web3Service {
 
       if (!ledgerConnection) {
         this.web3 = new Web3(window.web3.currentProvider);
-      }
+      // }
 
 
       // Start requestnetwork Library
@@ -98,7 +103,7 @@ export class Web3Service {
         networkId => {
           try {
             this.setEtherscanUrl(networkId);
-            this.requestNetwork = new RequestNetwork(this.web3.givenProvider, networkId);
+            this.requestNetwork = new RequestNetwork(this.web3.currentProvider, networkId);
             // this.requestNetwork.setMaxListeners(1000);
             this.ready = true;
           } catch (err) {
