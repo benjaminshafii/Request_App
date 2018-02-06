@@ -6,19 +6,25 @@ import { Web3Service } from '../web3.service';
   templateUrl: './ledger-dialog.component.html'
 })
 export class LedgerDialogComponent {
-  error: string;
+  private error;
+  private loading = false;
 
   constructor(private web3Service: Web3Service, private dialogRef: MatDialogRef < LedgerDialogComponent > , @Inject(MAT_DIALOG_DATA) public data: any) {}
 
-  async connectLedger() {
+  connectLedger() {
     this.error = '';
-    const result = await this.web3Service.connectLedger();
+    this.loading = true;
+    // const result = await this.web3Service.connectLedger();
 
-    if (result.error) {
-      this.error = result.error;
-    }
+    this.web3Service.connectLedger().then(
+      res => {
+        this.dialogRef.close();
+      },
+      err => {
+        this.loading = false;
+        this.error = err;
+      });
 
-    // this.dialogRef.close();
   }
 
 }

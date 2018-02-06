@@ -37,7 +37,7 @@ export class Web3Service {
   private web3NotReadyMsg = 'Error when trying to instanciate web3.';
   private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Rinkeby Test Network.';
   private metamaskNotReadyMsg = 'Connect your Metamask wallet to create or interact with a Request.';
-
+  derivationPath = `44'/60'/0'/0`;
 
   constructor(private snackBar: MatSnackBar) {
     window.addEventListener('load', async event => {
@@ -49,41 +49,56 @@ export class Web3Service {
   }
 
 
-  public async connectLedger() {
-    const engine = new ProviderEngine();
+  public connectLedger() {
+    return new Promise(async(resolve, reject) => {
+      const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => 4, this.derivationPath);
+      const ledger = ledgerWalletSubProvider.ledger;
 
-    const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => 4);
-    const ledger = ledgerWalletSubProvider.ledger;
+      if (!ledger.isU2FSupported) {
+        reject('Ledger Wallet uses U2F which is not supported by your browser.');
+      }
 
-    if (!ledger.isU2FSupported) {
-      return { error: 'Ledger Wallet uses U2F which is not supported by your browser.' };
-    }
+      ledger.getMultipleAccounts(this.derivationPath, 0, 1).then(
+          res => {
+            const engine = new ProviderEngine();
+            engine.addProvider(ledgerWalletSubProvider);
+            engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
+            engine.start();
 
-    // await ledger.getAccounts(async result => {
-    //   if (result === 'Invalid status 6801') {
-    //     return { error: 'Invalid status 6801. Check to make sure the right application is selected' };
-    //   }
-    // });
+            this.web3 = new Web3(engine);
+            this.checkAndInstantiateWeb3(true);
 
-    // ledger.getAppConfig(console.log);
-    // ledger.getLedgerConnection(console.log);
-    // ledger.getMultipleAccounts(console.log);
-    // ledger.getNetworkId(console.log);
+            resolve(Object.values(res));
+          })
+        .catch(err => {
+          if (err.metaData && err.metaData.code === 5) {
+            reject('Timeout error. Please verify your ledger is connected and the Ethereum application opened.');
+          } else if (err === 'Invalid status 6801') {
+            reject('Invalid status 6801. Check to make sure the right application is selected.');
+          }
+        });
 
-    // const test = await ledger.getAccounts();
 
-    // console.log('delay');
-    // const delay = new Promise(resolve => setTimeout(resolve, 5000));
-    // await delay;
-    // console.log('reprise');
 
-    engine.addProvider(ledgerWalletSubProvider);
-    engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
-    engine.start();
+      // ledger.getAccounts(result => {
+      //   if (result === 'Invalid status 6801') {
+      //     reject({ error: 'Invalid status 6801. Check to make sure the right application is selected' });
+      //   } else {
+      //     resolve(result);
+      //   }
+      // });
 
-    this.web3 = new Web3(engine);
-    this.checkAndInstantiateWeb3(true);
-    return {};
+    });
+
+
+    // console.log('test');
+
+    // ledger.getAppConfig(console.log, 10000);
+    // // ledger.getLedgerConnection(console.log);
+    // // ledger.getMultipleAccounts(console.log);
+    // // ledger.getNetworkId(console.log);
+
+    // // const test = await ledger.getAccounts();
   }
 
 
@@ -95,7 +110,7 @@ export class Web3Service {
 
       if (!ledgerConnection) {
         this.web3 = new Web3(window.web3.currentProvider);
-      // }
+      }
 
 
       // Start requestnetwork Library
