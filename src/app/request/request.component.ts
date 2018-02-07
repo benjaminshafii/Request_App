@@ -167,7 +167,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   callbackTx(response, msg ? ) {
-    this.web3Service.waitingForTxApproval = false;
+    this.web3Service.waitingForLedgerTxApproval = false;
     if (response.transaction) {
       this.web3Service.openSnackBar(msg || 'Transaction in progress.', 'Ok', 'info-snackbar');
       this.loading = response.transaction.hash;

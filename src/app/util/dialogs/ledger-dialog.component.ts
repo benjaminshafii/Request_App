@@ -12,12 +12,14 @@ export class LedgerDialogComponent {
   constructor(private web3Service: Web3Service, private dialogRef: MatDialogRef < LedgerDialogComponent > , @Inject(MAT_DIALOG_DATA) public data: any) {}
 
   connectLedger() {
+    if (this.loading) { return true; }
     this.error = '';
     this.loading = true;
     // const result = await this.web3Service.connectLedger();
 
     this.web3Service.connectLedger().then(
       res => {
+        this.loading = false;
         this.dialogRef.close();
       },
       err => {

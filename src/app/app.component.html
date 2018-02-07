@@ -29,7 +29,7 @@
             <small>&nbsp;{{account}}</small>
           </button>
           <hr class="m-0" style="border-color: #617B9F; opacity: 0.1;" />
-          <button (click)="openLedgerDialog()" mat-menu-item>
+          <button *ngIf="web3Service && !web3Service.ledgerConnected" (click)="openLedgerDialog()" mat-menu-item>
             <img style="width: 14px; position: relative; top: -2px" src="assets/img/ledger-logo.png">
             <span>&nbsp;Connect Ledger Wallet</span>
           </button>

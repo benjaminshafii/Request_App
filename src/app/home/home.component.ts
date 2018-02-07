@@ -93,10 +93,10 @@ export class HomeComponent implements OnInit {
 
     const callback = response => {
       this.createLoading = false;
-      // this.web3Service.waitingForTxApproval = false;
+      this.web3Service.waitingForLedgerTxApproval = false;
+
       if (response && response.transaction) {
         this.web3Service.openSnackBar('The request is being created. Please wait a few moments for it to appear on the Blockchain.', 'Ok', 'info-snackbar');
-
         const queryParams = {
           expectedAmount: this.expectedAmountFormControl.value,
           payer: this.payerFormControl.value,
@@ -106,7 +106,13 @@ export class HomeComponent implements OnInit {
 
         this.router.navigate(['/request/txHash', response.transaction.hash], { queryParams });
       } else if (response && response.message) {
-        this.web3Service.openSnackBar(response.message);
+        if (response.message.startsWith('Invalid status 6985')) {
+          this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
+        } else if (response.message.startsWith('Failed to subscribe to new newBlockHeaders')) {
+          return;
+        } else {
+          this.web3Service.openSnackBar(response.message);
+        }
       }
     };
 
