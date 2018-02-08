@@ -60,7 +60,7 @@
               <mat-error *ngIf="payerFormControl.hasError('pattern')">
                 ETH address format <strong>not valid</strong>
               </mat-error>
-              <mat-error *ngIf="payerFormControl.hasError('sameAddressAsAccount')">
+              <mat-error *ngIf="payerFormControl.hasError('sameAddressAsPayee')">
                 payer's address must be <strong>different from yours</strong>
               </mat-error>
             </mat-form-field>

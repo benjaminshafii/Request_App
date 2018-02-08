@@ -6,8 +6,8 @@ import { Web3Service } from '../web3.service';
   templateUrl: './ledger-dialog.component.html'
 })
 export class LedgerDialogComponent {
-  private error;
-  private loading = false;
+  error: any;
+  loading = false;
 
   constructor(private web3Service: Web3Service, private dialogRef: MatDialogRef < LedgerDialogComponent > , @Inject(MAT_DIALOG_DATA) public data: any) {}
 
@@ -15,7 +15,6 @@ export class LedgerDialogComponent {
     if (this.loading) { return true; }
     this.error = '';
     this.loading = true;
-    // const result = await this.web3Service.connectLedger();
 
     this.web3Service.connectLedger().then(
       res => {

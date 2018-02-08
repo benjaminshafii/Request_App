@@ -122,11 +122,8 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   watchAccount() {
-    if (!this.account && this.web3Service.accounts) {
-      this.account = this.web3Service.accounts[0];
-    }
     this.web3Service.accountsObservable.subscribe(accounts => {
-      this.account = accounts ? accounts[0] : null;
+      this.account = accounts[0];
       this.getRequestMode();
     });
   }
@@ -168,11 +165,18 @@ export class RequestComponent implements OnInit, OnDestroy {
 
   callbackTx(response, msg ? ) {
     this.web3Service.waitingForLedgerTxApproval = false;
+
     if (response.transaction) {
       this.web3Service.openSnackBar(msg || 'Transaction in progress.', 'Ok', 'info-snackbar');
       this.loading = response.transaction.hash;
     } else if (response.message) {
-      this.web3Service.openSnackBar(response.message);
+      if (response.message.startsWith('Invalid status 6985')) {
+        this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
+      } else if (response.message.startsWith('Failed to subscribe to new newBlockHeaders')) {
+        return;
+      } else {
+        this.web3Service.openSnackBar(response.message);
+      }
     }
   }
 
@@ -214,12 +218,12 @@ export class RequestComponent implements OnInit, OnDestroy {
 
   subtractRequest() {
     this.dialog.open(SubtractDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        request: this.request
-      }
-    }).afterClosed()
+        hasBackdrop: true,
+        width: '350px',
+        data: {
+          request: this.request
+        }
+      }).afterClosed()
       .subscribe(subtractValue => {
         if (subtractValue) {
           this.web3Service.subtractAction(this.request.requestId, subtractValue, this.callbackTx)

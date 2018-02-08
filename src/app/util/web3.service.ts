@@ -1,5 +1,6 @@
 import { Injectable, HostListener } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { MatSnackBar } from '@angular/material';
 
 import RequestNetwork from '@requestnetwork/request-network.js';
@@ -20,10 +21,13 @@ export class Web3Service {
   private requestNetwork: RequestNetwork;
   private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
   private derivationPath = `44'/60'/0'/0`;
+  private networkId: string;
 
   private metamaskConnected = true;
+  public metamask = false;
 
   public ledgerConnected = false;
+
   public ready = false;
   public waitingForLedgerTxApproval = false;
 
@@ -31,12 +35,12 @@ export class Web3Service {
   public accounts: string[];
 
 
-  public accountsObservable = new Subject < string[] > ();
+  public accountsObservable = new BehaviorSubject < string[] > (['loading']);
   public searchValue = new Subject < string > ();
 
   private web3NotReadyMsg = 'Error when trying to instanciate web3.';
   private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Rinkeby Test Network.';
-  private metamaskNotReadyMsg = 'Connect your Metamask wallet to create or interact with a Request.';
+  private walletNotReadyMsg = 'Connect your Metamask or Ledger wallet to create or interact with a Request.';
 
   public fromWei;
   public toWei;
@@ -47,9 +51,8 @@ export class Web3Service {
     window.addEventListener('load', async event => {
       console.log('web3service instantiate web3');
       this.checkAndInstantiateWeb3();
+      setInterval(_ => this.refreshAccounts(), 1000);
     });
-
-    setInterval(_ => this.refreshAccounts(), 1000);
   }
 
 
@@ -68,8 +71,7 @@ export class Web3Service {
             engine.addProvider(ledgerWalletSubProvider);
             engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
             engine.start();
-            this.web3 = new Web3(engine);
-            this.checkAndInstantiateWeb3(true);
+            this.checkAndInstantiateWeb3(new Web3(engine));
             this.ledgerConnected = true;
             this.openSnackBar('Ledger Wallet successfully connected on Rinkeby Test Network.', null, 'success-snackbar');
             resolve(Object.values(res));
@@ -85,27 +87,29 @@ export class Web3Service {
   }
 
 
-  private async checkAndInstantiateWeb3(ledgerConnection ? ) {
+  private async checkAndInstantiateWeb3(web3 ? ) {
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-    if (typeof window.web3 !== 'undefined') {
+    if (web3 || typeof window.web3 !== 'undefined') {
       console.log(`Using web3 detected from external source. If you find that your accounts don\'t appear, ensure you\'ve configured that source properly.`);
 
-      if (!ledgerConnection) {
+      if (web3) {
+        this.web3 = web3;
+      } else {
+        this.metamask = window.web3.currentProvider.isMetaMask;
+        console.log('this.metamask:', this.metamask);
         this.web3 = new Web3(window.web3.currentProvider);
       }
 
-
-      // Start requestnetwork Library
       this.web3.eth.net.getId().then(
         networkId => {
           try {
+            this.networkId = networkId;
             this.setEtherscanUrl(networkId);
             this.requestNetwork = new RequestNetwork(this.web3.currentProvider, networkId);
-            // this.requestNetwork.setMaxListeners(1000);
             this.ready = true;
           } catch (err) {
-            if (this.web3) { this.openSnackBar(this.requestNetworkNotReadyMsg); }
-            console.log('Error: ', err.message);
+            this.openSnackBar(this.requestNetworkNotReadyMsg);
+            console.error('Error: ', err);
           }
         }, err => {
           console.error('Error:', err);
@@ -130,7 +134,7 @@ export class Web3Service {
         // console.warn('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
         if (this.requestNetwork && this.metamaskConnected) {
           this.metamaskConnected = false;
-          this.openSnackBar(this.metamaskNotReadyMsg);
+          this.openSnackBar(this.walletNotReadyMsg);
         }
         this.accounts = accs;
         this.accountsObservable.next(accs);
@@ -175,7 +179,7 @@ export class Web3Service {
   public openSnackBar(msg ?: string, ok ?: string, panelClass ?: string, duration ?: number) {
   /* beautify preserve:end */
     if (!msg) {
-      msg = !this.web3 ? this.web3NotReadyMsg : !this.requestNetwork ? this.requestNetworkNotReadyMsg : !this.metamaskConnected ? this.metamaskNotReadyMsg : '';
+      msg = !this.web3 ? this.web3NotReadyMsg : !this.requestNetwork ? this.requestNetworkNotReadyMsg : !this.metamaskConnected ? this.walletNotReadyMsg : '';
       if (msg === '') { return; }
     }
 

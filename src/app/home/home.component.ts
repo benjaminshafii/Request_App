@@ -22,9 +22,9 @@ export class HomeComponent implements OnInit {
   // currency = new FormControl('ETH');
   // currencies = [{ name: 'ether', iso: 'ETH' }];
 
-  static sameAddressAsAccountValidator(control: FormControl) {
-    const sameAddressAsAccount = control.value && control.root.get('payee').value === control.value;
-    return sameAddressAsAccount ? { sameAddressAsAccount: true } : null;
+  static sameAddressAsPayeeValidator(control: FormControl) {
+    const sameAddressAsPayee = control.value && control.root.get('payee').value === control.value;
+    return { sameAddressAsPayee };
   }
 
 
@@ -35,10 +35,9 @@ export class HomeComponent implements OnInit {
     setInterval(_ => { this.date = new Date().getTime(); }, 5000);
     setTimeout(_ => this.web3Service.setSearchValue(''));
 
-    this.watchAccount();
 
     this.expectedAmountFormControl = new FormControl('', [Validators.required, Validators.pattern('[0-9]*([\.][0-9]{0,18})?$')]);
-    this.payerFormControl = new FormControl('', [Validators.required, Validators.pattern('^(0x)?[0-9a-fA-F]{40}$'), HomeComponent.sameAddressAsAccountValidator]);
+    this.payerFormControl = new FormControl('', [Validators.required, Validators.pattern('^(0x)?[0-9a-fA-F]{40}$'), HomeComponent.sameAddressAsPayeeValidator]);
     this.payeeFormControl = new FormControl(this.account);
     this.dateFormControl = new FormControl('');
     this.reasonFormControl = new FormControl('');
@@ -50,15 +49,14 @@ export class HomeComponent implements OnInit {
       date: this.dateFormControl,
       Reason: this.reasonFormControl,
     });
+
+    this.watchAccount();
   }
 
 
   watchAccount() {
-    if (!this.account && this.web3Service.accounts) {
-      this.account = this.web3Service.accounts[0];
-    }
     this.web3Service.accountsObservable.subscribe(accounts => {
-      this.account = accounts ? accounts[0] : null;
+      this.account = accounts[0];
       this.payeeFormControl.setValue(this.account);
       this.payerFormControl.updateValueAndValidity();
     });
@@ -95,7 +93,7 @@ export class HomeComponent implements OnInit {
       this.createLoading = false;
       this.web3Service.waitingForLedgerTxApproval = false;
 
-      if (response && response.transaction) {
+      if (response.transaction) {
         this.web3Service.openSnackBar('The request is being created. Please wait a few moments for it to appear on the Blockchain.', 'Ok', 'info-snackbar');
         const queryParams = {
           expectedAmount: this.expectedAmountFormControl.value,
@@ -105,7 +103,7 @@ export class HomeComponent implements OnInit {
         Object.keys(data).forEach(key => queryParams[key] = data[key]);
 
         this.router.navigate(['/request/txHash', response.transaction.hash], { queryParams });
-      } else if (response && response.message) {
+      } else if (response.message) {
         if (response.message.startsWith('Invalid status 6985')) {
           this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
         } else if (response.message.startsWith('Failed to subscribe to new newBlockHeaders')) {
