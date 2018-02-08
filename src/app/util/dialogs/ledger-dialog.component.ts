@@ -16,7 +16,7 @@ export class LedgerDialogComponent {
     this.error = '';
     this.loading = true;
 
-    this.web3Service.connectLedger().then(
+    this.web3Service.connectLedger(4).then(
       res => {
         this.loading = false;
         this.dialogRef.close();

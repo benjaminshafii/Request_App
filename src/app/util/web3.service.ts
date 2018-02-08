@@ -8,7 +8,6 @@ import Web3 from 'web3';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
-
 import LedgerWalletSubprovider from 'ledger-wallet-provider';
 
 /* beautify preserve:start */
@@ -17,11 +16,11 @@ declare let window: any;
 
 @Injectable()
 export class Web3Service {
-  private web3;
+  private web3: Web3;
   private requestNetwork: RequestNetwork;
   private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
   private derivationPath = `44'/60'/0'/0`;
-  private networkId: string;
+  private networkId: number;
 
   private metamaskConnected = true;
   public metamask = false;
@@ -33,7 +32,6 @@ export class Web3Service {
 
   public etherscanUrl: string;
   public accounts: string[];
-
 
   public accountsObservable = new BehaviorSubject < string[] > (['loading']);
   public searchValue = new Subject < string > ();
@@ -53,12 +51,14 @@ export class Web3Service {
       this.checkAndInstantiateWeb3();
       setInterval(_ => this.refreshAccounts(), 1000);
     });
+
+    // this.networkId
   }
 
 
-  public connectLedger() {
+  public connectLedger(networkId) {
     return new Promise(async(resolve, reject) => {
-      const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => 4, this.derivationPath);
+      const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, this.derivationPath);
       const ledger = ledgerWalletSubProvider.ledger;
 
       if (!ledger.isU2FSupported) {
@@ -72,6 +72,7 @@ export class Web3Service {
             engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
             engine.start();
             this.checkAndInstantiateWeb3(new Web3(engine));
+
             this.ledgerConnected = true;
             this.openSnackBar('Ledger Wallet successfully connected on Rinkeby Test Network.', null, 'success-snackbar');
             resolve(Object.values(res));
@@ -96,39 +97,34 @@ export class Web3Service {
         this.web3 = web3;
       } else {
         this.metamask = window.web3.currentProvider.isMetaMask;
-        console.log('this.metamask:', this.metamask);
         this.web3 = new Web3(window.web3.currentProvider);
       }
 
-      this.web3.eth.net.getId().then(
-        networkId => {
-          try {
-            this.networkId = networkId;
-            this.setEtherscanUrl(networkId);
-            this.requestNetwork = new RequestNetwork(this.web3.currentProvider, networkId);
-            this.ready = true;
-          } catch (err) {
-            this.openSnackBar(this.requestNetworkNotReadyMsg);
-            console.error('Error: ', err);
-          }
-        }, err => {
-          console.error('Error:', err);
-        });
+      this.networkId = await this.web3.eth.net.getId();
+      this.setEtherscanUrl(this.networkId);
+
+      try {
+        this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkId);
+      } catch (err) {
+        this.openSnackBar(this.requestNetworkNotReadyMsg);
+        console.error('Error: ', err);
+      }
     } else {
       console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, 4);
-      this.ready = true;
     }
 
     this.fromWei = this.web3.utils.fromWei;
     this.toWei = this.web3.utils.toWei;
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
+
+    this.ready = this.requestNetwork ? true : false;
   }
 
   private refreshAccounts() {
-    if (this.waitingForLedgerTxApproval || !this.web3) { return; }
+    if (this.waitingForLedgerTxApproval) { return; }
     this.web3.eth.getAccounts((err, accs) => {
       if (err != null || accs.length === 0) {
         // console.warn('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
@@ -136,11 +132,9 @@ export class Web3Service {
           this.metamaskConnected = false;
           this.openSnackBar(this.walletNotReadyMsg);
         }
-        this.accounts = accs;
         this.accountsObservable.next(accs);
-      } else if (!this.accounts || this.accounts.length !== accs.length || this.accounts[0] !== accs[0]) {
+      } else if (!this.accountsObservable.value || this.accountsObservable.value.length !== accs.length || this.accountsObservable.value[0] !== accs[0]) {
         console.log('Observed new accounts');
-        this.accounts = accs;
         this.accountsObservable.next(accs);
         if (accs.length) { this.metamaskConnected = true; }
       }
