@@ -20,7 +20,6 @@ export class Web3Service {
   private requestNetwork: RequestNetwork;
   private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
   private derivationPath = `44'/60'/0'/0`;
-  private networkId: number;
 
   private metamaskConnected = true;
   public metamask = false;
@@ -31,9 +30,9 @@ export class Web3Service {
   public waitingForLedgerTxApproval = false;
 
   public etherscanUrl: string;
-  public accounts: string[];
 
   public accountsObservable = new BehaviorSubject < string[] > (['loading']);
+  private networkIdObservable = new BehaviorSubject < number > (null);
   public searchValue = new Subject < string > ();
 
   private web3NotReadyMsg = 'Error when trying to instanciate web3.';
@@ -46,13 +45,14 @@ export class Web3Service {
   public isAddress;
 
   constructor(private snackBar: MatSnackBar) {
+
     window.addEventListener('load', async event => {
       console.log('web3service instantiate web3');
       this.checkAndInstantiateWeb3();
+      this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
       setInterval(_ => this.refreshAccounts(), 1000);
     });
 
-    // this.networkId
   }
 
 
@@ -89,30 +89,28 @@ export class Web3Service {
 
 
   private async checkAndInstantiateWeb3(web3 ? ) {
-    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (web3 || typeof window.web3 !== 'undefined') {
       console.log(`Using web3 detected from external source. If you find that your accounts don\'t appear, ensure you\'ve configured that source properly.`);
 
       if (web3) {
+        // Ledger wallet
         this.web3 = web3;
       } else {
+        // Case Web3 has been injected by the browser (Mist/MetaMask)
         this.metamask = window.web3.currentProvider.isMetaMask;
         this.web3 = new Web3(window.web3.currentProvider);
       }
-
-      this.networkId = await this.web3.eth.net.getId();
-      this.setEtherscanUrl(this.networkId);
-
-      try {
-        this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkId);
-      } catch (err) {
-        this.openSnackBar(this.requestNetworkNotReadyMsg);
-        console.error('Error: ', err);
-      }
+      this.networkIdObservable.next(await this.web3.eth.net.getId());
     } else {
       console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
-      this.requestNetwork = new RequestNetwork(this.web3.currentProvider, 4);
+    }
+
+    try {
+      this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable);
+    } catch (err) {
+      this.openSnackBar(this.requestNetworkNotReadyMsg);
+      console.error('Error: ', err);
     }
 
     this.fromWei = this.web3.utils.fromWei;
@@ -142,8 +140,8 @@ export class Web3Service {
   }
 
 
-  private setEtherscanUrl(networkId) {
-    switch (networkId) {
+  private setEtherscanUrl() {
+    switch (this.networkIdObservable.value) {
       case 1:
         this.etherscanUrl = 'https://etherscan.io/';
         break;
