@@ -32,6 +32,7 @@ export class Web3Service {
   public etherscanUrl: string;
 
   public accountsObservable = new BehaviorSubject < string[] > (['loading']);
+  public accountObservable = new BehaviorSubject < string > ('loading');
   private networkIdObservable = new BehaviorSubject < number > (null);
   public searchValue = new Subject < string > ();
 
@@ -50,7 +51,7 @@ export class Web3Service {
       console.log('web3service instantiate web3');
       this.checkAndInstantiateWeb3();
       this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
-      setInterval(_ => this.refreshAccounts(), 1000);
+      setInterval(async _ => await this.refreshAccounts(), 1000);
     });
 
   }
@@ -121,22 +122,33 @@ export class Web3Service {
     this.ready = this.requestNetwork ? true : false;
   }
 
-  private refreshAccounts() {
+
+  private async refreshAccounts() {
     if (this.waitingForLedgerTxApproval) { return; }
-    this.web3.eth.getAccounts((err, accs) => {
-      if (err != null || accs.length === 0) {
-        // console.warn('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
-        if (this.requestNetwork && this.metamaskConnected) {
-          this.metamaskConnected = false;
-          this.openSnackBar(this.walletNotReadyMsg);
-        }
-        this.accountsObservable.next(accs);
-      } else if (!this.accountsObservable.value || this.accountsObservable.value.length !== accs.length || this.accountsObservable.value[0] !== accs[0]) {
-        console.log('Observed new accounts');
-        this.accountsObservable.next(accs);
-        if (accs.length) { this.metamaskConnected = true; }
-      }
-    });
+
+    const accs = await this.web3.eth.getAccounts();
+    if (this.accountObservable.value && (!accs || accs.length === 0)) {
+      this.accountObservable.next(null);
+    } else if (this.accountObservable.value !== accs[0]) {
+      this.accountObservable.next(accs[0]);
+    }
+
+
+
+    // this.web3.eth.getAccounts((err, accs) => {
+    //   if (err != null || accs.length === 0) {
+    //     // console.warn('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
+    //     if (this.requestNetwork && this.metamaskConnected) {
+    //       this.metamaskConnected = false;
+    //       this.openSnackBar(this.walletNotReadyMsg);
+    //     }
+    //     this.accountsObservable.next(accs);
+    //   } else if (!this.accountsObservable.value || this.accountsObservable.value.length !== accs.length || this.accountsObservable.value[0] !== accs[0]) {
+    //     console.log('Observed new accounts');
+    //     this.accountsObservable.next(accs);
+    //     if (accs.length) { this.metamaskConnected = true; }
+    //   }
+    // });
   }
 
 
@@ -161,7 +173,7 @@ export class Web3Service {
 
 
   private watchDog() {
-    const stop = !this.web3 || !this.requestNetwork || !this.metamaskConnected;
+    const stop = !this.web3 || !this.requestNetwork || !this.accountObservable.value;
     if (stop) { this.openSnackBar(); }
     return stop;
   }
@@ -171,7 +183,7 @@ export class Web3Service {
   public openSnackBar(msg ?: string, ok ?: string, panelClass ?: string, duration ?: number) {
   /* beautify preserve:end */
     if (!msg) {
-      msg = !this.web3 ? this.web3NotReadyMsg : !this.requestNetwork ? this.requestNetworkNotReadyMsg : !this.metamaskConnected ? this.walletNotReadyMsg : '';
+      msg = !this.web3 ? this.web3NotReadyMsg : !this.requestNetwork ? this.requestNetworkNotReadyMsg : !this.accountObservable.value ? this.walletNotReadyMsg : '';
       if (msg === '') { return; }
     }
 

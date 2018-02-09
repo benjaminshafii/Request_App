@@ -14,7 +14,6 @@ import blockies from 'blockies';
 export class AppComponent implements OnInit {
 
   blockies = blockies;
-  account: string;
   searchForm: FormGroup;
   searchValueFormControl: FormControl;
 
@@ -23,8 +22,6 @@ export class AppComponent implements OnInit {
 
 
   ngOnInit() {
-    this.watchAccount();
-
     this.searchValueFormControl = new FormControl('');
     this.searchForm = this.formBuilder.group({
       searchValueFormControl: this.searchValueFormControl
@@ -32,13 +29,6 @@ export class AppComponent implements OnInit {
 
     this.web3Service.searchValue.subscribe(searchValue => {
       this.searchValueFormControl.setValue(searchValue);
-    });
-  }
-
-
-  watchAccount() {
-    this.web3Service.accountsObservable.subscribe(accounts => {
-      this.account = accounts[0];
     });
   }
 

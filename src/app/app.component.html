@@ -1,10 +1,6 @@
 <div class=wrapper>
-  <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="actionsMenu">
-    <button (click)="search(account)" mat-menu-item>
-      {{ account }} </button>
-  </mat-menu>
   <header *ngIf="!this.router.routerState.snapshot.url.startsWith('/contact')" class="d-flex flex-wrap justify-content-between align-items-center fc-primary px-3">
-    <a routerLink="/" style="text-decoration: none" class="d-flex align-items-center">
+    <a routerLink="/" class="d-flex align-items-center">
       <img class="px-3 request-logo" src="assets/img/request-logo.png">
       <span class="semi-bold">Request&nbsp;<sup><small><small>ALPHA TESTNET</small></small></sup></span>
     </a>
@@ -20,21 +16,21 @@
       </mat-form-field>
     </form>
     <div class="mr-3" [style.width]="'225px'">
-      <mat-spinner class="pull-right mr-3" [diameter]="20" *ngIf="account === 'loading'; else accountBlock"></mat-spinner>
+      <mat-spinner class="pull-right mr-4" [diameter]="20" *ngIf="(web3Service.accountObservable | async) === 'loading'; else accountBlock"></mat-spinner>
       <!-- ACCOUNT BLOCK -->
+      <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="accountMenu">
+        <button *ngIf="account" (click)="search(account)" mat-menu-item>
+          <i class="fa fa-search" aria-hidden="true"></i>
+          <small>&nbsp;{{account}}</small>
+        </button>
+        <hr class="m-0" style="border-color: #617B9F; opacity: 0.1;" />
+        <button *ngIf="web3Service && !web3Service.ledgerConnected" (click)="openLedgerDialog()" mat-menu-item>
+          <img style="width: 36px; position: relative; top: -2px" src="assets/img/ledger-icon.png">
+          <span>&nbsp;Ledger Nano S</span>
+        </button>
+      </mat-menu>
       <ng-template #accountBlock>
-        <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="accountMenu">
-          <button *ngIf="account" (click)="search(account)" mat-menu-item>
-            <i class="fa fa-search" aria-hidden="true"></i>
-            <small>&nbsp;{{account}}</small>
-          </button>
-          <hr class="m-0" style="border-color: #617B9F; opacity: 0.1;" />
-          <button *ngIf="web3Service && !web3Service.ledgerConnected" (click)="openLedgerDialog()" mat-menu-item>
-            <img style="width: 36px; position: relative; top: -2px" src="assets/img/ledger-icon.png">
-            <span>&nbsp;Ledger Nano S</span>
-          </button>
-        </mat-menu>
-        <button mat-button class="accountMenuButton no-focus-overlay" [matMenuTriggerFor]="accountMenu" *ngIf="account; else connectWallet">
+        <button mat-button class="accountMenuButton no-focus-overlay" [matMenuTriggerFor]="accountMenu" *ngIf="web3Service.accountObservable | async as account; else connectWallet">
           <img [src]="blockies({ seed: account.toLowerCase() }).toDataURL()" style="width: 24px; height: 24px; image-rendering: pixelated; border-radius: 12px" />
           <span style="text-overflow: ellipsis; overflow: hidden;">&nbsp;{{ account }}</span>
           <mat-icon>expand_more</mat-icon>
