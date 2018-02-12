@@ -29,7 +29,7 @@ export class Web3Service {
 
   public etherscanUrl: string;
 
-  public accountObservable = new BehaviorSubject < string > ('loading');
+  public accountObservable = new BehaviorSubject < string > ('');
   private networkIdObservable = new BehaviorSubject < number > (null);
   public searchValue = new Subject < string > ();
 
@@ -124,8 +124,8 @@ export class Web3Service {
     if (this.waitingForLedgerTxApproval) { return; }
 
     const accs = await this.web3.eth.getAccounts();
-    if (this.accountObservable.value && (!accs || accs.length === 0)) {
-      this.accountObservable.next(null);
+    if (!accs || accs.length === 0) {
+      this.accountObservable.next('noAccount');
     } else if (this.accountObservable.value !== accs[0]) {
       this.accountObservable.next(accs[0]);
     }

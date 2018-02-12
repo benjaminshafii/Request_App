@@ -144,7 +144,7 @@ button.account-menu-button {
   font-size: 16px;
   font-weight: initial;
   max-width: 100%;
-  .mat-button-wrapper {
+  .mat-button-wrapper > div {
     display: flex;
     justify-content: space-between;
     align-items: center;
