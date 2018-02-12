@@ -131,6 +131,9 @@ mat-toolbar.cta-toolbar {
 
 .account-menu {
   box-shadow: 2px 2px 18px 0px rgba(212, 227, 255, 0.5) !important;
+  button {
+    font-size: 14px;
+  }
   .mat-menu-content {
     padding: 0 !important;
   }
@@ -143,7 +146,7 @@ button.account-menu-button {
   font-size: 16px;
   font-weight: initial;
   max-width: 100%;
-  .mat-button-wrapper > div {
+  .mat-button-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;

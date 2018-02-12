@@ -91,7 +91,6 @@ export class HomeComponent implements OnInit {
 
     const callback = response => {
       this.createLoading = false;
-      this.web3Service.waitingForLedgerTxApproval = false;
 
       if (response.transaction) {
         this.web3Service.openSnackBar('The request is being created. Please wait a few moments for it to appear on the Blockchain.', 'Ok', 'info-snackbar');

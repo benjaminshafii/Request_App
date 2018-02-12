@@ -108,7 +108,7 @@ export class Web3Service {
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
     } catch (err) {
       this.openSnackBar(this.requestNetworkNotReadyMsg);
-      console.error('Error: ', err);
+      console.error(err);
     }
 
     this.fromWei = this.web3.utils.fromWei;
@@ -119,8 +119,9 @@ export class Web3Service {
     this.ready = this.requestNetwork ? true : false;
   }
 
-
-  private async refreshAccounts(force: boolean) {
+  /* beautify preserve:start */
+  private async refreshAccounts(force ?: boolean) {
+  /* beautify preserve:end */
     if (this.ledgerConnected && !force) { return; }
 
     const accs = await this.web3.eth.getAccounts();

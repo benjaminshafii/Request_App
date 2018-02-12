@@ -18,22 +18,18 @@
     <div class="mr-3">
       <!-- ACCOUNT BLOCK -->
       <button mat-button class="account-menu-button no-focus-overlay py-1" [matMenuTriggerFor]="accountMenu" *ngIf="web3Service.accountObservable | async as account; else loadingAccount">
-        <div *ngIf="!web3Service.metamask && !account.startsWith('0x'); else accountBlock">
-          <mat-icon>account_circle</mat-icon>
-          <span>&nbsp;Connect a wallet&nbsp;</span>
-          <mat-icon>expand_more</mat-icon>
+        <mat-icon *ngIf="!account.startsWith('0x'); else blockiesImg">account_circle</mat-icon>
+        <ng-template><img [src]="blockies({ seed: account.toLowerCase() }).toDataURL()" style="width: 26px; height: 26px; image-rendering: pixelated; border-radius: 13px" /></ng-template>
+        <div class="d-flex flex-column align-items-start px-2" [style.lineHeight]="'14px'" [style.borderRight]="'1px solid #617B9F'">
+          <span class="fc-accent fs-12">{{ web3Service.ledgerConnected ? 'Ledger Nano S' : web3Service.metamask ? 'Metamask' : 'connect a wallet' }}</span>
+          <span class="fs-14" *ngIf="account.startsWith('0x'); else accountLocked">{{ account.substring(0,10) }}...{{ account.substring(37,42) }}</span>
+          <ng-template #accountLocked><span class="fs-14">{{ web3Service.metamask ? 'Account locked' : 'Connect a wallet' }}</span></ng-template>
         </div>
-        <ng-template #accountBlock>
-          <div>
-            <img [src]="blockies({ seed: account.toLowerCase() }).toDataURL()" style="width: 26px; height: 26px; image-rendering: pixelated; border-radius: 13px" />
-            <div class="d-flex flex-column align-items-start px-2" [style.lineHeight]="'14px'">
-              <span class="fc-accent fs-12">{{ web3Service.ledgerConnected ? 'Ledger Nano S' : web3Service.metamask ? 'Metamask' : 'connect a wallet' }}</span>
-              <span class="fs-14" *ngIf="account.startsWith('0x'); else accountLocked">{{ account.substring(0,10) }}...{{ account.substring(37,42) }}</span>
-              <ng-template #accountLocked>Account locked</ng-template>
-            </div>
-            <mat-icon>expand_more</mat-icon>
-          </div>
-        </ng-template>
+        <div class="fs-14 d-flex align-items-center network-{{web3Service.networkIdObservable | async }}">
+          <span class="network-icon"></span>
+          <span class="network-name"></span>
+        </div>
+        <mat-icon>expand_more</mat-icon>
         <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="account-menu">
           <button *ngIf="account.startsWith('0x')" (click)="search(account)" mat-menu-item>
             <i class="fa fa-search" aria-hidden="true"></i>
@@ -42,7 +38,7 @@
           <hr class="m-0" *ngIf="account.startsWith('0x')" style="border-color: #617B9F; opacity: 0.1;" />
           <button (click)="openLedgerDialog()" mat-menu-item>
             <img style="width: 36px; position: relative; top: -2px" src="assets/img/ledger-icon.png">
-            <span>&nbsp;Ledger Nano S</span>
+            <span>&nbsp;Connect Ledger Nano S</span>
           </button>
         </mat-menu>
       </button>
