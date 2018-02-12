@@ -31,7 +31,7 @@ export class Web3Service {
 
   public etherscanUrl: string;
 
-  public accountsObservable = new BehaviorSubject < string[] > (['loading']);
+  // public accountsObservable = new BehaviorSubject < string[] > (['loading']);
   public accountObservable = new BehaviorSubject < string > ('loading');
   private networkIdObservable = new BehaviorSubject < number > (null);
   public searchValue = new Subject < string > ();

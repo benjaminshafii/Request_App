@@ -23,8 +23,8 @@ export class HomeComponent implements OnInit {
   // currencies = [{ name: 'ether', iso: 'ETH' }];
 
   static sameAddressAsPayeeValidator(control: FormControl) {
-    const sameAddressAsPayee = control.value && control.root.get('payee').value === control.value;
-    return { sameAddressAsPayee };
+    const result = control.value && control.root.get('payee').value === control.value ? { sameAddressAsPayee: true } : null;
+    return result;
   }
 
 
@@ -55,8 +55,8 @@ export class HomeComponent implements OnInit {
 
 
   watchAccount() {
-    this.web3Service.accountsObservable.subscribe(accounts => {
-      this.account = accounts[0];
+    this.web3Service.accountObservable.subscribe(account => {
+      this.account = account;
       this.payeeFormControl.setValue(this.account);
       this.payerFormControl.updateValueAndValidity();
     });

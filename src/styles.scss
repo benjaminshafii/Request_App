@@ -118,7 +118,7 @@ mat-toolbar.cta-toolbar {
   }
 }
 
-.actionsMenu {
+.actions-menu {
   box-shadow: 2px 2px 18px 0px rgba(212, 227, 255, 0.5) !important;
   max-width: 365px !important;
   width: 25.25vw;
@@ -129,7 +129,7 @@ mat-toolbar.cta-toolbar {
   }
 }
 
-.accountMenu {
+.account-menu {
   box-shadow: 2px 2px 18px 0px rgba(212, 227, 255, 0.5) !important;
   max-width: none !important;
   .mat-menu-content {
@@ -140,7 +140,7 @@ mat-toolbar.cta-toolbar {
   }
 }
 
-button.accountMenuButton {
+button.account-menu-button {
   font-size: 16px;
   font-weight: initial;
   max-width: 100%;

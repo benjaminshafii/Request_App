@@ -122,8 +122,8 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   watchAccount() {
-    this.web3Service.accountsObservable.subscribe(accounts => {
-      this.account = accounts[0];
+    this.web3Service.accountObservable.subscribe(account => {
+      this.account = account;
       this.getRequestMode();
     });
   }
