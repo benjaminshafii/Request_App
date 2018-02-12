@@ -23,9 +23,7 @@ export class Web3Service {
 
   public metamask = false;
   public ledgerConnected = false;
-
   public ready = false;
-  public waitingForLedgerTxApproval = false;
 
   public etherscanUrl: string;
 
@@ -92,9 +90,11 @@ export class Web3Service {
       if (web3) {
         // if Ledger wallet
         this.web3 = web3;
+        this.refreshAccounts(true);
       } else {
         // if Web3 has been injected by the browser (Mist/MetaMask)
         this.metamask = window.web3.currentProvider.isMetaMask;
+        this.ledgerConnected = false;
         this.web3 = new Web3(window.web3.currentProvider);
       }
       this.networkIdObservable.next(await this.web3.eth.net.getId());
@@ -103,7 +103,7 @@ export class Web3Service {
       this.networkIdObservable.next(4);
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
     }
-
+    // instanciate requestnetwork.js
     try {
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
     } catch (err) {
@@ -120,12 +120,12 @@ export class Web3Service {
   }
 
 
-  private async refreshAccounts() {
-    if (this.waitingForLedgerTxApproval) { return; }
+  private async refreshAccounts(force: boolean) {
+    if (this.ledgerConnected && !force) { return; }
 
     const accs = await this.web3.eth.getAccounts();
     if (!accs || accs.length === 0) {
-      this.accountObservable.next('noAccount');
+      this.accountObservable.next(' ');
     } else if (this.accountObservable.value !== accs[0]) {
       this.accountObservable.next(accs[0]);
     }
@@ -201,7 +201,6 @@ export class Web3Service {
 
 
   public createRequestAsPayee(payer: string, expectedAmount: string, data: string, callback ? ) {
-    this.waitingForLedgerTxApproval = true;
     if (this.watchDog()) { return callback(); }
     if (!this.web3.utils.isAddress(payer)) { return callback({ message: 'payer\'s address is not a valid Ethereum address' }); }
     const expectedAmountInWei = this.toWei(expectedAmount, 'ether');
@@ -210,21 +209,18 @@ export class Web3Service {
 
 
   public cancel(requestId: string, callback ? ) {
-    this.waitingForLedgerTxApproval = true;
     if (this.watchDog()) { return callback(); }
     return this.requestNetwork.requestEthereumService.cancel(requestId);
   }
 
 
   public accept(requestId: string, callback ? ) {
-    this.waitingForLedgerTxApproval = true;
     if (this.watchDog()) { return callback(); }
     return this.requestNetwork.requestEthereumService.accept(requestId);
   }
 
 
   public subtractAction(requestId: string, amount: string, callback ? ) {
-    this.waitingForLedgerTxApproval = true;
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString(), 'ether');
     return this.requestNetwork.requestEthereumService.subtractAction(requestId, amountInWei);
@@ -232,7 +228,6 @@ export class Web3Service {
 
 
   public additionalAction(requestId: string, amount: string, callback ? ) {
-    this.waitingForLedgerTxApproval = true;
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString(), 'ether');
     return this.requestNetwork.requestEthereumService.additionalAction(requestId, amountInWei);
@@ -240,14 +235,12 @@ export class Web3Service {
 
 
   public paymentAction(requestId: string, amount: string, callback ? ) {
-    this.waitingForLedgerTxApproval = true;
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString(), 'ether');
     return this.requestNetwork.requestEthereumService.paymentAction(requestId, amountInWei, 0);
   }
 
   public refundAction(requestId: string, amount: string, callback ? ) {
-    this.waitingForLedgerTxApproval = true;
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString(), 'ether');
     return this.requestNetwork.requestEthereumService.refundAction(requestId, amountInWei, 0);
