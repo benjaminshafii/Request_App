@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
   openLedgerDialog() {
     this.dialog.open(LedgerDialogComponent, {
       hasBackdrop: true,
-      width: '350px',
+      width: '500px',
     });
   }
 

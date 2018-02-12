@@ -53,7 +53,6 @@ export class Web3Service {
       this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
       setInterval(async _ => await this.refreshAccounts(), 1000);
     });
-
   }
 
 
