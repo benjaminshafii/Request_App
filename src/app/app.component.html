@@ -15,25 +15,17 @@
         </mat-placeholder>
       </mat-form-field>
     </form>
-    <div class="mr-3" [style.width]="'225px'">
+    <div class="mr-3">
       <mat-spinner class="pull-right mr-3" [diameter]="20" *ngIf="(web3Service.accountObservable | async) === 'loading'; else accountBlock"></mat-spinner>
       <!-- ACCOUNT BLOCK -->
       <ng-template #accountBlock>
         <button mat-button class="account-menu-button no-focus-overlay" [matMenuTriggerFor]="accountMenu" *ngIf="web3Service.accountObservable | async as account; else connectWallet">
           <img [src]="blockies({ seed: account.toLowerCase() }).toDataURL()" style="width: 24px; height: 24px; image-rendering: pixelated; border-radius: 12px" />
-          <span style="text-overflow: ellipsis; overflow: hidden;">&nbsp;{{ account }}</span>
+          <div class="d-flex flex-column align-items-start px-2" [style.lineHeight]="'14px'">
+            <span class="fc-accent fs-12">{{ web3Service.metamask ? 'Metamask' : 'Ledger Nano S' }}</span>
+            <span class="fs-14">{{ account.substring(0,5) }}...{{ account.substring(32,42) }}</span>
+          </div>
           <mat-icon>expand_more</mat-icon>
-          <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="account-menu">
-            <button *ngIf="account" (click)="search(account)" mat-menu-item>
-              <i class="fa fa-search" aria-hidden="true"></i>
-              <small>&nbsp;{{account}}</small>
-            </button>
-            <hr class="m-0" style="border-color: #617B9F; opacity: 0.1;" />
-            <button (click)="openLedgerDialog()" mat-menu-item>
-              <img style="width: 36px; position: relative; top: -2px" src="assets/img/ledger-icon.png">
-              <span>&nbsp;Ledger Nano S</span>
-            </button>
-          </mat-menu>
         </button>
         <!-- CONNECT ACCOUNT -->
         <ng-template #connectWallet>
@@ -43,6 +35,18 @@
             <mat-icon>expand_more</mat-icon>
           </button>
         </ng-template>
+        <!-- ACCOUNT MENU -->
+        <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="account-menu">
+          <button *ngIf="account" (click)="search(account)" mat-menu-item>
+            <i class="fa fa-search" aria-hidden="true"></i>
+            <small>&nbsp;{{account}}</small>
+          </button>
+          <hr class="m-0" style="border-color: #617B9F; opacity: 0.1;" />
+          <button (click)="openLedgerDialog()" mat-menu-item>
+            <img style="width: 36px; position: relative; top: -2px" src="assets/img/ledger-icon.png">
+            <span>&nbsp;Ledger Nano S</span>
+          </button>
+        </mat-menu>
       </ng-template>
     </div>
   </header>

@@ -21,9 +21,7 @@ export class Web3Service {
   private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
   private derivationPath = `44'/60'/0'/0`;
 
-  private metamaskConnected = true;
   public metamask = false;
-
   public ledgerConnected = false;
 
   public ready = false;
@@ -92,16 +90,17 @@ export class Web3Service {
       console.log(`Using web3 detected from external source. If you find that your accounts don\'t appear, ensure you\'ve configured that source properly.`);
 
       if (web3) {
-        // Ledger wallet
+        // if Ledger wallet
         this.web3 = web3;
       } else {
-        // Case Web3 has been injected by the browser (Mist/MetaMask)
+        // if Web3 has been injected by the browser (Mist/MetaMask)
         this.metamask = window.web3.currentProvider.isMetaMask;
         this.web3 = new Web3(window.web3.currentProvider);
       }
       this.networkIdObservable.next(await this.web3.eth.net.getId());
     } else {
       console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
+      this.networkIdObservable.next(4);
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
     }
 
