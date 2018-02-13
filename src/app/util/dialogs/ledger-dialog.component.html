@@ -1,7 +1,7 @@
 <div class="fc-primary">
-  <h1 mat-dialog-title>Connect Ledger Wallet</h1>
+  <h1 mat-dialog-title>{{ addresses ? 'Select an address' : 'Connect Ledger Wallet' }}</h1>
   <mat-dialog-content>
-    <div class="fs-14">
+    <div *ngIf="!addresses; else selectAddressBlock" class="fs-14">
       <ul>
         <li>Connect your Ledger Nano S and open the ethereum app.</li>
         <li>Make sure you don't have any other apps connected to your Ledger open.</li>
@@ -9,7 +9,7 @@
         <li>Make sure you have "Contract Data" turned ON in Settings.</li>
       </ul>
       <div>
-        <span>Please specify your desired network</span>
+        <span>Please specify your desired network: </span>
         <mat-form-field>
           <mat-select [(ngModel)]="networkId">
             <mat-option *ngFor="let network of networks" [value]="network.id" [disabled]="network.id !== 4">
@@ -25,12 +25,18 @@
         </mat-form-field>
       </div>
     </div>
+    <ng-template #selectAddressBlock>
+      <a *ngFor="let address of addresses" class="fs-12 fc-primary d-flex justify-content-between" (click)="instanciateWeb3FromLedger(address.derivationPath)">
+        <span>{{ address.address }}</span>
+        <span>&nbsp;{{ address.balance }} ETH</span>
+      </a>
+    </ng-template>
     <div class="fs-12 fc-warn" *ngIf="error">
       {{ error }}
     </div>
   </mat-dialog-content>
-  <mat-dialog-actions class="mt-3 d-flex flex-wrap justify-content-around w-100">
+  <mat-dialog-actions *ngIf="!addresses" class="mt-3 d-flex flex-wrap justify-content-around w-100">
     <button mat-raised-button type="button" mat-dialog-close>Cancel</button>
-    <button mat-raised-button type="button" color="accent" (click)="connectLedger()">Connect&nbsp;<i *ngIf="loading" class="fa fa-circle-o-notch fa-spin"></i></button>
+    <button mat-raised-button type="button" color="accent" (click)="checkLedger()">Connect&nbsp;<i *ngIf="loading" class="fa fa-circle-o-notch fa-spin"></i></button>
   </mat-dialog-actions>
 </div>

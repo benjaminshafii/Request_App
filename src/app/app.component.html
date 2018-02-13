@@ -21,11 +21,11 @@
         <mat-icon *ngIf="!account.startsWith('0x'); else blockiesImg">account_circle</mat-icon>
         <ng-template #blockiesImg><img [src]="blockies({ seed: account.toLowerCase() }).toDataURL()" style="width: 26px; height: 26px; image-rendering: pixelated; border-radius: 13px" /></ng-template>
         <div class="d-flex flex-column align-items-start px-2" [style.lineHeight]="'14px'" [style.borderRight]="'1px solid #617B9F'">
-          <span class="fc-accent fs-12">{{ web3Service.ledgerConnected ? 'Ledger Nano S' : web3Service.metamask ? 'Metamask' : 'connect a wallet' }}</span>
+          <span class="fc-accent fs-12">{{ web3Service.ledgerConnected ? 'Ledger Nano S' : web3Service.metamask ? 'Metamask' : 'Connect a wallet' }}</span>
           <span class="fs-14" *ngIf="account.startsWith('0x'); else accountLocked">{{ account.substring(0,10) }}...{{ account.substring(37,42) }}</span>
-          <ng-template #accountLocked><span class="fs-14">{{ web3Service.metamask ? 'Account locked' : 'Connect a wallet' }}</span></ng-template>
+          <ng-template #accountLocked><span class="fs-14">{{ web3Service.metamask ? 'Account locked' : 'no account' }}</span></ng-template>
         </div>
-        <div class="fs-14 d-flex align-items-center network-{{web3Service.networkIdObservable | async }}">
+        <div class="fs-14 d-flex align-items-center network-{{ web3Service.networkIdObservable | async }}">
           <span class="network-icon"></span>
           <span class="network-name"></span>
         </div>

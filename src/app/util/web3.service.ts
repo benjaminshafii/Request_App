@@ -51,7 +51,7 @@ export class Web3Service {
   }
 
 
-  public connectLedger(networkId) {
+  public checkLedger(networkId) {
     return new Promise(async(resolve, reject) => {
       const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, this.derivationPath);
       const ledger = ledgerWalletSubProvider.ledger;
@@ -60,17 +60,18 @@ export class Web3Service {
         reject('Ledger Wallet uses U2F which is not supported by your browser.');
       }
 
-      ledger.getMultipleAccounts(this.derivationPath, 0, 1).then(
-          res => {
+      ledger.getMultipleAccounts(this.derivationPath, 0, 10).then(
+          async res => {
             const engine = new ProviderEngine();
             engine.addProvider(ledgerWalletSubProvider);
             engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
             engine.start();
-            this.checkAndInstantiateWeb3(new Web3(engine));
-
-            this.ledgerConnected = true;
-            this.openSnackBar('Ledger Wallet successfully connected on Rinkeby Test Network.', null, 'success-snackbar');
-            resolve(Object.values(res));
+            const web3 = new Web3(engine);
+            const addresses = Object.entries(res).map(e => ({ derivationPath: e[0], address: e[1], balance: 0 }));
+            for (const address of addresses) {
+              address.balance = this.fromWei(await web3.eth.getBalance(address.address.toString()));
+            }
+            resolve(addresses);
           })
         .catch(err => {
           if (err.metaData && err.metaData.code === 5) {
@@ -80,6 +81,18 @@ export class Web3Service {
           }
         });
     });
+  }
+
+  public async instanciateWeb3FromLedger(networkId, derivationPath) {
+    const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, derivationPath);
+    const engine = new ProviderEngine();
+    engine.addProvider(ledgerWalletSubProvider);
+    engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
+    engine.start();
+
+    this.checkAndInstantiateWeb3(new Web3(engine));
+    this.openSnackBar('Ledger Wallet successfully connected on Rinkeby Test Network.', null, 'success-snackbar');
+    this.ledgerConnected = true;
   }
 
 

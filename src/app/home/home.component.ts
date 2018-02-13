@@ -108,6 +108,7 @@ export class HomeComponent implements OnInit {
         } else if (response.message.startsWith('Failed to subscribe to new newBlockHeaders')) {
           return;
         } else {
+          console.error(response);
           this.web3Service.openSnackBar(response.message);
         }
       }
@@ -123,7 +124,6 @@ export class HomeComponent implements OnInit {
           console.log('resolve createRequestAsPayee: ', response);
           setTimeout(_ => { this.web3Service.openSnackBar('Request successfully created.', 'Ok', 'success-snackbar'); }, 5000);
         }, err => {
-          console.error('Error:', err);
           callback(err);
         });
   }

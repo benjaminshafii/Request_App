@@ -8,7 +8,7 @@ import { Web3Service } from '../web3.service';
 export class LedgerDialogComponent {
   error: any;
   loading = false;
-
+  addresses: any;
   networks = [
     { id: 1, name: 'Main net' },
     { id: 3, name: 'Ropsten Test Net' },
@@ -22,21 +22,26 @@ export class LedgerDialogComponent {
     // this.networkId = this.web3Service.networkIdObservable.value;
   }
 
-  connectLedger() {
+  checkLedger() {
     if (this.loading) { return true; }
     this.error = '';
     this.loading = true;
 
-    this.web3Service.connectLedger(this.networkId).then(
+    this.web3Service.checkLedger(this.networkId).then(
       res => {
         this.loading = false;
-        this.dialogRef.close();
+        this.addresses = res;
       },
       err => {
         this.loading = false;
         this.error = err;
       });
+  }
 
+
+  async instanciateWeb3FromLedger(derivationPath) {
+    await this.web3Service.instanciateWeb3FromLedger(this.networkId, derivationPath);
+    this.dialogRef.close();
   }
 
 }
