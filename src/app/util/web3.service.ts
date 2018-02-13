@@ -28,7 +28,7 @@ export class Web3Service {
   public etherscanUrl: string;
 
   public accountObservable = new BehaviorSubject < string > ('');
-  private networkIdObservable = new BehaviorSubject < number > (null);
+  public networkIdObservable = new BehaviorSubject < number > (null);
   public searchValue = new Subject < string > ();
 
   private web3NotReadyMsg = 'Error when trying to instanciate web3.';

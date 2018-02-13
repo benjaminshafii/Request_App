@@ -131,6 +131,7 @@ mat-toolbar.cta-toolbar {
 
 .account-menu {
   box-shadow: 2px 2px 18px 0px rgba(212, 227, 255, 0.5) !important;
+  max-width: 100% !important;
   button {
     font-size: 14px;
   }
@@ -188,6 +189,71 @@ mat-toolbar.mat-toolbar {
   border: none;
   font-weight: 300;
 }
+
+// NETWORK ID
+.network-icon {
+  display: flex;
+  height: 12px;
+  min-width: 12px;
+  margin: 8px;
+}
+
+.network-1 {
+  span.network-icon {
+    transform: rotate(45deg);
+    background: #038789;
+  }
+  span.network-name {
+    &::before {
+      content: 'Main Network';
+      color: #038789;
+      font-size: 12px;
+    }
+  }
+}
+
+.network-3 {
+  span.network-icon {
+    background: #E91550;
+    border-radius: 10px;
+  }
+  span.network-name {
+    &::before {
+      content: 'Ropsten Test Net';
+      color: #E91550;
+      font-size: 12px;
+    }
+  }
+}
+
+.network-42 {
+  span.network-icon {
+    transform: rotate(45deg);
+    border: 3px solid #690496;
+  }
+  span.network-name {
+    &::before {
+      content: 'Kovan Test Net';
+      color: #690496;
+      font-size: 12px;
+    }
+  }
+}
+
+.network-4 {
+  span.network-icon {
+    background: #EBB33F;
+  }
+  span.network-name {
+    &::before {
+      content: 'Rinkeby Test Net';
+      color: #EBB33F;
+      font-size: 12px;
+    }
+  }
+}
+
+
 
 // CUSTOMIZE MAT-INPUT CSS
 input.mat-input-element,

@@ -3,11 +3,27 @@
   <mat-dialog-content>
     <div class="fs-14">
       <ul>
-        <li>Connect your ledger and open the ethereum app</li>
-        <li>Make sure you don't have any other apps that connect to your Ledger open</li>
-        <li>Make sure you have browser support turned ON.</li>
-        <li>Make sure you have contract data turned ON.</li>
+        <li>Connect your Ledger Nano S and open the ethereum app.</li>
+        <li>Make sure you don't have any other apps connected to your Ledger open.</li>
+        <li>Make sure you have "Browser Support" turned ON in Settings.</li>
+        <li>Make sure you have "Contract Data" turned ON in Settings.</li>
       </ul>
+      <div>
+        <span>Please specify your desired network</span>
+        <mat-form-field>
+          <mat-select [(ngModel)]="networkId">
+            <mat-option *ngFor="let network of networks" [value]="network.id" [disabled]="network.id !== 4">
+              <div class="d-flex align-items-center network-{{ network.id }}">
+                <span class="network-icon"></span>
+                <strong>{{network.name}}</strong>
+              </div>
+            </mat-option>
+          </mat-select>
+          <span class="d-flex network-{{ networkId }}" matPrefix>
+              <span class="network-icon"></span>
+          </span>
+        </mat-form-field>
+      </div>
     </div>
     <div class="fs-12 fc-warn" *ngIf="error">
       {{ error }}
