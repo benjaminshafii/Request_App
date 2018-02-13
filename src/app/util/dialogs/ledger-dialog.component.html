@@ -26,7 +26,11 @@
       </div>
     </div>
     <ng-template #selectAddressBlock>
-      <a *ngFor="let address of addresses" class="fs-12 fc-primary d-flex justify-content-between" (click)="instanciateWeb3FromLedger(address.derivationPath)">
+      <div class="px-3 fs-14 semi-bold d-flex justify-content-between">
+        <span>Address</span>
+        <span>Balance</span>
+      </div>
+      <a *ngFor="let address of addresses" class="address-row" (click)="instanciateWeb3FromLedger(address.derivationPath)">
         <span>{{ address.address }}</span>
         <span>&nbsp;{{ address.balance }} ETH</span>
       </a>

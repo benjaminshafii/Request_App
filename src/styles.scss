@@ -190,6 +190,18 @@ mat-toolbar.mat-toolbar {
   font-weight: 300;
 }
 
+// Select address table
+.address-row {
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  &:hover {
+    color: $accent !important;
+  } 
+}
+
 // NETWORK ID
 .network-icon {
   display: flex;
