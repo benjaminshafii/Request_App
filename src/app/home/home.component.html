@@ -7,7 +7,7 @@
         <p>This is an MVP. What we call MVP is the first version of the website which will allow anyone to interact with Request Network smart contracts on <strong>Rinkeby</strong> testnet.</p>
         <div>What you can do with the first version of Request on the testnet:</div>
         <ul>
-          <li>Connect to your wallet with Metamask</li>
+          <li>Connect to your Metamask or Ledger Nano S wallet</li>
           <li>Create and send a request in ETH</li>
           <li>Pay a request in ETH</li>
           <li>Pay a request multiple times</li>
@@ -60,7 +60,7 @@
               <mat-error *ngIf="payerFormControl.hasError('pattern')">
                 ETH address format <strong>not valid</strong>
               </mat-error>
-              <mat-error *ngIf="payerFormControl.hasError('sameAddressAsAccount')">
+              <mat-error *ngIf="payerFormControl.hasError('sameAddressAsPayee')">
                 payer's address must be <strong>different from yours</strong>
               </mat-error>
             </mat-form-field>

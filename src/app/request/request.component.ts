@@ -64,6 +64,19 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.timerInterval = setInterval(() => this.getRequestByRequestId(), 10000);
   }
 
+  async watchTxHash(txHash) {
+    const result = await this.web3Service.getRequestByTransactionHash(txHash);
+    if (result.request && result.request.requestId) {
+      result.request.history = await this.web3Service.getRequestEvents(result.request.requestId);
+      this.setRequest(result.request);
+      this.loading = false;
+    } else if (result.transaction) {
+      const delay = new Promise(resolve => setTimeout(resolve, 5000));
+      await delay;
+      return this.watchTxHash(txHash);
+    }
+  }
+
 
   async watchRequestByTxHash() {
     if (this.searchValue) { return console.log('stopped watching txHash'); }
@@ -121,11 +134,8 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   watchAccount() {
-    if (!this.account && this.web3Service.accounts) {
-      this.account = this.web3Service.accounts[0];
-    }
-    this.web3Service.accountsObservable.subscribe(accounts => {
-      this.account = accounts[0];
+    this.web3Service.accountObservable.subscribe(account => {
+      this.account = account;
       this.getRequestMode();
     });
   }
@@ -169,8 +179,16 @@ export class RequestComponent implements OnInit, OnDestroy {
     if (response.transaction) {
       this.web3Service.openSnackBar(msg || 'Transaction in progress.', 'Ok', 'info-snackbar');
       this.loading = response.transaction.hash;
+      this.watchTxHash(this.loading);
     } else if (response.message) {
-      this.web3Service.openSnackBar(response.message);
+      if (response.message.startsWith('Invalid status 6985')) {
+        this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
+      } else if (response.message.startsWith('Failed to subscribe to new newBlockHeaders')) {
+        return;
+      } else {
+        console.error(response);
+        this.web3Service.openSnackBar(response.message);
+      }
     }
   }
 
@@ -181,12 +199,11 @@ export class RequestComponent implements OnInit, OnDestroy {
         this.callbackTx(response, 'The request is being cancelled. Please wait a few moments for it to appear on the Blockchain.');
       }).then(
         response => {
-          setTimeout(() => {
-            this.loading = false;
-            this.web3Service.openSnackBar('Request successfully cancelled.', 'Ok', 'success-snackbar');
-          }, 5000);
+          // setTimeout(_ => {
+          //   this.loading = false;
+          //   this.web3Service.openSnackBar('Request successfully cancelled.', 'Ok', 'success-snackbar');
+          // }, 5000);
         }, err => {
-          console.log('Error:', err);
           this.callbackTx(err);
         }
       );
@@ -199,28 +216,24 @@ export class RequestComponent implements OnInit, OnDestroy {
         this.callbackTx(response, 'The request is being accepted. Please wait a few moments for it to appear on the Blockchain.');
       }).then(
         response => {
-          setTimeout(() => {
-            this.loading = false;
-            this.web3Service.openSnackBar('Request successfully accepted.', 'Ok', 'success-snackbar');
-          }, 5000);
+          // setTimeout(_ => {
+          //   this.loading = false;
+          //   this.web3Service.openSnackBar('Request successfully accepted.', 'Ok', 'success-snackbar');
+          // }, 5000);
         }, err => {
-          console.log('Error:', err);
           this.callbackTx(err);
         });
   }
 
 
   subtractRequest() {
-    const subtractDialogRef = this.dialog.open(SubtractDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        request: this.request
-      }
-    });
-
-    subtractDialogRef
-      .afterClosed()
+    this.dialog.open(SubtractDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        data: {
+          request: this.request
+        }
+      }).afterClosed()
       .subscribe(subtractValue => {
         if (subtractValue) {
           this.web3Service.subtractAction(this.request.requestId, subtractValue, this.callbackTx)
@@ -228,12 +241,11 @@ export class RequestComponent implements OnInit, OnDestroy {
               this.callbackTx(response, 'Subtract in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
               response => {
-                setTimeout(() => {
-                  this.loading = false;
-                  this.web3Service.openSnackBar('Subtract done.', 'Ok', 'success-snackbar');
-                }, 5000);
+                // setTimeout(_ => {
+                //   this.loading = false;
+                //   this.web3Service.openSnackBar('Subtract done.', 'Ok', 'success-snackbar');
+                // }, 5000);
               }, err => {
-                console.log('Error:', err);
                 this.callbackTx(err);
               });
         }
@@ -242,16 +254,13 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   additionalRequest() {
-    const additionalDialogRef = this.dialog.open(AdditionalDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        request: this.request
-      }
-    });
-
-    additionalDialogRef
-      .afterClosed()
+    this.dialog.open(AdditionalDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        data: {
+          request: this.request
+        }
+      }).afterClosed()
       .subscribe(subtractValue => {
         if (subtractValue) {
           this.web3Service.additionalAction(this.request.requestId, subtractValue, this.callbackTx)
@@ -259,12 +268,11 @@ export class RequestComponent implements OnInit, OnDestroy {
               this.callbackTx(response, 'Additional in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
               response => {
-                setTimeout(() => {
-                  this.loading = false;
-                  this.web3Service.openSnackBar('Additional done.', 'Ok', 'success-snackbar');
-                }, 5000);
+                // setTimeout(_ => {
+                //   this.loading = false;
+                //   this.web3Service.openSnackBar('Additional done.', 'Ok', 'success-snackbar');
+                // }, 5000);
               }, err => {
-                console.log('Error:', err);
                 this.callbackTx(err);
               });
         }
@@ -273,16 +281,13 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   payRequest() {
-    const payDialogRef = this.dialog.open(PayDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        request: this.request
-      }
-    });
-
-    payDialogRef
-      .afterClosed()
+    this.dialog.open(PayDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        data: {
+          request: this.request
+        }
+      }).afterClosed()
       .subscribe(amountValue => {
         if (amountValue) {
           this.web3Service.paymentAction(this.request.requestId, amountValue, this.callbackTx)
@@ -290,12 +295,11 @@ export class RequestComponent implements OnInit, OnDestroy {
               this.callbackTx(response, 'Payment is being done. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
               response => {
-                setTimeout(() => {
-                  this.loading = false;
-                  this.web3Service.openSnackBar('Payment done.', 'Ok', 'success-snackbar');
-                }, 5000);
+                // setTimeout(_ => {
+                //   this.loading = false;
+                //   this.web3Service.openSnackBar('Payment done.', 'Ok', 'success-snackbar');
+                // }, 5000);
               }, err => {
-                console.log('Error:', err);
                 this.callbackTx(err);
               });
         }
@@ -304,16 +308,13 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   refundRequest() {
-    const refundDialogRef = this.dialog.open(RefundDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        request: this.request
-      }
-    });
-
-    refundDialogRef
-      .afterClosed()
+    this.dialog.open(RefundDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        data: {
+          request: this.request
+        }
+      }).afterClosed()
       .subscribe(amountValue => {
         if (amountValue) {
           this.web3Service.refundAction(this.request.requestId, amountValue, this.callbackTx)
@@ -321,12 +322,11 @@ export class RequestComponent implements OnInit, OnDestroy {
               this.callbackTx(response, 'Refund in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
               response => {
-                setTimeout(() => {
-                  this.loading = false;
-                  this.web3Service.openSnackBar('Refund done.', 'Ok', 'success-snackbar');
-                }, 5000);
+                // setTimeout(_ => {
+                //   this.loading = false;
+                //   this.web3Service.openSnackBar('Refund done.', 'Ok', 'success-snackbar');
+                // }, 5000);
               }, err => {
-                console.log('Error:', err);
                 this.callbackTx(err);
               });
         }

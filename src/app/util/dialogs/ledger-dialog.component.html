@@ -1,0 +1,52 @@
+<div class="fc-primary">
+  <h1 mat-dialog-title *ngIf="!addresses; else selectAddressTitle">Connect Ledger Wallet</h1>
+  <ng-template #selectAddressTitle>
+    <div class="d-flex align-items-baseline justify-content-between">
+      <span mat-dialog-title>Select a wallet</span>
+      <span class="fs-12 semi-bold">derivation path: {{ this.derivationPath }}</span>
+    </div>
+  </ng-template>
+  <mat-dialog-content>
+    <div *ngIf="!addresses; else selectAddressBlock" class="fs-14">
+      <ul>
+        <li>Connect your Ledger Nano S and open the ethereum app.</li>
+        <li>Make sure you don't have any other apps connected to your Ledger open.</li>
+        <li>Make sure you have "Browser Support" turned ON in Settings.</li>
+        <li>Make sure you have "Contract Data" turned ON in Settings.</li>
+      </ul>
+      <div>
+        <span class="semi-bold">Please specify your desired network: </span>
+        <mat-form-field>
+          <mat-select [(ngModel)]="networkId">
+            <mat-option *ngFor="let network of networks" [value]="network.id" [disabled]="network.id !== 4">
+              <div class="d-flex align-items-center network-{{ network.id }}">
+                <span class="network-icon"></span>
+                <strong>{{network.name}}</strong>
+              </div>
+            </mat-option>
+          </mat-select>
+          <span class="d-flex network-{{ networkId }}" matPrefix>
+              <span class="network-icon"></span>
+          </span>
+        </mat-form-field>
+      </div>
+    </div>
+    <ng-template #selectAddressBlock>
+      <div class="px-3 fs-14 semi-bold d-flex justify-content-between">
+        <span>Address</span>
+        <span>Balance</span>
+      </div>
+      <a *ngFor="let address of addresses" class="address-row" (click)="instanciateWeb3FromLedger(address.derivationPath)">
+        <span>{{ address.address }}</span>
+        <span>&nbsp;{{ address.balance }} ETH</span>
+      </a>
+    </ng-template>
+    <div class="fs-12 fc-warn" *ngIf="error">
+      {{ error }}
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions *ngIf="!addresses" class="mt-3 d-flex flex-wrap justify-content-around w-100">
+    <button mat-raised-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-raised-button type="button" color="accent" (click)="checkLedger()">Connect&nbsp;<i *ngIf="loading" class="fa fa-circle-o-notch fa-spin"></i></button>
+  </mat-dialog-actions>
+</div>

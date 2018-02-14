@@ -1,9 +1,14 @@
 import { Injectable, HostListener } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { MatSnackBar } from '@angular/material';
 
+import RequestNetwork from '@requestnetwork/request-network.js';
 import Web3 from 'web3';
-import RequestNetwork from '@requestnetwork/request-network.js/dist/src/requestNetwork';
+import ProviderEngine from 'web3-provider-engine';
+import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
+import FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
+import LedgerWalletSubprovider from 'ledger-wallet-provider';
 
 /* beautify preserve:start */
 declare let window: any;
@@ -14,60 +19,108 @@ export class Web3Service {
   private web3: Web3;
   private requestNetwork: RequestNetwork;
   private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
-  private metamaskConnected = true;
 
-
-  public etherscanUrl: string;
-  public accounts: string[];
+  public metamask = false;
+  public ledgerConnected = false;
   public ready = false;
 
-  public accountsObservable = new Subject < string[] > ();
+  public etherscanUrl: string;
+
+  public accountObservable = new BehaviorSubject < string > ('');
+  public networkIdObservable = new BehaviorSubject < number > (null);
   public searchValue = new Subject < string > ();
+
+  private web3NotReadyMsg = 'Error when trying to instanciate web3.';
+  private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Rinkeby Test Network.';
+  private walletNotReadyMsg = 'Connect your Metamask or Ledger wallet to create or interact with a Request.';
 
   public fromWei;
   public toWei;
   public BN;
   public isAddress;
 
-  web3NotReadyMsg = 'Error when trying to instanciate web3.';
-  requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Rinkeby Test Network.';
-  metamaskNotReadyMsg = 'Connect your Metamask wallet to create or interact with a Request.';
+  constructor(private snackBar: MatSnackBar) {
 
-
-  constructor(public snackBar: MatSnackBar) {
-    window.addEventListener('load', event => {
+    window.addEventListener('load', async event => {
       console.log('web3service instantiate web3');
       this.checkAndInstantiateWeb3();
+      this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
+      setInterval(async _ => await this.refreshAccounts(), 1000);
     });
   }
 
 
-  private checkAndInstantiateWeb3() {
-    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-    if (typeof window.web3 !== 'undefined') {
-      console.log(`Using web3 detected from external source. If you find that your accounts don\'t
-         appear, ensure you\'ve configured that source properly.`);
-      this.web3 = new Web3(window.web3.currentProvider);
+  public checkLedger(networkId, derivationPath) {
+    return new Promise(async(resolve, reject) => {
+      const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, derivationPath);
+      const ledger = ledgerWalletSubProvider.ledger;
 
-      // Start requestnetwork Library
-      this.web3.eth.net.getId().then(
-        networkId => {
-          try {
-            this.setEtherscanUrl(networkId);
-            this.requestNetwork = new RequestNetwork(this.web3.givenProvider, networkId);
-            this.ready = true;
-          } catch (err) {
-            if (this.web3) { this.openSnackBar(this.requestNetworkNotReadyMsg); }
-            console.log('Error: ', err.message);
+      if (!ledger.isU2FSupported) {
+        reject('Ledger Wallet uses U2F which is not supported by your browser.');
+      }
+
+      ledger.getMultipleAccounts(derivationPath, 0, 10).then(
+          async res => {
+            const engine = new ProviderEngine();
+            engine.addProvider(ledgerWalletSubProvider);
+            engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
+            engine.start();
+            const web3 = new Web3(engine);
+            const addresses = Object.entries(res).map(e => ({ derivationPath: e[0], address: e[1], balance: 0 }));
+            for (const address of addresses) {
+              address.balance = this.fromWei(await web3.eth.getBalance(address.address.toString()));
+            }
+            resolve(addresses);
+          })
+        .catch(err => {
+          if (err.metaData && err.metaData.code === 5) {
+            reject('Timeout error. Please verify your ledger is connected and the Ethereum application opened.');
+          } else if (err === 'Invalid status 6801') {
+            reject('Invalid status 6801. Check to make sure the right application is selected on your ledger.');
           }
-        }, err => {
-          console.error('Error:', err);
         });
+    });
+  }
+
+  public async instanciateWeb3FromLedger(networkId, derivationPath) {
+    const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, derivationPath);
+    const engine = new ProviderEngine();
+    engine.addProvider(ledgerWalletSubProvider);
+    engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
+    engine.start();
+
+    this.checkAndInstantiateWeb3(new Web3(engine));
+    this.openSnackBar('Ledger Wallet successfully connected on Rinkeby Test Network.', null, 'success-snackbar');
+    this.ledgerConnected = true;
+  }
+
+
+  public async checkAndInstantiateWeb3(web3 ? ) {
+    if (web3 || typeof window.web3 !== 'undefined') {
+      console.log(`Using web3 detected from external source. If you find that your accounts don\'t appear, ensure you\'ve configured that source properly.`);
+
+      if (web3) {
+        // if Ledger wallet
+        this.web3 = web3;
+        this.refreshAccounts(true);
+      } else {
+        // if Web3 has been injected by the browser (Mist/MetaMask)
+        this.metamask = window.web3.currentProvider.isMetaMask;
+        this.ledgerConnected = false;
+        this.web3 = new Web3(window.web3.currentProvider);
+      }
+      this.networkIdObservable.next(await this.web3.eth.net.getId());
     } else {
       console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
+      this.networkIdObservable.next(4);
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
-      this.requestNetwork = new RequestNetwork(this.web3.givenProvider, 4);
-      this.ready = true;
+    }
+    // instanciate requestnetwork.js
+    try {
+      this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
+    } catch (err) {
+      this.openSnackBar(this.requestNetworkNotReadyMsg);
+      console.error(err);
     }
 
     this.fromWei = this.web3.utils.fromWei;
@@ -75,34 +128,26 @@ export class Web3Service {
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
 
-    setInterval(() => this.refreshAccounts(), 1000);
+
+    this.ready = this.requestNetwork ? true : false;
+  }
+
+  /* beautify preserve:start */
+  private async refreshAccounts(force ?: boolean) {
+  /* beautify preserve:end */
+    if (this.ledgerConnected && !force) { return; }
+
+    const accs = await this.web3.eth.getAccounts();
+    if (!accs || accs.length === 0) {
+      this.accountObservable.next(' ');
+    } else if (this.accountObservable.value !== accs[0]) {
+      this.accountObservable.next(accs[0]);
+    }
   }
 
 
-  private refreshAccounts() {
-    this.web3.eth.getAccounts((err, accs) => {
-      if (err != null || accs.length === 0) {
-        console.warn('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
-        if (this.requestNetwork && this.metamaskConnected) {
-          this.metamaskConnected = false;
-          this.openSnackBar(this.metamaskNotReadyMsg);
-        }
-        this.accounts = accs;
-        return this.accountsObservable.next(accs);
-      }
-
-      if (!this.accounts || this.accounts.length !== accs.length || this.accounts[0] !== accs[0]) {
-        console.log('Observed new accounts');
-        this.accountsObservable.next(accs);
-        this.accounts = accs;
-        if (accs.length) { this.metamaskConnected = true; }
-      }
-    });
-  }
-
-
-  private setEtherscanUrl(networkId) {
-    switch (networkId) {
+  private setEtherscanUrl() {
+    switch (this.networkIdObservable.value) {
       case 1:
         this.etherscanUrl = 'https://etherscan.io/';
         break;
@@ -122,7 +167,7 @@ export class Web3Service {
 
 
   private watchDog() {
-    const stop = !this.web3 || !this.requestNetwork || !this.metamaskConnected;
+    const stop = !this.web3 || !this.requestNetwork || !this.accountObservable.value;
     if (stop) { this.openSnackBar(); }
     return stop;
   }
@@ -132,7 +177,7 @@ export class Web3Service {
   public openSnackBar(msg ?: string, ok ?: string, panelClass ?: string, duration ?: number) {
   /* beautify preserve:end */
     if (!msg) {
-      msg = !this.web3 ? this.web3NotReadyMsg : !this.requestNetwork ? this.requestNetworkNotReadyMsg : !this.metamaskConnected ? this.metamaskNotReadyMsg : '';
+      msg = !this.web3 ? this.web3NotReadyMsg : !this.requestNetwork ? this.requestNetworkNotReadyMsg : !this.accountObservable.value ? this.walletNotReadyMsg : '';
       if (msg === '') { return; }
     }
 
@@ -148,6 +193,7 @@ export class Web3Service {
   public setSearchValue(searchValue: string) {
     this.searchValue.next(searchValue);
   }
+
 
   public setRequestStatus(request) {
     if (request.state === 2) {
@@ -226,6 +272,7 @@ export class Web3Service {
     }
   }
 
+
   public async getRequestByTransactionHash(txHash: string) {
     try {
       const response = await this.requestNetwork.requestCoreService.getRequestByTransactionHash(txHash);
@@ -246,6 +293,7 @@ export class Web3Service {
       return err;
     }
   }
+
 
   public async getRequestsByAddress(requestId: string) {
     try {

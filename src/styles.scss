@@ -97,6 +97,7 @@ a {
   max-height: 52px;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+  max-height: 52px;
   button {
     color: #fff;
   }
@@ -118,7 +119,7 @@ mat-toolbar.cta-toolbar {
   }
 }
 
-.actionsMenu {
+.actions-menu {
   box-shadow: 2px 2px 18px 0px rgba(212, 227, 255, 0.5) !important;
   max-width: 365px !important;
   width: 25.25vw;
@@ -129,21 +130,24 @@ mat-toolbar.cta-toolbar {
   }
 }
 
-.accountMenu {
+.account-menu {
   box-shadow: 2px 2px 18px 0px rgba(212, 227, 255, 0.5) !important;
-  max-width: none !important;
+  max-width: 100% !important;
+  button {
+    font-size: 14px;
+  }
   .mat-menu-content {
     padding: 0 !important;
   }
   .mat-menu-item {
-    color: $blue-grey;
+    color: $blue-grey !important;
   }
 }
 
-button.accountMenuButton {
+button.account-menu-button {
   font-size: 16px;
   font-weight: initial;
-  width: 100%;
+  max-width: 100%;
   .mat-button-wrapper {
     display: flex;
     justify-content: space-between;
@@ -186,6 +190,83 @@ mat-toolbar.mat-toolbar {
   border: none;
   font-weight: 300;
 }
+
+// Select address table
+.address-row {
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  &:hover {
+    color: $accent !important;
+  } 
+}
+
+// NETWORK ID
+.network-icon {
+  display: flex;
+  height: 12px;
+  min-width: 12px;
+  margin: 8px;
+}
+
+.network-1 {
+  span.network-icon {
+    transform: rotate(45deg);
+    background: #038789;
+  }
+  span.network-name {
+    &::before {
+      content: 'Main Network';
+      color: #038789;
+      font-size: 12px;
+    }
+  }
+}
+
+.network-3 {
+  span.network-icon {
+    background: #E91550;
+    border-radius: 10px;
+  }
+  span.network-name {
+    &::before {
+      content: 'Ropsten Test Net';
+      color: #E91550;
+      font-size: 12px;
+    }
+  }
+}
+
+.network-42 {
+  span.network-icon {
+    transform: rotate(45deg);
+    border: 3px solid #690496;
+  }
+  span.network-name {
+    &::before {
+      content: 'Kovan Test Net';
+      color: #690496;
+      font-size: 12px;
+    }
+  }
+}
+
+.network-4 {
+  span.network-icon {
+    background: #EBB33F;
+  }
+  span.network-name {
+    &::before {
+      content: 'Rinkeby Test Net';
+      color: #EBB33F;
+      font-size: 12px;
+    }
+  }
+}
+
+
 
 // CUSTOMIZE MAT-INPUT CSS
 input.mat-input-element,

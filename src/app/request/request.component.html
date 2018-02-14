@@ -127,7 +127,7 @@
                 <ng-template #ctaBlock>
                   <div *ngIf="!loading; else loadingMode" class="h-100 w-100 fs-18" [ngSwitch]="mode">
                     <!-- PAYEE -->
-                    <mat-menu #payeeActionsMenu="matMenu" [overlapTrigger]="false" class="actionsMenu">
+                    <mat-menu #payeeActionsMenu="matMenu" [overlapTrigger]="false" class="actions-menu">
                       <button (click)="cancelRequest()" [disabled]="request.balance > 0" mat-menu-item>
                         Cancel this Request
                       </button>
@@ -136,13 +136,13 @@
                       </button>
                     </mat-menu>
                     <div *ngSwitchCase="'payee'" class="d-flex h-100">
-                      <button type="button" class="fs-18 bg-grey-whiter fc-blue-grey" mat-raised-button [matMenuTriggerFor]="payeeActionsMenu">Actions&nbsp;
+                      <button type="button" class="fs-18 bg-grey-whiter fc-blue-grey no-focus-overlay" mat-raised-button [matMenuTriggerFor]="payeeActionsMenu">Actions&nbsp;
                         <mat-icon>expand_more</mat-icon>
                       </button>
                       <button class="ml-auto fs-18 no-focus-overlay" mat-raised-button color="accent" (click)="subtractRequest()">Update the Request</button>
                     </div>
                     <!-- PAYER -->
-                    <mat-menu #payerActionsMenu="matMenu" [overlapTrigger]="false" class="actionsMenu">
+                    <mat-menu #payerActionsMenu="matMenu" [overlapTrigger]="false" class="actions-menu">
                       <button (click)="cancelRequest()" *ngIf="request.state == 0" mat-menu-item>
                         Decline this Request
                       </button>
@@ -157,7 +157,7 @@
                       </button>
                     </mat-menu>
                     <div *ngSwitchCase="'payer'" class="d-flex h-100">
-                      <button type="button" class="fs-18 bg-grey-whiter fc-blue-grey" mat-raised-button [matMenuTriggerFor]="payerActionsMenu">Actions&nbsp;
+                      <button type="button" class="fs-18 bg-grey-whiter fc-blue-grey no-focus-overlay" mat-raised-button [matMenuTriggerFor]="payerActionsMenu">Actions&nbsp;
                         <mat-icon>expand_more</mat-icon>
                       </button>
                       <button class="ml-auto fs-18 no-focus-overlay" *ngIf="request.status != 'complete' && request.status != 'overpaid'" mat-raised-button color="accent" (click)="payRequest()">

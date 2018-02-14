@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { Web3Service } from './util/web3.service';
-import { BasicDialogComponent } from './util/dialogs/basic-dialog.component';
+import { LedgerDialogComponent } from './util/dialogs/ledger-dialog.component';
 import blockies from 'blockies';
 
 @Component({
@@ -14,8 +14,6 @@ import blockies from 'blockies';
 export class AppComponent implements OnInit {
 
   blockies = blockies;
-  accounts: string[];
-  account = 'loading';
   searchForm: FormGroup;
   searchValueFormControl: FormControl;
 
@@ -24,8 +22,6 @@ export class AppComponent implements OnInit {
 
 
   ngOnInit() {
-    this.watchAccount();
-
     this.searchValueFormControl = new FormControl('');
     this.searchForm = this.formBuilder.group({
       searchValueFormControl: this.searchValueFormControl
@@ -37,10 +33,10 @@ export class AppComponent implements OnInit {
   }
 
 
-  watchAccount() {
-    this.web3Service.accountsObservable.subscribe(accounts => {
-      this.accounts = accounts;
-      this.account = accounts[0];
+  openLedgerDialog() {
+    this.dialog.open(LedgerDialogComponent, {
+      hasBackdrop: true,
+      width: '500px',
     });
   }
 
