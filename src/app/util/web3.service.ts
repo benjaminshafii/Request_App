@@ -19,7 +19,6 @@ export class Web3Service {
   private web3: Web3;
   private requestNetwork: RequestNetwork;
   private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
-  private derivationPath = `44'/60'/0'/0`;
 
   public metamask = false;
   public ledgerConnected = false;
@@ -51,16 +50,16 @@ export class Web3Service {
   }
 
 
-  public checkLedger(networkId) {
+  public checkLedger(networkId, derivationPath) {
     return new Promise(async(resolve, reject) => {
-      const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, this.derivationPath);
+      const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, derivationPath);
       const ledger = ledgerWalletSubProvider.ledger;
 
       if (!ledger.isU2FSupported) {
         reject('Ledger Wallet uses U2F which is not supported by your browser.');
       }
 
-      ledger.getMultipleAccounts(this.derivationPath, 0, 10).then(
+      ledger.getMultipleAccounts(derivationPath, 0, 10).then(
           async res => {
             const engine = new ProviderEngine();
             engine.addProvider(ledgerWalletSubProvider);

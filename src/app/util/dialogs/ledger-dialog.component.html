@@ -1,5 +1,11 @@
 <div class="fc-primary">
-  <h1 mat-dialog-title>{{ addresses ? 'Select an address' : 'Connect Ledger Wallet' }}</h1>
+  <h1 mat-dialog-title *ngIf="!addresses; else selectAddressTitle">Connect Ledger Wallet</h1>
+  <ng-template #selectAddressTitle>
+    <div class="d-flex align-items-baseline justify-content-between">
+      <span mat-dialog-title>Select a wallet</span>
+      <span class="fs-12 semi-bold">derivation path: {{ this.derivationPath }}</span>
+    </div>
+  </ng-template>
   <mat-dialog-content>
     <div *ngIf="!addresses; else selectAddressBlock" class="fs-14">
       <ul>
@@ -9,7 +15,7 @@
         <li>Make sure you have "Contract Data" turned ON in Settings.</li>
       </ul>
       <div>
-        <span>Please specify your desired network: </span>
+        <span class="semi-bold">Please specify your desired network: </span>
         <mat-form-field>
           <mat-select [(ngModel)]="networkId">
             <mat-option *ngFor="let network of networks" [value]="network.id" [disabled]="network.id !== 4">
