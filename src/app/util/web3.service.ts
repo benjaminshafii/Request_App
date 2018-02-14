@@ -95,7 +95,7 @@ export class Web3Service {
   }
 
 
-  private async checkAndInstantiateWeb3(web3 ? ) {
+  public async checkAndInstantiateWeb3(web3 ? ) {
     if (web3 || typeof window.web3 !== 'undefined') {
       console.log(`Using web3 detected from external source. If you find that your accounts don\'t appear, ensure you\'ve configured that source properly.`);
 

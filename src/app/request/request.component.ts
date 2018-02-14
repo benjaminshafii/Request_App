@@ -64,6 +64,19 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.timerInterval = setInterval(_ => this.getRequestByRequestId(), 10000);
   }
 
+  async watchTxHash(txHash) {
+    const result = await this.web3Service.getRequestByTransactionHash(txHash);
+    if (result.request && result.request.requestId) {
+      result.request.history = await this.web3Service.getRequestEvents(result.request.requestId);
+      this.setRequest(result.request);
+      this.loading = false;
+    } else if (result.transaction) {
+      const delay = new Promise(resolve => setTimeout(resolve, 5000));
+      await delay;
+      return this.watchTxHash(txHash);
+    }
+  }
+
 
   async watchRequestByTxHash() {
     if (this.searchValue) { return console.log('stopped watching txHash'); }
@@ -71,7 +84,6 @@ export class RequestComponent implements OnInit, OnDestroy {
     const result = await this.web3Service.getRequestByTransactionHash(this.txHash);
 
     if (result.request && result.request.requestId) {
-      // this.setRequestWithEventsAndStatus(result.request);
       this.web3Service.setSearchValue(result.request.requestId);
     } else if (result.transaction) {
       this.setRequest({
@@ -167,6 +179,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     if (response.transaction) {
       this.web3Service.openSnackBar(msg || 'Transaction in progress.', 'Ok', 'info-snackbar');
       this.loading = response.transaction.hash;
+      this.watchTxHash(this.loading);
     } else if (response.message) {
       if (response.message.startsWith('Invalid status 6985')) {
         this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
@@ -186,10 +199,10 @@ export class RequestComponent implements OnInit, OnDestroy {
         this.callbackTx(response, 'The request is being cancelled. Please wait a few moments for it to appear on the Blockchain.');
       }).then(
         response => {
-          setTimeout(_ => {
-            this.loading = false;
-            this.web3Service.openSnackBar('Request successfully cancelled.', 'Ok', 'success-snackbar');
-          }, 5000);
+          // setTimeout(_ => {
+          //   this.loading = false;
+          //   this.web3Service.openSnackBar('Request successfully cancelled.', 'Ok', 'success-snackbar');
+          // }, 5000);
         }, err => {
           this.callbackTx(err);
         }
@@ -203,10 +216,10 @@ export class RequestComponent implements OnInit, OnDestroy {
         this.callbackTx(response, 'The request is being accepted. Please wait a few moments for it to appear on the Blockchain.');
       }).then(
         response => {
-          setTimeout(_ => {
-            this.loading = false;
-            this.web3Service.openSnackBar('Request successfully accepted.', 'Ok', 'success-snackbar');
-          }, 5000);
+          // setTimeout(_ => {
+          //   this.loading = false;
+          //   this.web3Service.openSnackBar('Request successfully accepted.', 'Ok', 'success-snackbar');
+          // }, 5000);
         }, err => {
           this.callbackTx(err);
         });
@@ -228,10 +241,10 @@ export class RequestComponent implements OnInit, OnDestroy {
               this.callbackTx(response, 'Subtract in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
               response => {
-                setTimeout(_ => {
-                  this.loading = false;
-                  this.web3Service.openSnackBar('Subtract done.', 'Ok', 'success-snackbar');
-                }, 5000);
+                // setTimeout(_ => {
+                //   this.loading = false;
+                //   this.web3Service.openSnackBar('Subtract done.', 'Ok', 'success-snackbar');
+                // }, 5000);
               }, err => {
                 this.callbackTx(err);
               });
@@ -255,10 +268,10 @@ export class RequestComponent implements OnInit, OnDestroy {
               this.callbackTx(response, 'Additional in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
               response => {
-                setTimeout(_ => {
-                  this.loading = false;
-                  this.web3Service.openSnackBar('Additional done.', 'Ok', 'success-snackbar');
-                }, 5000);
+                // setTimeout(_ => {
+                //   this.loading = false;
+                //   this.web3Service.openSnackBar('Additional done.', 'Ok', 'success-snackbar');
+                // }, 5000);
               }, err => {
                 this.callbackTx(err);
               });
@@ -282,10 +295,10 @@ export class RequestComponent implements OnInit, OnDestroy {
               this.callbackTx(response, 'Payment is being done. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
               response => {
-                setTimeout(_ => {
-                  this.loading = false;
-                  this.web3Service.openSnackBar('Payment done.', 'Ok', 'success-snackbar');
-                }, 5000);
+                // setTimeout(_ => {
+                //   this.loading = false;
+                //   this.web3Service.openSnackBar('Payment done.', 'Ok', 'success-snackbar');
+                // }, 5000);
               }, err => {
                 this.callbackTx(err);
               });
@@ -309,10 +322,10 @@ export class RequestComponent implements OnInit, OnDestroy {
               this.callbackTx(response, 'Refund in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
               response => {
-                setTimeout(_ => {
-                  this.loading = false;
-                  this.web3Service.openSnackBar('Refund done.', 'Ok', 'success-snackbar');
-                }, 5000);
+                // setTimeout(_ => {
+                //   this.loading = false;
+                //   this.web3Service.openSnackBar('Refund done.', 'Ok', 'success-snackbar');
+                // }, 5000);
               }, err => {
                 this.callbackTx(err);
               });

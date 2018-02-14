@@ -121,8 +121,8 @@ export class HomeComponent implements OnInit {
       })
       .then(
         response => {
-          console.log('resolve createRequestAsPayee: ', response);
-          setTimeout(_ => { this.web3Service.openSnackBar('Request successfully created.', 'Ok', 'success-snackbar'); }, 5000);
+          // console.log('resolve createRequestAsPayee: ', response);
+          // setTimeout(_ => { this.web3Service.openSnackBar('Request successfully created.', 'Ok', 'success-snackbar'); }, 5000);
         }, err => {
           callback(err);
         });
