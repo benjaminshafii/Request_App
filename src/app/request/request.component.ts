@@ -68,6 +68,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     const result = await this.web3Service.getRequestByTransactionHash(txHash);
     if (result.request && result.request.requestId) {
       result.request.history = await this.web3Service.getRequestEvents(result.request.requestId);
+      this.web3Service.setRequestStatus(result.request);
       this.setRequest(result.request);
       this.loading = false;
     } else if (result.transaction) {
