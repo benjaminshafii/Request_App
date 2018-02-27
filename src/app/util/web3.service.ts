@@ -7,7 +7,6 @@ import RequestNetwork from '@requestnetwork/request-network.js';
 import Web3 from 'web3';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
-import FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
 import LedgerWalletSubprovider from 'ledger-wallet-provider';
 
 /* beautify preserve:start */
