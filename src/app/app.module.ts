@@ -19,6 +19,7 @@ import { SubtractDialogComponent } from './util/dialogs/subtract-dialog.componen
 import { AdditionalDialogComponent } from './util/dialogs/additional-dialog.component';
 import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
 import { AccountComponent } from './shared/account/account.component';
+import { SearchBarComponent } from './shared/search-bar/search-bar.component';
 
 
 @NgModule({
@@ -35,6 +36,7 @@ import { AccountComponent } from './shared/account/account.component';
     AdditionalDialogComponent,
     RefundDialogComponent,
     AccountComponent,
+    SearchBarComponent,
   ],
   imports: [
     // Feature Modules

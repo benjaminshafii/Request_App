@@ -21,12 +21,6 @@ header {
     background: $grey-white;
   }
 
-  .searchBar {
-    @media (min-width: 576px) {
-      width: 400px;
-    }
-  }
-
   footer {
     background: $primary;
     color: #fff;
