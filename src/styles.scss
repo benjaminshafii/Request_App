@@ -35,6 +35,13 @@ a {
   }
 }
 
+.wrapper {
+  min-height: 100%;
+  background: $grey-white;
+  display: flex;
+  flex-direction: column;
+}
+
 .status {
   border-radius: 4px;
   padding: 0.25rem 0.5rem;
