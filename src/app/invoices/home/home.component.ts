@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder, ValidationErrors } from '@angular/forms';
-import { Web3Service } from '../util/web3.service';
+import { Web3Service } from '../../util/web3.service';
 
 @Component({
   selector: 'app-home',

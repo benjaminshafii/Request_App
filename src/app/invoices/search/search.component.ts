@@ -1,6 +1,6 @@
 import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Web3Service } from '../util/web3.service';
+import { Web3Service } from '../../util/web3.service';
 import { MatPaginator, MatTableDataSource, MatSort } from '@angular/material';
 
 @Component({

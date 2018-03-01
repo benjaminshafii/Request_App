@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
-import { ClipboardModule } from 'ngx-clipboard';
-import { PopoverModule } from 'ngx-popover';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { SharedModule } from './shared/shared.module';
 
@@ -8,47 +8,35 @@ import { AppRoutingModule } from './app-routing.module';
 import { UtilModule } from './util/util.module';
 
 import { AppComponent } from './app.component';
-import { ContactComponent } from './contact/contact.component';
-import { HomeComponent } from './home/home.component';
-import { RequestComponent } from './request/request.component';
-import { SearchComponent } from './search/search.component';
+import { InvoicesModule } from './invoices/invoices.module';
 
 import { LedgerDialogComponent } from './util/dialogs/ledger-dialog.component';
 import { PayDialogComponent } from './util/dialogs/pay-dialog.component';
 import { SubtractDialogComponent } from './util/dialogs/subtract-dialog.component';
 import { AdditionalDialogComponent } from './util/dialogs/additional-dialog.component';
 import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
-import { AccountComponent } from './shared/account/account.component';
-import { SearchBarComponent } from './shared/search-bar/search-bar.component';
 
 
 @NgModule({
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+
+    SharedModule,
+    UtilModule,
+
+    InvoicesModule,
+
+    AppRoutingModule,
+  ],
   declarations: [
     AppComponent,
-    ContactComponent,
-    HomeComponent,
-    RequestComponent,
-    SearchComponent,
 
     LedgerDialogComponent,
     PayDialogComponent,
     SubtractDialogComponent,
     AdditionalDialogComponent,
     RefundDialogComponent,
-    AccountComponent,
-    SearchBarComponent,
-  ],
-  imports: [
-    // Feature Modules
-    ClipboardModule,
-    PopoverModule,
-
-    // features
-    SharedModule,
-    UtilModule,
-
-    // app
-    AppRoutingModule,
   ],
   entryComponents: [
     LedgerDialogComponent,

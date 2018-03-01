@@ -108,7 +108,8 @@ export class Web3Service {
         this.ledgerConnected = false;
         this.web3 = new Web3(window.web3.currentProvider);
       }
-      this.networkIdObservable.next(await this.web3.eth.net.getId());
+      const networkId = await this.web3.eth.net.getId();
+      this.networkIdObservable.next(networkId);
     } else {
       console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
       this.networkIdObservable.next(4);

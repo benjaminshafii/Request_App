@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -25,14 +24,15 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { AccountComponent } from './account/account.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
+    RouterModule,
 
     MatButtonModule,
     MatCardModule,
@@ -55,14 +55,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatToolbarModule,
     MatTooltipModule
   ],
-  declarations: [],
+  declarations: [
+    AccountComponent
+  ],
   exports: [
-    BrowserModule,
-    BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
 
+    AccountComponent,
     MatButtonModule,
     MatCardModule,
     // MatCheckboxModule,

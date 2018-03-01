@@ -7,13 +7,13 @@
     <span class="fs-14" *ngIf="account.startsWith('0x'); else accountLocked">{{ account.substring(0,10) }}...{{ account.substring(37,42) }}</span>
     <ng-template #accountLocked><span class="fs-14">{{ web3Service.metamask ? 'Account locked' : 'no account' }}</span></ng-template>
   </div>
-  <div class="fs-14 d-flex align-items-center network-{{ web3Service.networkIdObservable | async }}">
+  <div class="fs-14 d-flex align-items-center network network-{{ web3Service.networkIdObservable | async }}">
     <span class="network-icon"></span>
     <span class="network-name"></span>
   </div>
   <mat-icon>expand_more</mat-icon>
   <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="account-menu">
-    <a *ngIf="account.startsWith('0x')" routerLink="/search/{{account}}" mat-menu-item>
+    <a *ngIf="account.startsWith('0x')" routerLink="/search/{{ account }}" mat-menu-item>
       <i class="fa fa-search" aria-hidden="true"></i>
       <small>&nbsp;{{ account }}</small>
     </a>
@@ -27,9 +27,9 @@
       <span>&nbsp;Connect metamask</span>
     </button>
     <a class="fs-14 d-flex align-items-center" href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank" *ngIf="!web3Service.metamask" mat-menu-item>
-            <img style="width: 20px; position: relative; top: -4px; margin: 0 0.5rem" src="assets/img/metamask-icon.png">
-            <span>&nbsp;Download metamask</span>
-          </a>
+      <img style="width: 20px; position: relative; top: -4px; margin: 0 0.5rem" src="assets/img/metamask-icon.png">
+      <span>&nbsp;Download metamask</span>
+    </a>
   </mat-menu>
 </button>
 <ng-template #loadingAccount>

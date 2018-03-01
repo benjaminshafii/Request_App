@@ -1,13 +1,13 @@
 import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Web3Service } from '../util/web3.service';
+import { Web3Service } from '../../util/web3.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import blockies from 'blockies';
 
-import { PayDialogComponent } from '../util/dialogs/pay-dialog.component';
-import { SubtractDialogComponent } from '../util/dialogs/subtract-dialog.component';
-import { AdditionalDialogComponent } from '../util/dialogs/additional-dialog.component';
-import { RefundDialogComponent } from '../util/dialogs/refund-dialog.component';
+import { PayDialogComponent } from '../../util/dialogs/pay-dialog.component';
+import { SubtractDialogComponent } from '../../util/dialogs/subtract-dialog.component';
+import { AdditionalDialogComponent } from '../../util/dialogs/additional-dialog.component';
+import { RefundDialogComponent } from '../../util/dialogs/refund-dialog.component';
 
 
 @Component({
