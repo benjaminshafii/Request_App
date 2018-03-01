@@ -1,0 +1,13 @@
+<div class="wrapper">
+  <header *ngIf="!this.router.routerState.snapshot.url.startsWith('/contact')" class="d-flex flex-wrap justify-content-between align-items-center px-3">
+    <div style="flex: 1">
+      <a routerLink="/" class="d-flex align-items-center">
+        <img class="px-3 request-logo" src="assets/img/request-logo.png">
+        <span class="semi-bold fc-primary">Request&nbsp;<sup><small><small>ALPHA TESTNET</small></small></sup></span>
+      </a>
+    </div>
+    <div class="mr-3 text-right" style="flex: 1">
+      <app-account></app-account>
+    </div>
+  </header>
+</div>

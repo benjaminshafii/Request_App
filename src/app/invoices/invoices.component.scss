@@ -1,13 +1,5 @@
 @import 'variables';
 
-header {
-  z-index: 1;
-  border-bottom: 2px solid $grey-light;
-  .request-logo {
-    height: 36px;
-  }
-}
-
 footer {
   background: $primary;
   color: #fff;

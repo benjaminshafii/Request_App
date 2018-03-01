@@ -42,6 +42,17 @@ a {
   flex-direction: column;
 }
 
+header {
+  z-index: 1;
+  background: white;
+  min-height: 67.5px;
+  color: $primary;
+  border-bottom: 2px solid $grey-light;
+  .request-logo {
+    height: 36px;
+  }
+}
+
 .status {
   border-radius: 4px;
   padding: 0.25rem 0.5rem;

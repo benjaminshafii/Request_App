@@ -2,13 +2,15 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { SharedModule } from './shared/shared.module';
+import { AppComponent } from './app.component';
+import { PayWithRequestComponent} from './pay-with-request/pay-with-request.component';
 
+import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { UtilModule } from './util/util.module';
-
-import { AppComponent } from './app.component';
 import { InvoicesModule } from './invoices/invoices.module';
+
+
 
 import { LedgerDialogComponent } from './util/dialogs/ledger-dialog.component';
 import { PayDialogComponent } from './util/dialogs/pay-dialog.component';
@@ -31,12 +33,13 @@ import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
   ],
   declarations: [
     AppComponent,
+    PayWithRequestComponent,
 
     LedgerDialogComponent,
     PayDialogComponent,
     SubtractDialogComponent,
     AdditionalDialogComponent,
-    RefundDialogComponent,
+    RefundDialogComponent
   ],
   entryComponents: [
     LedgerDialogComponent,
@@ -45,7 +48,11 @@ import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
     AdditionalDialogComponent,
     RefundDialogComponent
   ],
-  providers: [UtilModule],
-  bootstrap: [AppComponent]
+  providers: [
+    UtilModule
+  ],
+  bootstrap: [
+    AppComponent
+  ]
 })
 export class AppModule {}
