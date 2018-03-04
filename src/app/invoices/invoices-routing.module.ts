@@ -6,7 +6,6 @@ import { InvoicesComponent } from './invoices.component';
 import { HomeComponent } from './home/home.component';
 import { RequestComponent } from './request/request.component';
 import { SearchComponent } from './search/search.component';
-import { ContactComponent } from './contact/contact.component';
 
 const invoicesRoutes: Routes = [{
   path: '',
@@ -29,11 +28,7 @@ const invoicesRoutes: Routes = [{
       pathMatch: 'full',
       path: 'search/:searchValue',
       component: SearchComponent
-    },
-    {
-      path: 'contact',
-      component: ContactComponent
-    },
+    }
   ]
 }];
 

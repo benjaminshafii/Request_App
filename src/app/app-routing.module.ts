@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { PayWithRequestComponent} from './pay-with-request/pay-with-request.component';
+import { ContactComponent} from './contact/contact.component';
 
 const routes: Routes = [{
     path: '',
@@ -11,6 +12,10 @@ const routes: Routes = [{
   {
     path: 'pay-with-request',
     component: PayWithRequestComponent,
+  },
+  {
+    path: 'contact',
+    component: ContactComponent,
   },
   {
     path: '**',

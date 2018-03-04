@@ -8,7 +8,6 @@ import { InvoicesComponent } from './invoices.component';
 import { HomeComponent } from './home/home.component';
 import { RequestComponent } from './request/request.component';
 import { SearchComponent } from './search/search.component';
-import { ContactComponent } from './contact/contact.component';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 
 import { ClipboardModule } from 'ngx-clipboard';
@@ -28,7 +27,6 @@ import { PopoverModule } from 'ngx-popover';
     HomeComponent,
     RequestComponent,
     SearchComponent,
-    ContactComponent,
     SearchBarComponent
   ]
 })
