@@ -2,7 +2,6 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Web3Service } from '../util/web3.service';
-import blockies from 'blockies';
 
 @Component({
   selector: 'app-pay-with-request',
@@ -10,9 +9,9 @@ import blockies from 'blockies';
   styleUrls: ['./pay-with-request.component.scss']
 })
 export class PayWithRequestComponent implements OnInit {
-  blockies = blockies;
   signedRequest: any;
   date = new Date();
+  data: any;
 
   constructor(@Inject(DOCUMENT) private document: any, public web3Service: Web3Service, public router: Router, private route: ActivatedRoute) {}
 
@@ -24,6 +23,11 @@ export class PayWithRequestComponent implements OnInit {
     }
     if (Object.entries(this.route.snapshot.queryParams).length) {
       this.signedRequest = JSON.parse(Object.values(this.route.snapshot.queryParams)[0]);
+      if (this.signedRequest.data) {
+        const ipfsData = await this.web3Service.getIpfsData(this.signedRequest.data);
+        this.data = JSON.parse(ipfsData);
+        console.log(this.data);
+      }
       console.log(this.signedRequest);
     }
   }

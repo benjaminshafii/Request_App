@@ -26,6 +26,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AccountComponent } from './account/account.component';
 import { RouterModule } from '@angular/router';
+import { BlockiesModule } from 'angular-blockies';
+
+
 
 @NgModule({
   imports: [
@@ -33,6 +36,7 @@ import { RouterModule } from '@angular/router';
     ReactiveFormsModule,
     CommonModule,
     RouterModule,
+    BlockiesModule,
 
     MatButtonModule,
     MatCardModule,
@@ -62,6 +66,7 @@ import { RouterModule } from '@angular/router';
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
+    BlockiesModule,
 
     AccountComponent,
     MatButtonModule,

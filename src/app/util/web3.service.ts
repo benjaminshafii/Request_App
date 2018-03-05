@@ -4,10 +4,11 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { MatSnackBar } from '@angular/material';
 
 import RequestNetwork from '@requestnetwork/request-network.js';
-import Web3 from 'web3';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import LedgerWalletSubprovider from 'ledger-wallet-provider';
+
+const Web3 = require('web3');
 
 /* beautify preserve:start */
 declare let window: any;
@@ -15,7 +16,7 @@ declare let window: any;
 
 @Injectable()
 export class Web3Service {
-  private web3: Web3;
+  private web3;
   private requestNetwork: RequestNetwork;
   private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
 
@@ -321,6 +322,10 @@ export class Web3Service {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.broadcastSignedRequestAsPayer(signedRequest, expectedAmount);
+  }
+
+  public async getIpfsData(hash: string) {
+    return this.requestNetwork.equestCoreService.getIpfsFile(hash);
   }
 
 

@@ -2,7 +2,6 @@ import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Web3Service } from '../../util/web3.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import blockies from 'blockies';
 
 import { PayDialogComponent } from '../../util/dialogs/pay-dialog.component';
 import { SubtractDialogComponent } from '../../util/dialogs/subtract-dialog.component';
@@ -16,7 +15,6 @@ import { RefundDialogComponent } from '../../util/dialogs/refund-dialog.componen
   styleUrls: ['./request.component.scss'],
 })
 export class RequestComponent implements OnInit, OnDestroy {
-  blockies = blockies;
   objectKeys = Object.keys;
   account: string;
   mode: string;
