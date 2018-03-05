@@ -128,7 +128,6 @@ export class Web3Service {
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
 
-
     this.ready = this.requestNetwork ? true : false;
   }
 
@@ -316,5 +315,13 @@ export class Web3Service {
       return err;
     }
   }
+
+
+  public broadcastSignedRequestAsPayer(signedRequest: string, expectedAmount: string, callback ? ) {
+    if (this.watchDog()) { return callback(); }
+    this.confirmTxOnLedgerMsg();
+    return this.requestNetwork.requestEthereumService.broadcastSignedRequestAsPayer(signedRequest, expectedAmount);
+  }
+
 
 }

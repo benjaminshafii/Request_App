@@ -37,7 +37,6 @@ a {
 
 .wrapper {
   min-height: 100%;
-  background: $grey-white;
   display: flex;
   flex-direction: column;
 }
@@ -348,8 +347,16 @@ mat-hint.mat-hint {
   background: $primary;
 }
 
+.bg-grey-white {
+  background-color: $grey-white;
+}
+
 .bg-grey-whiter {
   background: $grey-whiter !important;
+}
+
+.bg-grey-white-blue {
+  background-color: $grey-white-blue;
 }
 
 .bg-white {
