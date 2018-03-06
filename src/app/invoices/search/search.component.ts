@@ -12,7 +12,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   date = new Date().getTime();
   searchValue: string;
   subscription;
-  displayedColumns = ['requestId', '_meta.timestamp', 'request.payee', 'request.payer', 'request.expectedAmount', 'request.balance', 'request.status'];
+  displayedColumns = ['requestId', '_meta.timestamp', 'request.payee.address', 'request.payer', 'request.payee.expectedAmount', 'request.payee.balance', 'request.status'];
   dataSource = new MatTableDataSource();
   loading = true;
 
@@ -54,7 +54,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getRequestsFromIds(requests) {
     for (const request of requests) {
-      this.web3Service.getRequestByRequestIdAsync(request.requestId).then(
+      this.web3Service.getRequestByRequestId(request.requestId).then(
         response => {
           request.request = response;
         });

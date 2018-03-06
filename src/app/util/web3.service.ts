@@ -249,7 +249,7 @@ export class Web3Service {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString(), 'ether');
     this.confirmTxOnLedgerMsg();
-    return this.requestNetwork.requestEthereumService.subtractAction(requestId, amountInWei);
+    return this.requestNetwork.requestEthereumService.subtractAction(requestId, [amountInWei]);
   }
 
 
@@ -257,7 +257,7 @@ export class Web3Service {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString(), 'ether');
     this.confirmTxOnLedgerMsg();
-    return this.requestNetwork.requestEthereumService.additionalAction(requestId, amountInWei);
+    return this.requestNetwork.requestEthereumService.additionalAction(requestId, [amountInWei]);
   }
 
 
@@ -265,7 +265,7 @@ export class Web3Service {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString(), 'ether');
     this.confirmTxOnLedgerMsg();
-    return this.requestNetwork.requestEthereumService.paymentAction(requestId, amountInWei, 0);
+    return this.requestNetwork.requestEthereumService.paymentAction(requestId, [amountInWei]);
   }
 
 
@@ -273,11 +273,11 @@ export class Web3Service {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString(), 'ether');
     this.confirmTxOnLedgerMsg();
-    return this.requestNetwork.requestEthereumService.refundAction(requestId, amountInWei, 0);
+    return this.requestNetwork.requestEthereumService.refundAction(requestId, amountInWei);
   }
 
 
-  public async getRequestByRequestIdAsync(requestId: string) {
+  public async getRequestByRequestId(requestId: string) {
     try {
       const request = await this.requestNetwork.requestCoreService.getRequest(requestId);
       this.setRequestStatus(request);
@@ -313,7 +313,6 @@ export class Web3Service {
 
   public async getRequestsByAddress(address: string) {
     try {
-      console.log(address);
       const requests = await this.requestNetwork.requestCoreService.getRequestsByAddress(address);
       return requests;
     } catch (err) {

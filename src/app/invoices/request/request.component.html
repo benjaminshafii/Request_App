@@ -4,7 +4,7 @@
       <mat-spinner class="mx-auto"></mat-spinner>
     </div>
     <ng-template #resultBlock>
-      <div class="col-12 text-center" *ngIf="!request.expectedAmount; else requestBlock">
+      <div class="col-12 text-center" *ngIf="!request.payee.expectedAmount; else requestBlock">
         <img class="mx-auto" src="assets/img/searching.png" style="max-width: 120px;">
         <h1 class="my-3">Oops</h1>
         <div *ngIf="request.errorTxHash; else errorRequestIdBlock" class="">
@@ -59,12 +59,12 @@
             <div class="bg-grey-whiter fc-blue-grey p-4 d-flex flex-wrap">
               <div class="d-flex mb-3 m-lg-0" style="flex: 1">
                 <div class="px-3">
-                  <angular-blockies *ngIf="request.payee" [options]="{ seed: request.payee.toLowerCase() }" class="blockies" style="width: 50px; height: 50px;"></angular-blockies>
+                  <angular-blockies *ngIf="request.payee.address" [options]="{ seed: request.payee.address.toLowerCase() }" class="blockies" style="width: 50px; height: 50px;"></angular-blockies>
                 </div>
                 <div class="fs-14 lh-18">
                   <div class="mb-1" [style.opacity]="'0.5'">FROM</div>
                   <div class="semi-bold">ETH address</div>
-                  <div popover="{{request.payee}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payee.substring(0, 10)}}...{{request.payee.substring(32, 42)}}</div>
+                  <div popover="{{request.payee.address}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payee.address.substring(0, 10)}}...{{request.payee.address.substring(32, 42)}}</div>
                 </div>
               </div>
               <div class="d-flex" style="flex: 1">
@@ -87,7 +87,7 @@
             <div class="d-flex">
               <div class="ml-auto d-inline-block semi-bold fc-primary px-5 py-3" style="background: #DFE5EC">
                 <div class="fs-14">AMOUNT</div>
-                <div class="fs-24">{{web3Service.fromWei(request.expectedAmount)}} ETH</div>
+                <div class="fs-24">{{web3Service.fromWei(request.payee.expectedAmount)}} ETH</div>
               </div>
             </div>
             <div class="p-5">
@@ -95,9 +95,9 @@
                 <div><strong>{{progress | number: '1.0-2'}}%</strong> of the request has been paid</div>
                 <mat-progress-bar class="my-1" mode="determinate" [value]="progress"></mat-progress-bar>
                 <div [ngSwitch]="request.status">
-                  <span *ngSwitchCase="'overpaid'"><strong>{{ web3Service.fromWei(request.expectedAmount.sub(request.balance).abs()) }} ETH</strong> overpaid</span>
+                  <span *ngSwitchCase="'overpaid'"><strong>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance).abs()) }} ETH</strong> overpaid</span>
                   <span *ngSwitchCase="'complete'">&nbsp;</span>
-                  <span *ngSwitchDefault><strong>{{ web3Service.fromWei(request.expectedAmount.sub(request.balance)) }} ETH</strong> remains to be paid</span>
+                  <span *ngSwitchDefault><strong>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance)) }} ETH</strong> remains to be paid</span>
                 </div>
               </div>
             </div>
@@ -128,10 +128,10 @@
                   <div *ngIf="!loading; else loadingMode" class="h-100 w-100 fs-18" [ngSwitch]="mode">
                     <!-- PAYEE -->
                     <mat-menu #payeeActionsMenu="matMenu" [overlapTrigger]="false" class="actions-menu">
-                      <button (click)="cancelRequest()" [disabled]="request.balance > 0" mat-menu-item>
+                      <button (click)="cancelRequest()" [disabled]="request.payee.balance > 0" mat-menu-item>
                         Cancel this Request
                       </button>
-                      <button (click)="refundRequest()" *ngIf="request.balance != 0" mat-menu-item>
+                      <button (click)="refundRequest()" *ngIf="request.payee.balance != 0" mat-menu-item>
                         <span>Refund</span>
                       </button>
                     </mat-menu>

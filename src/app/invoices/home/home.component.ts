@@ -94,14 +94,13 @@ export class HomeComponent implements OnInit {
 
       if (response.transaction) {
         this.web3Service.openSnackBar('The request is being created. Please wait a few moments for it to appear on the Blockchain.', 'Ok', 'info-snackbar');
-        const queryParams = {
-          expectedAmount: this.expectedAmountFormControl.value,
-          payer: this.payerFormControl.value,
-          payee: this.payeeFormControl.value,
-        };
-        Object.keys(data).forEach(key => queryParams[key] = data[key]);
-
-        this.router.navigate(['/request/txHash', response.transaction.hash], { queryParams });
+        // const queryParams = {
+        //   expectedAmount: this.expectedAmountFormControl.value,
+        //   payer: this.payerFormControl.value,
+        //   payee: this.payeeFormControl.value,
+        // };
+        // Object.keys(data).forEach(key => queryParams[key] = data[key]);
+        this.router.navigate(['/request/txHash', response.transaction.hash]);
       } else if (response.message) {
         if (response.message.startsWith('Invalid status 6985')) {
           this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');

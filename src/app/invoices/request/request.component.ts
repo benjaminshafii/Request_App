@@ -35,20 +35,17 @@ export class RequestComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     // wait for web3 to be instantiated
     if (!this.web3Service || !this.web3Service.ready) {
-      const delay = new Promise(resolve => setTimeout(resolve, 1000));
-      await delay;
+      await new Promise(resolve => setTimeout(resolve, 1000));
       return this.ngOnInit();
     }
     this.watchAccount();
 
     this.subscription = this.web3Service.searchValue.subscribe(async searchValue => {
       if (searchValue && searchValue.length > 42) {
-        this.loading = false;
-        this.searchValue = searchValue;
-        const request = await this.web3Service.getRequestByRequestIdAsync(searchValue);
-        request.events = await this.web3Service.getRequestEvents(request.requestId);
-        this.request = null;
+        const request = await this.web3Service.getRequestByRequestId(searchValue);
         this.setRequest(request);
+        this.searchValue = searchValue;
+        this.loading = false;
       }
     });
 
@@ -59,19 +56,21 @@ export class RequestComponent implements OnInit, OnDestroy {
       this.watchRequestByTxHash();
     }
 
-    this.timerInterval = setInterval(() => this.getRequestByRequestId(), 10000);
+    // watch Request in background
+    this.timerInterval = setInterval(async _ => {
+      if (!this.searchValue) { return; }
+      const request = await this.web3Service.getRequestByRequestId(this.searchValue);
+      this.setRequest(request);
+    }, 10000);
   }
 
   async watchTxHash(txHash) {
     const result = await this.web3Service.getRequestByTransactionHash(txHash);
     if (result.request && result.request.requestId) {
-      result.request.history = await this.web3Service.getRequestEvents(result.request.requestId);
-      this.web3Service.setRequestStatus(result.request);
       this.setRequest(result.request);
       this.loading = false;
     } else if (result.transaction) {
-      const delay = new Promise(resolve => setTimeout(resolve, 5000));
-      await delay;
+      await new Promise(resolve => setTimeout(resolve, 5000));
       return this.watchTxHash(txHash);
     }
   }
@@ -87,48 +86,54 @@ export class RequestComponent implements OnInit, OnDestroy {
     } else if (result.transaction) {
       this.setRequest({
         waitingMsg: 'waiting for transaction to be mined...',
-        expectedAmount: this.web3Service.BN(result.transaction.method.parameters[1]),
         payer: result.transaction.method.parameters[0],
-        payee: result.transaction.from,
+        payee: {
+          address: result.transaction.from,
+          balance: this.web3Service.BN(this.web3Service.toWei('0')),
+          expectedAmount: this.web3Service.BN(result.transaction.method.parameters[1])
+        },
         data: { data: { date: Date.now() } }
       });
-      const delay = new Promise(resolve => setTimeout(resolve, 5000));
-      await delay;
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
       return this.watchRequestByTxHash();
-    } else if (Object.keys(this.route.snapshot.queryParams).length > 0 && this.route.snapshot.queryParams.expectedAmount && this.route.snapshot.queryParams.payer && this.route.snapshot.queryParams.payee) {
-      const queryRequest = {
-        expectedAmount: this.web3Service.BN(this.web3Service.toWei(this.route.snapshot.queryParams.expectedAmount)),
-        balance: this.web3Service.BN(this.web3Service.toWei('0')),
-        payer: this.route.snapshot.queryParams.payer,
-        payee: this.route.snapshot.queryParams.payee,
-        data: { data: {} }
-      };
-      Object.keys(this.route.snapshot.queryParams).forEach((key) => {
-        if (!queryRequest[key]) { queryRequest.data.data[key] = this.route.snapshot.queryParams[key]; }
-      });
-      if (!this.request) { setTimeout(() => this.request.errorMsg = 'unable to locate this Transaction Hash', 5000); }
-      this.setRequest(queryRequest);
+      // } else if (Object.keys(this.route.snapshot.queryParams).length > 0 && this.route.snapshot.queryParams.payee && this.route.snapshot.queryParams.payee.address && this.route.snapshot.queryParams.payee.balance && this.route.snapshot.queryParams.payee.expectedAmount && this.route.snapshot.queryParams.payer) {
+      //   const queryRequest = {
+      //     payer: this.route.snapshot.queryParams.payer,
+      //     payee: {
+      //       address: this.route.snapshot.queryParams.payee,
+      //       balance: this.web3Service.BN(this.web3Service.toWei('0')),
+      //       expectedAmount: this.web3Service.BN(this.web3Service.toWei(this.route.snapshot.queryParams.expectedAmount))
+      //     },
+      //     data: { data: {} }
+      //   };
+      //   Object.keys(this.route.snapshot.queryParams).forEach((key) => {
+      //     if (!queryRequest[key]) { queryRequest.data.data[key] = this.route.snapshot.queryParams[key]; }
+      //   });
+      //   if (!this.request) { setTimeout(() => this.request.errorMsg = 'unable to locate this Transaction Hash', 5000); }
+      //   this.setRequest(queryRequest);
     } else {
       this.setRequest({ errorTxHash: 'Sorry, we are unable to locate this Transaction Hash' });
     }
   }
 
-  async getRequestByRequestId() {
-    if (!this.searchValue) { return; }
-    const request = await this.web3Service.getRequestByRequestIdAsync(this.searchValue);
-    request.events = await this.web3Service.getRequestEvents(request.requestId);
-    return this.setRequest(request);
-  }
 
-
-  setRequest(request) {
-    if (this.searchValue && (!this.request || this.request.requestId && this.searchValue !== this.request.requestId)) {
-      history.pushState(null, null, `/#/request/requestId/${this.searchValue}`);
-      this.url = `${window.location.protocol}//${window.location.host}/#/request/requestId/${this.searchValue}`;
+  async setRequest(request) {
+    // if new search
+    if (!this.request || this.request.requestId && request.requestId !== this.request.requestId) {
+      this.request = null;
+      history.pushState(null, null, `/#/request/requestId/${request.requestId}`);
+      this.url = `${window.location.protocol}//${window.location.host}/#/request/requestId/${request.requestId}`;
+    }
+    if (request.status) {
+      this.web3Service.setRequestStatus(request);
+    }
+    if (request.requestId && !request.events) {
+      request.events = await this.web3Service.getRequestEvents(request.requestId);
     }
     this.request = request;
     this.getRequestMode();
-    if (request) { this.progress = 100 * this.request.balance / this.request.expectedAmount; }
+    if (request) { this.progress = 100 * this.request.payee.balance / this.request.payee.expectedAmount; }
   }
 
 
@@ -154,7 +159,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   getRequestMode() {
-    this.mode = this.request && this.account === this.request.payee ? 'payee' : this.request && this.account === this.request.payer ? 'payer' : 'none';
+    this.mode = this.request && this.account === this.request.payee.address ? 'payee' : this.request && this.account === this.request.payer ? 'payer' : 'none';
   }
 
 
