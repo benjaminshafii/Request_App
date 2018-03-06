@@ -82,6 +82,7 @@ export class Web3Service {
     });
   }
 
+
   public async instanciateWeb3FromLedger(networkId, derivationPath) {
     const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, derivationPath);
     const engine = new ProviderEngine();
@@ -132,6 +133,7 @@ export class Web3Service {
     this.ready = this.requestNetwork ? true : false;
   }
 
+
   /* beautify preserve:start */
   private async refreshAccounts(force ?: boolean) {
   /* beautify preserve:end */
@@ -180,7 +182,6 @@ export class Web3Service {
       msg = !this.web3 ? this.web3NotReadyMsg : !this.requestNetwork ? this.requestNetworkNotReadyMsg : !this.accountObservable.value ? this.walletNotReadyMsg : '';
       if (msg === '') { return; }
     }
-
     this.snackBar.open(msg, ok || 'Ok', {
       duration: duration || 5000,
       horizontalPosition: 'right',
@@ -213,18 +214,20 @@ export class Web3Service {
     }
   }
 
+
   private confirmTxOnLedgerMsg() {
     if (this.ledgerConnected) {
       setTimeout(_ => { this.openSnackBar('Please confirm transaction on your ledger.', null, 'info-snackbar'); }, 1500);
     }
   }
 
+
   public createRequestAsPayee(payer: string, expectedAmount: string, data: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     if (!this.web3.utils.isAddress(payer)) { return callback({ message: 'payer\'s address is not a valid Ethereum address' }); }
     const expectedAmountInWei = this.toWei(expectedAmount, 'ether');
     this.confirmTxOnLedgerMsg();
-    return this.requestNetwork.requestEthereumService.createRequestAsPayee(payer, expectedAmountInWei, data);
+    return this.requestNetwork.requestEthereumService.createRequestAsPayee([this.accountObservable.value], [expectedAmountInWei], payer, null, null, data);
   }
 
 
@@ -264,6 +267,7 @@ export class Web3Service {
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.paymentAction(requestId, amountInWei, 0);
   }
+
 
   public refundAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
@@ -307,9 +311,10 @@ export class Web3Service {
   }
 
 
-  public async getRequestsByAddress(requestId: string) {
+  public async getRequestsByAddress(address: string) {
     try {
-      const requests = await this.requestNetwork.requestCoreService.getRequestsByAddress(requestId);
+      console.log(address);
+      const requests = await this.requestNetwork.requestCoreService.getRequestsByAddress(address);
       return requests;
     } catch (err) {
       console.log('Error: ', err.message);
@@ -323,6 +328,7 @@ export class Web3Service {
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.broadcastSignedRequestAsPayer(signedRequest, expectedAmount);
   }
+
 
   public async getIpfsData(hash: string) {
     return this.requestNetwork.equestCoreService.getIpfsFile(hash);
