@@ -330,7 +330,13 @@ export class Web3Service {
 
 
   public async getIpfsData(hash: string) {
-    return this.requestNetwork.equestCoreService.getIpfsFile(hash);
+    try {
+      const result = await this.requestNetwork.requestCoreService.getIpfsFile(hash);
+      return JSON.parse(result);
+    } catch (err) {
+      console.log('Error: ', err.message);
+      return err;
+    }
   }
 
 

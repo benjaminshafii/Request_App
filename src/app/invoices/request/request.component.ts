@@ -80,23 +80,26 @@ export class RequestComponent implements OnInit, OnDestroy {
     if (this.searchValue) { return console.log('stopped watching txHash'); }
 
     const result = await this.web3Service.getRequestByTransactionHash(this.txHash);
-
     if (result.request && result.request.requestId) {
       this.web3Service.setSearchValue(result.request.requestId);
     } else if (result.transaction) {
-      this.setRequest({
+      const request = {
         waitingMsg: 'waiting for transaction to be mined...',
-        payer: result.transaction.method.parameters[0],
         payee: {
-          address: result.transaction.from,
+          address: result.transaction.method.parameters._payeesIdAddress[0],
           balance: this.web3Service.BN(this.web3Service.toWei('0')),
-          expectedAmount: this.web3Service.BN(result.transaction.method.parameters[1])
+          expectedAmount: result.transaction.method.parameters._expectedAmounts[0],
         },
-        data: { data: { date: Date.now() } }
-      });
-      await new Promise(resolve => setTimeout(resolve, 5000));
+        payer: result.transaction.method.parameters._payer,
+        data: {data: null},
+      };
+      if (result.transaction.method.parameters._data) {
+        request.data.data = await this.web3Service.getIpfsData(result.transaction.method.parameters._data);
+      }
+      this.setRequest(request);
 
-      return this.watchRequestByTxHash();
+      setTimeout(await this.watchRequestByTxHash(), 5000)
+
       // } else if (Object.keys(this.route.snapshot.queryParams).length > 0 && this.route.snapshot.queryParams.payee && this.route.snapshot.queryParams.payee.address && this.route.snapshot.queryParams.payee.balance && this.route.snapshot.queryParams.payee.expectedAmount && this.route.snapshot.queryParams.payer) {
       //   const queryRequest = {
       //     payer: this.route.snapshot.queryParams.payer,
@@ -120,7 +123,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
   async setRequest(request) {
     // if new search
-    if (!this.request || this.request.requestId && request.requestId !== this.request.requestId) {
+    if (request.requestId && ((!this.request && this.route.snapshot.params['txHash']) || this.request && this.request.requestId && this.request.requestId !== request.requestId)) {
       this.request = null;
       history.pushState(null, null, `/#/request/requestId/${request.requestId}`);
       this.url = `${window.location.protocol}//${window.location.host}/#/request/requestId/${request.requestId}`;
