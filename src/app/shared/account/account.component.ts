@@ -11,7 +11,7 @@ import { LedgerDialogComponent } from '../../util/dialogs/ledger-dialog.componen
 })
 export class AccountComponent {
 
-  constructor(private web3Service: Web3Service, private dialog: MatDialog) {}
+  constructor(public web3Service: Web3Service, private dialog: MatDialog) {}
 
 
   openLedgerDialog() {

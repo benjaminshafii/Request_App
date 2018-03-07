@@ -70,8 +70,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       this.setRequest(result.request);
       this.loading = false;
     } else if (result.transaction) {
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      return this.watchTxHash(txHash);
+      setTimeout(await this.watchTxHash(txHash), 5000));
     }
   }
 
@@ -98,7 +97,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       }
       this.setRequest(request);
 
-      setTimeout(await this.watchRequestByTxHash(), 5000)
+      setTimeout(await this.watchRequestByTxHash(), 5000);
 
       // } else if (Object.keys(this.route.snapshot.queryParams).length > 0 && this.route.snapshot.queryParams.payee && this.route.snapshot.queryParams.payee.address && this.route.snapshot.queryParams.payee.balance && this.route.snapshot.queryParams.payee.expectedAmount && this.route.snapshot.queryParams.payer) {
       //   const queryRequest = {
