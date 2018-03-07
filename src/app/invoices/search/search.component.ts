@@ -32,8 +32,9 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.subscription = this.web3Service.searchValue.subscribe(async searchValue => {
-      this.loading = true;
       this.searchValue = searchValue;
+      this.loading = true;
+      this.dataSource.data = [];
       history.pushState(null, null, `/#/search/${searchValue}`);
       const resultsList = await this.web3Service.getRequestsByAddress(searchValue);
       this.loading = false;
