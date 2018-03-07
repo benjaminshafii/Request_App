@@ -70,7 +70,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       this.setRequest(result.request);
       this.loading = false;
     } else if (result.transaction) {
-      setTimeout(await this.watchTxHash(txHash), 5000));
+      setTimeout(await this.watchTxHash(txHash), 5000);
     }
   }
 
