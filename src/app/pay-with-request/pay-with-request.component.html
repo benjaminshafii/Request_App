@@ -54,9 +54,19 @@
             <div class="p-5">
             </div>
             <mat-toolbar class="p-0 bbr-7 cta-toolbar" [style.height]="'90px'">
-              <button class="fs-18 no-focus-overlay" mat-raised-button color="accent" (click)="acceptAndPay()">
-                <span>Accept & Pay</span>
-              </button>
+              <div *ngIf="web3Service.accountObservable | async; else viewMode" class="h-100">
+                <button class="fs-18 no-focus-overlay w-100" mat-raised-button color="accent" (click)="acceptAndPay()">
+                  <span>Accept & Pay</span>
+                </button>
+              </div>
+              <ng-template #viewMode>
+                <div class="text-center fs-12 lh-14 h-100">
+                  <mat-icon class="mx-auto mt-3" color="accent">remove_red_eye</mat-icon>
+                  <div class="fc-primary semi-bold">
+                    <i>You are in view mode.<br/> Connect your metamask account to interact with this Request.</i>
+                  </div>
+                </div>
+              </ng-template>
             </mat-toolbar>
           </mat-card>
           <div class="mt-3 fs-12 fc-blue-grey">
@@ -67,3 +77,11 @@
     </div>
   </div>
 </div>
+<!-- 
+<div *ngSwitchDefault class="text-center fs-12 lh-14 h-100 ">
+                      <mat-icon class="mx-auto mt-3 " color="accent ">remove_red_eye</mat-icon>
+                      <div class="fc-primary semi-bold ">
+                        <i>You are in view mode.<br/> Connect your metamask account as the payer or payee to interact with this Request.</i>
+                      </div>
+                    </div>
+                  -->

@@ -47,6 +47,5 @@ export class PayWithRequestComponent implements OnInit {
           this.web3Service.openSnackBar(err.message);
         });
   }
-  
 
 }
