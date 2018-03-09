@@ -35,7 +35,9 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
       this.searchValue = searchValue;
       this.loading = true;
       this.dataSource.data = [];
-      history.pushState(null, null, `/#/search/${searchValue}`);
+      if (searchValue !== this.searchValue) {
+        history.pushState(null, null, `/#/search/${searchValue}`);
+      }
       const resultsList = await this.web3Service.getRequestsByAddress(searchValue);
       this.loading = false;
       if (!resultsList || !resultsList.asPayer || !resultsList.asPayee) {

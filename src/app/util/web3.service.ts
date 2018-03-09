@@ -22,7 +22,7 @@ export class Web3Service {
 
   public metamask = false;
   public ledgerConnected = false;
-  public ready = false;
+  public ready: boolean;
 
   public etherscanUrl: string;
 
@@ -130,7 +130,6 @@ export class Web3Service {
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
 
-    this.ready = this.requestNetwork ? true : false;
   }
 
 
@@ -145,6 +144,8 @@ export class Web3Service {
     } else if (this.accountObservable.value !== accs[0]) {
       this.accountObservable.next(accs[0]);
     }
+
+    if (this.ready === undefined) { this.ready = this.requestNetwork ? true : false; }
   }
 
 
