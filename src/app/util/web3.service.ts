@@ -26,7 +26,7 @@ export class Web3Service {
 
   public etherscanUrl: string;
 
-  public accountObservable = new BehaviorSubject < string > ('');
+  public accountObservable = new BehaviorSubject < string > (null);
   public networkIdObservable = new BehaviorSubject < number > (null);
   public searchValue = new Subject < string > ();
 
@@ -141,7 +141,7 @@ export class Web3Service {
 
     const accs = await this.web3.eth.getAccounts();
     if (!accs || accs.length === 0) {
-      this.accountObservable.next(' ');
+      this.accountObservable.next(null);
     } else if (this.accountObservable.value !== accs[0]) {
       this.accountObservable.next(accs[0]);
     }

@@ -147,6 +147,12 @@ mat-toolbar.cta-toolbar {
   }
 }
 
+button.account-menu-button {
+  font-size: 16px;
+  font-weight: initial;
+  max-width: 100%;
+}
+
 .account-menu {
   box-shadow: 2px 2px 18px 0px rgba(212, 227, 255, 0.5) !important;
   max-width: 100% !important;
@@ -169,18 +175,6 @@ mat-toolbar.cta-toolbar {
     height: inherit;
     image-rendering: pixelated;
     border-radius: 100%;
-  }
-}
-
-
-button.account-menu-button {
-  font-size: 16px;
-  font-weight: initial;
-  max-width: 100%;
-  .mat-button-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
 }
 
