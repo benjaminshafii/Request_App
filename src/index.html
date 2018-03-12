@@ -12,25 +12,22 @@
   <meta name="description" content="A decentralized network to get paid in cryptocurrencies.">
   <meta name="image" content="https://app.request.network/assets/img/request-share-img.png">
   <base href="/">
-  
   <!-- Open Graph meta -->
   <meta property="og:url" content="https://app.request.network" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Request Network Colossus - Send payment requests the right way" />
-  <meta property="og:description" content="A decentralized network to get paid in cryptocurrencies."/>
+  <meta property="og:description" content="A decentralized network to get paid in cryptocurrencies." />
   <meta property="og:image" content="https://app.request.network/assets/img/request-share-img.png" />
   <!-- Twitter meta -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="https://app.request.network">
   <meta name="twitter:creator" content="@RequestNetwork">
   <meta name="twitter:title" content="Request Network Colossus - Send payment requests the right way">
-  <meta name="twitter:description" content="A decentralized network to get paid in cryptocurrencies."">
+  <meta name="twitter:description" content="A decentralized network to get paid in cryptocurrencies.">
   <meta name="twitter:image" content="https://app.request.network/assets/img/request-share-img.png">
-
   <noscript>
     <h1>To use this website, please enable JavaScript.</h1>
   </noscript>
-
   <style type="text/css">
   body,
   html {
@@ -38,7 +35,6 @@
   }
 
   .app-loading {
-    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -51,12 +47,6 @@
     width: 200px;
     animation: rotate 2s linear infinite;
     transform-origin: center center;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
   }
 
   .app-loading .spinner .path {
@@ -67,11 +57,25 @@
     stroke: #103B56;
   }
 
+  .app-loading .logo-flex-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5rem;
+  }
+
   .app-loading .logo {
+    position: absolute;
     width: 100px;
     height: 100px;
     background-size: 45% !important;
     background: url(./assets/img/request-logo.png) center center no-repeat;
+  }
+
+  #redirection {
+    color: #103B56;
+    display: none;
   }
 
   @keyframes rotate {
@@ -99,13 +103,22 @@
 </head>
 
 <body>
-  <app-root>
+<app-root>
     <div class="app-loading">
-      <div class="logo"></div>
-      <svg class="spinner" viewBox="25 25 50 50">
-        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
-      </svg>
+      <div id="redirection">Redirecting to Request Network gateway to pay in ETH...</div>
+      <div class="logo-flex-box">
+        <div class="logo"></div>
+        <svg class="spinner" viewBox="25 25 50 50">
+          <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+        </svg>
+      </div>
     </div>
+    <script type="text/javascript">
+    console.log(window.location.href);
+    if (window.location.href.indexOf('pay-with-request') !== -1) {
+      document.getElementById('redirection').style.display = 'block';
+    }
+    </script>
   </app-root>
 </body>
 

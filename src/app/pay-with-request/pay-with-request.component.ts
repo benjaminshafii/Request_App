@@ -13,6 +13,7 @@ export class PayWithRequestComponent implements OnInit {
   signedRequest: any;
   ipfsData: any;
   callbackUrl: string;
+  error: string;
   date = new Date();
 
   constructor(@Inject(DOCUMENT) private document: any, public web3Service: Web3Service, public router: Router, private route: ActivatedRoute) {}
@@ -24,9 +25,13 @@ export class PayWithRequestComponent implements OnInit {
       return this.ngOnInit();
     }
     if (this.route.snapshot.queryParams.data) {
-      const data = JSON.parse(this.route.snapshot.queryParams.data); // todo check more if conditions
+      const data = JSON.parse(this.route.snapshot.queryParams.data);
+      if (!data.callback || !data.request) {
+        this.error = 'Missing param';
+       }
+
       if (data.request && data.request.data) {
-        this.ipfsData = await this.web3Service.getIpfsData( data.request.data);
+        this.ipfsData = await this.web3Service.getIpfsData(data.request.data);
       }
       this.callbackUrl = data.callback;
       this.signedRequest = data.request;
