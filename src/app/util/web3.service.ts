@@ -201,13 +201,13 @@ export class Web3Service {
     if (request.state === 2) {
       request.status = 'cancelled';
     } else if (request.state === 1) {
-      if (request.balance.isZero()) {
+      if (request.payee.balance.isZero()) {
         request.status = 'accepted';
-      } else if (request.balance.lt(request.expectedAmount)) {
+      } else if (request.payee.balance.lt(request.payee.expectedAmount)) {
         request.status = 'in progress';
-      } else if (request.balance.eq(request.expectedAmount)) {
+      } else if (request.payee.balance.eq(request.payee.expectedAmount)) {
         request.status = 'complete';
-      } else if (request.balance.gt(request.expectedAmount)) {
+      } else if (request.payee.balance.gt(request.payee.expectedAmount)) {
         request.status = 'overpaid';
       }
     } else {
@@ -323,10 +323,10 @@ export class Web3Service {
   }
 
 
-  public broadcastSignedRequestAsPayer(signedRequest: string, expectedAmount: string, callback ? ) {
+  public broadcastSignedRequestAsPayer(signedRequest: string, amountsToPay: any[], callback ? ) {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
-    return this.requestNetwork.requestEthereumService.broadcastSignedRequestAsPayer(signedRequest, expectedAmount);
+    return this.requestNetwork.requestEthereumService.broadcastSignedRequestAsPayer(signedRequest, amountsToPay);
   }
 
 

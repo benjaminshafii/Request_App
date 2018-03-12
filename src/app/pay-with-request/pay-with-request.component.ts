@@ -11,8 +11,9 @@ import { Web3Service } from '../util/web3.service';
 export class PayWithRequestComponent implements OnInit {
   Object = Object;
   signedRequest: any;
-  date = new Date();
   ipfsData: any;
+  callbackUrl: string;
+  date = new Date();
 
   constructor(@Inject(DOCUMENT) private document: any, public web3Service: Web3Service, public router: Router, private route: ActivatedRoute) {}
 
@@ -22,22 +23,22 @@ export class PayWithRequestComponent implements OnInit {
       await delay;
       return this.ngOnInit();
     }
-    if (Object.entries(this.route.snapshot.queryParams).length) {
-      const signedRequest = JSON.parse(Object.values(this.route.snapshot.queryParams)[0]);
-      if (signedRequest.data) {
-        this.ipfsData = await this.web3Service.getIpfsData(signedRequest.data);
+    if (this.route.snapshot.queryParams.data) {
+      const data = JSON.parse(this.route.snapshot.queryParams.data); // todo check more if conditions
+      if (data.request && data.request.data) {
+        this.ipfsData = await this.web3Service.getIpfsData( data.request.data);
       }
-      this.signedRequest = signedRequest;
-      console.log(this.signedRequest);
+      this.callbackUrl = data.callback;
+      this.signedRequest = data.request;
     }
   }
 
   acceptAndPay() {
-    this.web3Service.broadcastSignedRequestAsPayer(this.signedRequest, this.signedRequest.amountInitial)
+    this.web3Service.broadcastSignedRequestAsPayer(this.signedRequest, [this.signedRequest.expectedAmounts[0]])
       .on('broadcasted',
         res => {
-          if (res.txHash) {
-            this.document.location.href = `${this.signedRequest.callbackUrl}?txHash=${res.txHash}`;
+          if (res.transaction && res.transaction.hash) {
+            this.document.location.href = `${this.callbackUrl}?txHash=${res.transaction.hash}`;
           }
         })
       .then(
@@ -46,6 +47,10 @@ export class PayWithRequestComponent implements OnInit {
           console.error(err);
           this.web3Service.openSnackBar(err.message);
         });
+  }
+
+  cancelRequest() {
+    this.document.location.href = `${this.callbackUrl}?signedRequest=${this.signedRequest}`;
   }
 
 }
