@@ -75,7 +75,6 @@
 
   #redirection {
     color: #103B56;
-    display: none;
   }
 
   @keyframes rotate {
@@ -115,8 +114,8 @@
     </div>
     <script type="text/javascript">
     console.log(window.location.href);
-    if (window.location.href.indexOf('pay-with-request') !== -1) {
-      document.getElementById('redirection').style.display = 'block';
+    if (window.location.href.indexOf('pay-with-request') == -1) {
+      document.getElementById('redirection').style.display = 'none';
     }
     </script>
   </app-root>

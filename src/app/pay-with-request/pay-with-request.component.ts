@@ -13,7 +13,8 @@ export class PayWithRequestComponent implements OnInit {
   signedRequest: any;
   ipfsData: any;
   callbackUrl: string;
-  error: string;
+  queryParamError: boolean;
+  redirecting: boolean;
   date = new Date();
 
   constructor(@Inject(DOCUMENT) private document: any, public web3Service: Web3Service, public router: Router, private route: ActivatedRoute) {}
@@ -24,18 +25,17 @@ export class PayWithRequestComponent implements OnInit {
       await delay;
       return this.ngOnInit();
     }
-    if (this.route.snapshot.queryParams.data) {
-      const data = JSON.parse(this.route.snapshot.queryParams.data);
-      if (!data.callback || !data.request) {
-        this.error = 'Missing param';
-       }
 
-      if (data.request && data.request.data) {
-        this.ipfsData = await this.web3Service.getIpfsData(data.request.data);
+      const data =  this.route.snapshot.queryParams.data ? JSON.parse(this.route.snapshot.queryParams.data) : null;
+      if (!data || !data.callbackUrl || !data.signedRequest) {
+        return this.queryParamError = true;
       }
-      this.callbackUrl = data.callback;
-      this.signedRequest = data.request;
-    }
+
+      if (data.signedRequest.data) {
+        this.ipfsData = await this.web3Service.getIpfsData(data.signedRequest.data);
+      }
+      this.callbackUrl = data.callbackUrl;
+      this.signedRequest = data.signedRequest;
   }
 
   acceptAndPay() {
@@ -43,6 +43,7 @@ export class PayWithRequestComponent implements OnInit {
       .on('broadcasted',
         res => {
           if (res.transaction && res.transaction.hash) {
+            this.redirecting = true;
             this.document.location.href = `${this.callbackUrl}?txHash=${res.transaction.hash}`;
           }
         })
