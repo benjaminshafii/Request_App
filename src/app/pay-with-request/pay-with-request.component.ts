@@ -14,7 +14,7 @@ export class PayWithRequestComponent implements OnInit {
   ipfsData: any;
   callbackUrl: string;
   queryParamError: boolean;
-  redirecting: boolean;
+  redirectUrl: string;
   date = new Date();
 
   constructor(@Inject(DOCUMENT) private document: any, public web3Service: Web3Service, public router: Router, private route: ActivatedRoute) {}
@@ -43,8 +43,8 @@ export class PayWithRequestComponent implements OnInit {
       .on('broadcasted',
         res => {
           if (res.transaction && res.transaction.hash) {
-            this.redirecting = true;
-            this.document.location.href = `${this.callbackUrl}?txHash=${res.transaction.hash}`;
+            this.redirectUrl = `${this.callbackUrl}${res.transaction.hash}`;
+            setTimeout( _ => this.document.location.href = `${this.callbackUrl}${res.transaction.hash}`, 5000);
           }
         })
       .then(

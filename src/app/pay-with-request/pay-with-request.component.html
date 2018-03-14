@@ -1,6 +1,10 @@
-<div class="overlay" *ngIf="redirecting; else payWithRequestTemplate">
+<div class="overlay" *ngIf="redirectUrl; else payWithRequestTemplate">
   <div class="app-loading">
-    <div id="redirection">Redirecting to {{ callbackUrl }}...</div>
+    <div id="redirection">
+      <span>Transaction broadcasted, redirecting to</span>
+      <br/>
+      <a [href]="redirectUrl">{{ redirectUrl }}</a>
+    </div>
     <div class="logo-flex-box">
       <div class="logo"></div>
       <svg class="spinner" viewBox="25 25 50 50">
