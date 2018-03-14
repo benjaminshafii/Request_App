@@ -341,4 +341,10 @@ export class Web3Service {
   }
 
 
+  public isSignedRequestHasError(signedRequest: any, payer: string) {
+    return this.requestNetwork.requestEthereumService.isSignedRequestHasError(signedRequest, payer);
+  }
+
+
+
 }
