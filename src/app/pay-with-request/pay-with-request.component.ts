@@ -20,7 +20,7 @@ export class PayWithRequestComponent implements OnInit {
   constructor(@Inject(DOCUMENT) private document: any, public web3Service: Web3Service, public router: Router, private route: ActivatedRoute) {}
 
   async ngOnInit() {
-    if (!this.web3Service || !this.web3Service.ready) {
+    if (!this.web3Service || !this.web3Service.web3Ready) {
       const delay = new Promise(resolve => setTimeout(resolve, 1000));
       await delay;
       return this.ngOnInit();

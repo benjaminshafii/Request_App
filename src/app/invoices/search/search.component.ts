@@ -25,7 +25,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async ngOnInit() {
     // wait for web3 to be instantiated
-    if (!this.web3Service || !this.web3Service.ready) {
+    if (!this.web3Service || !this.web3Service.web3Ready) {
       const delay = new Promise(resolve => setTimeout(resolve, 1000));
       await delay;
       return await this.ngOnInit();

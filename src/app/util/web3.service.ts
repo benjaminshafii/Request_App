@@ -22,7 +22,7 @@ export class Web3Service {
 
   public metamask = false;
   public ledgerConnected = false;
-  public ready: boolean;
+  public web3Ready: boolean;
 
   public etherscanUrl: string;
 
@@ -117,6 +117,7 @@ export class Web3Service {
       this.networkIdObservable.next(4);
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
     }
+    this.web3Ready = true;
     // instanciate requestnetwork.js
     try {
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
@@ -129,7 +130,6 @@ export class Web3Service {
     this.toWei = this.web3.utils.toWei;
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
-
   }
 
 
@@ -145,7 +145,6 @@ export class Web3Service {
       this.accountObservable.next(accs[0]);
     }
 
-    if (this.ready === undefined) { this.ready = this.requestNetwork ? true : false; }
   }
 
 
@@ -344,7 +343,6 @@ export class Web3Service {
   public isSignedRequestHasError(signedRequest: any, payer: string) {
     return this.requestNetwork.requestEthereumService.isSignedRequestHasError(signedRequest, payer);
   }
-
 
 
 }
