@@ -87,7 +87,7 @@
             <div class="d-flex">
               <div class="ml-auto d-inline-block semi-bold fc-primary px-5 py-3" style="background: #DFE5EC">
                 <div class="fs-14">AMOUNT</div>
-                <div class="fs-24">{{web3Service.fromWei(request.payee.expectedAmount)}} ETH</div>
+                <div class="fs-24">{{web3Service.fromWei(request.payee.expectedAmount.toString())}} ETH</div>
               </div>
             </div>
             <div class="p-5">
@@ -95,9 +95,9 @@
                 <div><strong>{{progress | number: '1.0-2'}}%</strong> of the request has been paid</div>
                 <mat-progress-bar class="my-1" mode="determinate" [value]="progress"></mat-progress-bar>
                 <div [ngSwitch]="request.status">
-                  <span *ngSwitchCase="'overpaid'"><strong>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance).abs()) }} ETH</strong> overpaid</span>
+                  <span *ngSwitchCase="'overpaid'"><strong>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance).abs().toString()) }} ETH</strong> overpaid</span>
                   <span *ngSwitchCase="'complete'">&nbsp;</span>
-                  <span *ngSwitchDefault><strong>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance)) }} ETH</strong> remains to be paid</span>
+                  <span *ngSwitchDefault><strong>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance.toString())) }} ETH</strong> remains to be paid</span>
                 </div>
               </div>
             </div>
