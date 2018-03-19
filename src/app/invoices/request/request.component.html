@@ -97,7 +97,7 @@
                 <div [ngSwitch]="request.status">
                   <span *ngSwitchCase="'overpaid'"><strong>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance).abs().toString()) }} ETH</strong> overpaid</span>
                   <span *ngSwitchCase="'complete'">&nbsp;</span>
-                  <span *ngSwitchDefault><strong>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance.toString())) }} ETH</strong> remains to be paid</span>
+                  <span *ngSwitchDefault><strong>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance).toString()) }} ETH</strong> remains to be paid</span>
                 </div>
               </div>
             </div>

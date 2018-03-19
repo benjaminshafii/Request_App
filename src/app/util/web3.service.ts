@@ -117,7 +117,7 @@ export class Web3Service {
       this.networkIdObservable.next(4);
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
     }
-    this.web3Ready = true;
+
     // instanciate requestnetwork.js
     try {
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
@@ -144,6 +144,8 @@ export class Web3Service {
     } else if (this.accountObservable.value !== accs[0]) {
       this.accountObservable.next(accs[0]);
     }
+
+    if (this.web3Ready === undefined) { this.web3Ready = true; }
 
   }
 

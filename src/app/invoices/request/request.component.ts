@@ -57,11 +57,11 @@ export class RequestComponent implements OnInit, OnDestroy {
     }
 
     // watch Request in background
-    this.timerInterval = setInterval(async _ => {
-      if (!this.searchValue) { return; }
-      const request = await this.web3Service.getRequestByRequestId(this.searchValue);
-      this.setRequest(request);
-    }, 10000);
+    // this.timerInterval = setInterval(async _ => {
+    //   if (!this.searchValue) { return; }
+    //   const request = await this.web3Service.getRequestByRequestId(this.searchValue);
+    //   this.setRequest(request);
+    // }, 10000);
   }
 
   async watchTxHash(txHash) {
