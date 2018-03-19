@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
   // currencies = [{ name: 'ether', iso: 'ETH' }];
 
   static sameAddressAsPayeeValidator(control: FormControl) {
-    const result = control.value && control.root.get('payee').value === control.value ? { sameAddressAsPayee: true } : null;
+    const result = control.value && control.root.get('payee').value.toLowerCase() === control.value.toLowerCase() ? { sameAddressAsPayee: true } : null;
     return result;
   }
 
