@@ -51,10 +51,16 @@
                     <div class="px-3">
                       <angular-blockies *ngIf="signedRequest.payeesIdAddress[0]" [options]="{ seed: signedRequest.payeesIdAddress[0].toLowerCase() }" class="blockies" style="width: 50px; height: 50px;"></angular-blockies>
                     </div>
-                    <div class="fs-14 lh-18">
-                      <div class="mb-1" [style.opacity]="'0.5'">FROM</div>
-                      <div class="semi-bold">ETH address</div>
-                      <div>{{ signedRequest.payeesIdAddress[0] }}</div>
+                    <div>
+                      <div class="fs-14 lh-18">
+                        <div class="mb-1" [style.opacity]="'0.5'">FROM</div>
+                        <div class="bold">ID address</div>
+                        <div>{{ signedRequest.payeesIdAddress[0] }}</div>
+                        <div *ngIf="signedRequest.payeesPaymentAddress && signedRequest.payeesPaymentAddress[0].length > 0">
+                          <div class="bold">Payment address</div>
+                          <div>{{ signedRequest.payeesPaymentAddress[0] }}</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
