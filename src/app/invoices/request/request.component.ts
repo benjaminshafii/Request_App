@@ -87,7 +87,7 @@ export class RequestComponent implements OnInit, OnDestroy {
         payee: {
           address: result.transaction.method.parameters._payeesIdAddress[0],
           balance: this.web3Service.BN(this.web3Service.toWei('0')),
-          expectedAmount: result.transaction.method.parameters._expectedAmounts[0],
+          expectedAmount: this.web3Service.BN(result.transaction.method.parameters._expectedAmounts[0]),
         },
         payer: result.transaction.method.parameters._payer,
         data: {data: null},
@@ -127,7 +127,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       history.pushState(null, null, `/#/request/requestId/${request.requestId}`);
       this.url = `${window.location.protocol}//${window.location.host}/#/request/requestId/${request.requestId}`;
     }
-    if (!request.status) {
+    if (request.state) {
       this.web3Service.setRequestStatus(request);
     }
     if (request.requestId && !request.events) {
