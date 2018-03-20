@@ -43,7 +43,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.subscription = this.web3Service.searchValue.subscribe(async searchValue => {
       if (searchValue && searchValue.length > 42) {
         const request = await this.web3Service.getRequestByRequestId(searchValue);
-        this.setRequest(request);
+        await this.setRequest(request);
         this.searchValue = searchValue;
         this.loading = false;
       }
@@ -67,7 +67,7 @@ export class RequestComponent implements OnInit, OnDestroy {
   async watchTxHash(txHash) {
     const result = await this.web3Service.getRequestByTransactionHash(txHash);
     if (result.request && result.request.requestId) {
-      this.setRequest(result.request);
+      await this.setRequest(result.request);
       this.loading = false;
     } else if (result.transaction) {
       setTimeout(await this.watchTxHash(txHash), 5000);
@@ -95,7 +95,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       if (result.transaction.method.parameters._data) {
         request.data.data = await this.web3Service.getIpfsData(result.transaction.method.parameters._data);
       }
-      this.setRequest(request);
+      await this.setRequest(request);
 
       setTimeout(await this.watchRequestByTxHash(), 5000);
 
@@ -115,7 +115,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       //   if (!this.request) { setTimeout(() => this.request.errorMsg = 'unable to locate this Transaction Hash', 5000); }
       //   this.setRequest(queryRequest);
     } else {
-      this.setRequest({ errorTxHash: 'Sorry, we are unable to locate this Transaction Hash' });
+      await this.setRequest({ errorTxHash: 'Sorry, we are unable to locate this Transaction Hash' });
     }
   }
 
@@ -127,7 +127,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       history.pushState(null, null, `/#/request/requestId/${request.requestId}`);
       this.url = `${window.location.protocol}//${window.location.host}/#/request/requestId/${request.requestId}`;
     }
-    if (request.status) {
+    if (!request.status) {
       this.web3Service.setRequestStatus(request);
     }
     if (request.requestId && !request.events) {
@@ -153,7 +153,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     const days = Math.floor((date - timestamp * 1000) / (1000 * 60 * 60 * 24));
     let msg = days === 1 ? `${days} day ` : days > 1 ? `${days} days ` : '';
     const hours = Math.floor((date - timestamp * 1000) / (1000 * 60 * 60) % 24);
-    msg += days === 1 ? `${hours} hr ` : hours > 1 ? `${hours} hrs ` : '';
+    msg += hours === 1 ? `${hours} hr ` : hours > 1 ? `${hours} hrs ` : '';
     const minutes = Math.floor((date - timestamp * 1000) / (1000 * 60) % 60);
     msg += minutes === 1 ? `${minutes} min ` : minutes > 1 ? `${minutes} mins ` : '';
     return msg ? `${msg}ago` : 'less than 1 min ago';

@@ -71,7 +71,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     const days = Math.floor(time / (1000 * 60 * 60 * 24));
     let msg = days === 1 ? `${days} day ` : days > 1 ? `${days} days ` : '';
     const hours = Math.floor(time / (1000 * 60 * 60) % 24);
-    msg += days === 1 ? `${hours} hr ` : hours > 1 ? `${hours} hrs ` : '';
+    msg += hours === 1 ? `${hours} hr ` : hours > 1 ? `${hours} hrs ` : '';
     const minutes = Math.floor(time / (1000 * 60) % 60);
     msg += minutes === 1 ? `${minutes} min ` : minutes > 1 ? `${minutes} mins ` : '';
     return msg ? `${msg}ago` : 'less than 1 min ago';
