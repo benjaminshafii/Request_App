@@ -267,7 +267,7 @@ export class Web3Service {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString(), 'ether');
     this.confirmTxOnLedgerMsg();
-    return this.requestNetwork.requestEthereumService.paymentAction(requestId, [amountInWei]);
+    return this.requestNetwork.requestEthereumService.paymentAction(requestId, [amountInWei], []);
   }
 
 
