@@ -54,10 +54,10 @@
                     <div>
                       <div class="fs-14 lh-18">
                         <div class="mb-1" [style.opacity]="'0.5'">FROM</div>
-                        <div class="bold">ID address</div>
+                        <div class="semi-bold">ID address</div>
                         <div>{{ signedRequest.payeesIdAddress[0] }}</div>
-                        <div *ngIf="signedRequest.payeesPaymentAddress && signedRequest.payeesPaymentAddress[0].length > 0">
-                          <div class="bold">Payment address</div>
+                        <div *ngIf="signedRequest.payeesPaymentAddress[0]">
+                          <div class="semi-bold">Payment address</div>
                           <div>{{ signedRequest.payeesPaymentAddress[0] }}</div>
                         </div>
                       </div>
