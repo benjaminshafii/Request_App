@@ -237,40 +237,50 @@ export class Web3Service {
 
     if (currency !== 'ETH') {
        const { currencyToContract } = environment;
-       console.log('req');
        return this.requestNetwork.requestERC20Service.createRequestAsPayee(currencyToContract[currency], [this.accountObservable.value], [expectedAmountInWei], payer, null, null, data);
     }
-    console.log('eth');
     return this.requestNetwork.requestEthereumService.createRequestAsPayee([this.accountObservable.value], [expectedAmountInWei], payer, null, null, data);
   }
 
 
-  public cancel(requestId: string, callback ? ) {
+  public cancel(requestId: string, currency: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
+    if (currency !== 'ETH') {
+      return this.requestNetwork.requestERC20Service.cancel(requestId);
+    }
     return this.requestNetwork.requestEthereumService.cancel(requestId);
   }
 
 
-  public accept(requestId: string, callback ? ) {
+  public accept(requestId: string, currency, callback ? ) {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
+    if (currency !== 'ETH') {
+      return this.requestNetwork.requestERC20Service.accept(requestId);
+    }
     return this.requestNetwork.requestEthereumService.accept(requestId);
   }
 
 
-  public subtractAction(requestId: string, amount: string, callback ? ) {
+  public subtractAction(requestId: string, amount: string, currency: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
+    if (currency !== 'ETH') {
+      return this.requestNetwork.requestERC20Service.subtractAction(requestId, [amountInWei]);
+    }
     return this.requestNetwork.requestEthereumService.subtractAction(requestId, [amountInWei]);
   }
 
 
-  public additionalAction(requestId: string, amount: string, callback ? ) {
+  public additionalAction(requestId: string, amount: string, currency: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
+    if (currency !== 'ETH') {
+      return this.requestNetwork.requestERC20Service.additionalAction(requestId, [amountInWei]);
+    }
     return this.requestNetwork.requestEthereumService.additionalAction(requestId, [amountInWei]);
   }
 
@@ -324,6 +334,19 @@ export class Web3Service {
     }
   }
 
+
+  public getCurrency(request: { currencyContract: { tokenAddress: string }, currency: string }) {
+    let currency = 'ETH';
+    if (request.currencyContract) {
+      const { currencyToContract } = environment;
+      Object.keys(currencyToContract).forEach((key) => {
+        if (currencyToContract[key] === request.currencyContract.tokenAddress) {
+          return currency = key;
+        }
+      });
+    }
+    return currency;
+  }
 
   public async getRequestsByAddress(address: string) {
     try {

@@ -46,6 +46,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
       let requests = resultsList.asPayer.concat(resultsList.asPayee);
       requests = requests.sort((a, b) => b._meta.timestamp - a._meta.timestamp);
       this.getRequestsFromIds(requests);
+      console.log(requests)
       this.dataSource.data = requests;
     });
 
@@ -59,6 +60,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const request of requests) {
       this.web3Service.getRequestByRequestId(request.requestId).then(
         response => {
+          response.currency = this.web3Service.getCurrency(response);
           request.request = response;
         });
     }
