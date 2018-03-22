@@ -7,6 +7,8 @@ import RequestNetwork from '@requestnetwork/request-network.js';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import LedgerWalletSubprovider from 'ledger-wallet-provider';
+import { environment } from '../../environments/environment';
+
 
 const Web3 = require('web3');
 
@@ -41,6 +43,7 @@ export class Web3Service {
   public toWei;
   public BN;
   public isAddress;
+
 
   constructor(private snackBar: MatSnackBar) {
     window.addEventListener('load', async event => {
@@ -226,11 +229,18 @@ export class Web3Service {
   }
 
 
-  public createRequestAsPayee(payer: string, expectedAmount: string, data: string, callback ? ) {
+  public createRequestAsPayee(payer: string, expectedAmount: string, data: string, currency: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     if (!this.web3.utils.isAddress(payer)) { return callback({ message: 'payer\'s address is not a valid Ethereum address' }); }
     const expectedAmountInWei = this.toWei(expectedAmount);
     this.confirmTxOnLedgerMsg();
+
+    if (currency !== 'ETH') {
+       const { currencyToContract } = environment;
+       console.log('req');
+       return this.requestNetwork.requestERC20Service.createRequestAsPayee(currencyToContract[currency], [this.accountObservable.value], [expectedAmountInWei], payer, null, null, data);
+    }
+    console.log('eth');
     return this.requestNetwork.requestEthereumService.createRequestAsPayee([this.accountObservable.value], [expectedAmountInWei], payer, null, null, data);
   }
 
