@@ -25,7 +25,7 @@ export class PayWithRequestComponent implements OnInit {
       return this.ngOnInit();
     }
 
-    const data = this.route.snapshot.queryParams.data ? JSON.parse(this.route.snapshot.queryParams.data) : null;
+    const data = JSON.parse(this.route.snapshot.params.data);
     if (!data || !data.callbackUrl || !data.signedRequest) {
       return this.queryParamError = true;
     }

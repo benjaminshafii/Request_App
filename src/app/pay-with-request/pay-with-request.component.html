@@ -42,7 +42,8 @@
                   <div class="ml-auto text-right px-3 fc-white">
                     <h4 class="semi-bold fs-18">Payment Request</h4>
                     <div class="fs-14" [style.opacity]="'0.5'">
-                      <i>{{ date | date: 'fullDate'}}</i>
+                      <i>{{ signedRequest.expirationDate | date: 'fullDate'}}</i>
+                      <!-- <i>expires {{ signedRequest.expirationDate | date: 'fullDate'}} at {{ signedRequest.expirationDate | date: 'mediumTime'}}</i> -->
                     </div>
                   </div>
                 </div>

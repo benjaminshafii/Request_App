@@ -10,7 +10,8 @@ const routes: Routes = [{
     // data: { preload: true }
   },
   {
-    path: 'pay-with-request',
+    pathMatch: 'full',
+    path: 'pay-with-request/:data',
     component: PayWithRequestComponent,
   },
   {
