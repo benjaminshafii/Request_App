@@ -4,5 +4,9 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  // a mapping to erc20 address
+  currencyToContract: {
+    REQ: '0xf25186B5081Ff5cE73482AD761DB0eB0d25abfBF',
+  },
 };

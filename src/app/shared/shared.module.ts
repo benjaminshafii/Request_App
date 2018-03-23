@@ -23,6 +23,7 @@ import { MatTableModule } from '@angular/material/table';
 // import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { AccountComponent } from './account/account.component';
 import { RouterModule } from '@angular/router';
@@ -39,25 +40,27 @@ import { PopoverModule } from 'ngx-popover';
     RouterModule,
     BlockiesModule,
     PopoverModule,
-
     MatButtonModule,
     MatCardModule,
     // MatCheckboxModule,
     // MatChipsModule,
-    MatDialogModule,
-    MatIconModule,
-    MatMenuModule,
-    MatInputModule,
     // MatListModule,
+    // MatSidenavModule,
+    // MatTabsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatInputModule,
+    MatMenuModule,
     MatPaginatorModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    // MatSidenavModule,
     MatSnackBarModule,
     MatSortModule,
     MatTableModule,
-    // MatTabsModule,
     MatToolbarModule,
     MatTooltipModule
   ],
@@ -77,6 +80,7 @@ import { PopoverModule } from 'ngx-popover';
     // MatCheckboxModule,
     // MatChipsModule,
     MatDialogModule,
+    MatExpansionModule,
     MatIconModule,
     MatMenuModule,
     MatInputModule,

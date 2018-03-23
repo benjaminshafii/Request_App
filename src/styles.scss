@@ -51,6 +51,20 @@ a {
     display: none !important;
   }
 }
+// related to  expansion pannel on payment dialog
+.mat-expansion-panel {
+  box-shadow: initial !important;
+}
+
+.mat-expansion-panel-header {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+.mat-expansion-panel-header, .mat-expansion-panel-body {
+  color: $blue-grey;
+  padding: initial !important;
+}
 
 
 .wrapper {
