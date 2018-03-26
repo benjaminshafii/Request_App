@@ -273,6 +273,12 @@ export class Web3Service {
     return this.requestNetwork.requestEthereumService.subtractAction(requestId, [amountInWei]);
   }
 
+  public allow(requestId: string, amount: string, payer: string, callback ?) {
+    if (this.watchDog()) { return callback(); }
+    this.confirmTxOnLedgerMsg();
+    const amountInWei = this.toWei(amount.toString(), 'ether');
+    return this.requestNetwork.requestERC20Service.approveTokenForRequest(requestId, amountInWei, {from: payer});
+  }
 
   public additionalAction(requestId: string, amount: string, currency: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
@@ -285,10 +291,13 @@ export class Web3Service {
   }
 
 
-  public paymentAction(requestId: string, amount: string, callback ? ) {
+  public paymentAction(requestId: string, amount: string, currency, callback ? ) {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
+    if (currency !== 'ETH') {
+      return this.requestNetwork.requestERC20Service.paymentAction(requestId, [amountInWei], []);
+    }
     return this.requestNetwork.requestEthereumService.paymentAction(requestId, [amountInWei], []);
   }
 
