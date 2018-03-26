@@ -330,7 +330,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       }).afterClosed()
       .subscribe(amountValue => {
         if (amountValue) {
-          this.web3Service.refundAction(this.request.requestId, amountValue, this.callbackTx)
+          this.web3Service.refundAction(this.request.requestId, amountValue, this.request.currency, this.callbackTx)
             .on('broadcasted', response => {
               this.callbackTx(response, 'Refund in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(

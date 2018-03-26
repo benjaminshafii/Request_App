@@ -10,8 +10,6 @@ export class PayDialogComponent implements OnInit {
   request;
   payForm: FormGroup;
   amountFormControl: FormControl;
-  allowForm: FormGroup;
-  allowanceFormControl: FormControl;
   isAllowanceGranted: boolean;
 
   constructor(public web3Service: Web3Service, private formBuilder: FormBuilder, private dialogRef: MatDialogRef < PayDialogComponent > , @Inject(MAT_DIALOG_DATA) private data: any) {
@@ -25,12 +23,8 @@ export class PayDialogComponent implements OnInit {
     const amountValidator = [Validators.required, Validators.pattern('[0-9]*([\.][0-9]{0,18})?$')];
 
     this.amountFormControl = new FormControl(initialAmountValue, amountValidator);
-    this.allowanceFormControl = new FormControl(initialAmountValue, amountValidator);
     this.payForm = this.formBuilder.group({
       amountFormControl: this.amountFormControl,
-    });
-    this.allowForm = this.formBuilder.group({
-      allowanceFormControl: this.amountFormControl,
     });
 
     this.isAllowanceGranted = false;

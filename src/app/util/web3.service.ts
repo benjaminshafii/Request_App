@@ -302,10 +302,13 @@ export class Web3Service {
   }
 
 
-  public refundAction(requestId: string, amount: string, callback ? ) {
+  public refundAction(requestId: string, amount: string, currency: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
+    if (currency !== 'ETH') {
+      return this.requestNetwork.requestERC20Service.refundAction(requestId, amountInWei);
+    }
     return this.requestNetwork.requestEthereumService.refundAction(requestId, amountInWei);
   }
 
