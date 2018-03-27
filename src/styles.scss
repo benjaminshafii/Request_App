@@ -52,6 +52,12 @@ a {
   }
 }
 // related to  expansion pannel on payment dialog
+
+.align-checkbox {
+  position: relative;
+  top: 3px;
+}
+
 .mat-expansion-panel {
   box-shadow: initial !important;
 }
@@ -61,10 +67,15 @@ a {
   font-weight: 600 !important;
 }
 
+.mat-expansion-panel-header.mat-expanded {
+  color: $blue-grey !important;
+}
+
 .mat-expansion-panel-header, .mat-expansion-panel-body {
   color: $blue-grey;
   padding: initial !important;
 }
+
 
 
 .wrapper {
@@ -366,6 +377,10 @@ mat-hint.mat-hint {
 
 .fc-warn {
   color: $warn;
+}
+
+.fc-green {
+  color: $green;
 }
 
 .fc-accent {

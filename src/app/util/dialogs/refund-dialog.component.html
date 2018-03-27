@@ -1,16 +1,16 @@
-<h1 mat-dialog-title>Refund Request</h1>
+<h1 mat-dialog-title class="fc-primary">Refund Request</h1>
 <mat-dialog-content style="overflow:initial">
   <ng-template [ngIf]="this.request.currency !== 'ETH'" [ngIfElse]="refund">
     <mat-accordion>
-      <mat-expansion-panel [disabled]="this.isAllowanceGranted" [hideToggle]="true" [expanded]="true">
+      <mat-expansion-panel [disabled]="true" [hideToggle]="true" [expanded]="true">
         <mat-expansion-panel-header>
           <div class="d-flex">
             <div *ngIf="!this.isAllowanceGranted; then uncheckedBox else checkedBox"></div>
             <ng-template #uncheckedBox>
-              <i class="fa fa-dot-circle-o px-2" aria-hidden="true"></i>
+              <i class="fa fa-dot-circle-o px-2 align-checkbox" aria-hidden="true"></i>
             </ng-template>
             <ng-template #checkedBox>
-              <i class="fa fa-check-circle px-2" aria-hidden="true"></i>
+              <i class="fa fa-check-circle px-2 align-checkbox fc-green" aria-hidden="true"></i>
             </ng-template>
             Step 1: you need to allow Request to debit your wallet
           </div>
@@ -20,7 +20,7 @@
       <mat-expansion-panel [hideToggle]="true" [expanded]="this.isAllowanceGranted" [disabled]="!this.isAllowanceGranted">
         <mat-expansion-panel-header>
           <div class="d-flex">
-            <i class="fa fa-dot-circle-o px-2" aria-hidden="true"></i>
+            <i class="fa fa-dot-circle-o px-2 align-checkbox" aria-hidden="true"></i>
             Step 2: confirm your request payment
           </div>
         </mat-expansion-panel-header>
@@ -38,7 +38,7 @@
       <div>{{ web3Service.fromWei(request.payee.balance.toString()) }}<small>&nbsp;{{ request.currency }}</small></div>
     </div>
     <mat-form-field class="w-100">
-      <input matInput type="text" formControlName="refundFormControl" placeholder="amount to refund">
+      <input  matInput type="text" formControlName="refundFormControl" placeholder="amount to refund">
       <mat-error *ngIf="refundFormControl.hasError('required')">
         amount is <strong>required</strong>
       </mat-error>
