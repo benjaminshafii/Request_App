@@ -52,8 +52,5 @@ export class AllowanceComponent implements OnInit {
     }
     this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, payer, this.callbackTx)
       .then((res) => this.onAllowed.emit(true), (err) => console.error(err));
-
   }
-
-
 }
