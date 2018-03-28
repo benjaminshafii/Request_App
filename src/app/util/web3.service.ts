@@ -273,6 +273,11 @@ export class Web3Service {
     return this.requestNetwork.requestEthereumService.subtractAction(requestId, [amountInWei]);
   }
 
+  public getAllowance(tokenAddress: string, contractAddress: string, payer: string) {
+    return this.requestNetwork.requestERC20Service.getTokenAllowance(tokenAddress, contractAddress, { from: payer });
+
+  }
+
   public allow(requestId: string, amount: string, payer: string, callback ?) {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();

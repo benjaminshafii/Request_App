@@ -13,6 +13,7 @@ export class AllowanceComponent implements OnInit {
   @Input() request: any;
   @Input() isRefund: false;
   @Output() onAllowed = new EventEmitter<boolean>();
+  @Output() onSetAllowance = new EventEmitter<boolean>();
   allowForm: FormGroup;
   allowanceFormControl: FormControl;
 
@@ -20,14 +21,27 @@ export class AllowanceComponent implements OnInit {
   constructor(public web3Service: Web3Service, private formBuilder: FormBuilder) {}
 
   ngOnInit() {
-    const initialAmountValue = this.request.payee.expectedAmount.gt(this.request.payee.balance) ? this.web3Service.fromWei(this.request.payee.expectedAmount.sub(this.request.payee.balance).toString()) : '0';
+    const { payee, currencyContract, payer } = this.request;
+
+    const initialAmountValue = payee.expectedAmount.gt(payee.balance) ? this.web3Service.fromWei(payee.expectedAmount.sub(payee.balance).toString()) : '0';
+
+    this.web3Service.getAllowance(currencyContract.tokenAddress, currencyContract.address, payer)
+      .then((allowance) => {
+        const isAllowanceGreater = this.web3Service.BN(allowance).gte(payee.expectedAmount.sub(payee.balance)) && !this.web3Service.BN(allowance).isZero();
+        this.onAllowed.emit(isAllowanceGreater);
+        this.onSetAllowance.emit(allowance);
+      });
+
+
     const amountValidator = [Validators.required, Validators.pattern('[0-9]*([\.][0-9]{0,18})?$')];
     this.allowanceFormControl = new FormControl(initialAmountValue, amountValidator);
     this.allowForm = this.formBuilder.group({
       allowanceFormControl: this.allowanceFormControl,
     });
 
+
   }
+
 
   callbackTx(response, msg ? ) {
     if (response.transaction) {
@@ -51,6 +65,9 @@ export class AllowanceComponent implements OnInit {
         .then((res) => this.onAllowed.emit(true), (err) => console.error(err));
     }
     this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, payer, this.callbackTx)
-      .then((res) => this.onAllowed.emit(true), (err) => console.error(err));
+      .then((res) => {
+        this.onAllowed.emit(true);
+        this.onSetAllowance.emit(this.web3Service.toWei(this.allowForm.value.allowanceFormControl));
+      }, (err) => console.error(err));
   }
 }

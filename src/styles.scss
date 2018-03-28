@@ -58,6 +58,11 @@ a {
   top: 3px;
 }
 
+.error-anchor {
+  color: $primary !important;
+  text-decoration: underline !important;
+}
+
 .mat-expansion-panel {
   box-shadow: initial !important;
 }

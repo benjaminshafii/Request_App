@@ -1,23 +1,24 @@
 <h1 mat-dialog-title class="fc-primary">Pay Request</h1>
 <mat-dialog-content style="overflow:initial">
-  <ng-template [ngIf]="this.request.currency !== 'ETH'" [ngIfElse]="pay">
+  <ng-template [ngIf]="request.currency !== 'ETH'" [ngIfElse]="pay">
     <mat-accordion>
-      <mat-expansion-panel [disabled]="true" [hideToggle]="true" [expanded]="true">
+      <mat-expansion-panel [disabled]="true" [hideToggle]="true" [expanded]="!isAllowanceGranted">
         <mat-expansion-panel-header>
           <div class="d-flex">
-            <div *ngIf="!this.isAllowanceGranted; then uncheckedBox else checkedBox"></div>
+            <div *ngIf="!isAllowanceGranted; then uncheckedBox else checkedBox"></div>
             <ng-template #uncheckedBox>
               <i class="fa fa-dot-circle-o px-2 align-checkbox" aria-hidden="true"></i>
+              Step 1: you need to allow Request to debit your wallet
             </ng-template>
             <ng-template #checkedBox>
               <i class="fa fa-check-circle px-2 align-checkbox fc-green" aria-hidden="true"></i>
+              Step 1: you've already allowed {{ web3Service.fromWei(allowance) }} {{ request.currency }} to be debited from your wallet
             </ng-template>
-            Step 1: you need to allow Request to debit your wallet
           </div>
         </mat-expansion-panel-header>
-        <app-allowance [request]="request" (onAllowed)="onAllowed($event)"></app-allowance>
+        <app-allowance [request]="request" (onSetAllowance)="onSetAllowance($event)" (onAllowed)="onAllowed($event)"></app-allowance>
       </mat-expansion-panel>
-      <mat-expansion-panel [hideToggle]="true" [expanded]="this.isAllowanceGranted" [disabled]="true">
+      <mat-expansion-panel class="mt-0" [hideToggle]="true" [expanded]="isAllowanceGranted" [disabled]="true">
         <mat-expansion-panel-header>
           <div class="d-flex">
             <i class="fa fa-dot-circle-o px-2 align-checkbox" aria-hidden="true"></i>
@@ -36,20 +37,20 @@
     <div class="fs-12 d-flex justify-content-between mb-1">
       <div>The request total amount is:</div>
       <div>{{ web3Service.fromWei(request.payee.expectedAmount.toString()) }}
-        <small>&nbsp;{{ this.request.currency }}</small>
+        <small>&nbsp;{{ request.currency }}</small>
       </div>
     </div>
     <div class="fs-12 d-flex justify-content-between mb-1">
       <div>Amount already paid:</div>
       <div>{{ web3Service.fromWei(request.payee.balance.toString()) }}
-        <small>&nbsp;{{ this.request.currency }}</small>
+        <small>&nbsp;{{ request.currency }}</small>
       </div>
     </div>
     <hr style="border-top: 1px solid #617B9F; opacity: 0.2">
     <div class="fs-12 d-flex justify-content-between mb-3">
       <div>Remaining amount to pay:</div>
       <div>{{ web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance).toString()) }}
-        <small>&nbsp;{{ this.request.currency }}</small>
+        <small>&nbsp;{{ request.currency }}</small>
       </div>
     </div>
     <mat-form-field class="w-100">
@@ -60,13 +61,16 @@
       <mat-error *ngIf="amountFormControl.hasError('pattern')">
         must be a <strong>positive number</strong> with maximum <strong>18 decimals</strong>
       </mat-error>
-      <span matSuffix><img class="currencyIcon" src="assets/img/cryptoIcons/{{ this.request.currency }}.png"><strong>&nbsp;{{ this.request.currency }}&nbsp;</strong><a (click)="setMax()" class="fs-12 fc-accent"><strong>max</strong></a>
+      <mat-error *ngIf="amountFormControl.hasError('max')">
+        must be <strong>inferior or equal</strong> to the allowance amount <a class="error-anchor" (click)="onAllowed(false)">increase your allowance</a>
+      </mat-error>
+      <span matSuffix><img class="currencyIcon" src="assets/img/cryptoIcons/{{ request.currency }}.png"><strong>&nbsp;{{ request.currency }}&nbsp;</strong><a (click)="setMax()" class="fs-12 fc-accent"><strong>max</strong></a>
       </span>
     </mat-form-field>
     <div class="fs-12 d-flex justify-content-between my-3">
       <div><strong>Will remain</strong></div>
       <div>{{ amountFormControl.value && amountFormControl.valid ? web3Service.fromWei(request.payee.expectedAmount.sub(request.payee.balance).sub(web3Service.BN(web3Service.toWei(amountFormControl.value.toString()))).toString()) : '...' }}&nbsp;
-        <small>{{ this.request.currency }}</small>
+        <small>{{ request.currency }}</small>
       </div>
     </div>
     <mat-dialog-actions class="mt-3 d-flex justify-content-around w-100">
