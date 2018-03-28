@@ -60,7 +60,7 @@ export class PayWithRequestComponent implements OnInit {
   }
 
   cancelRequest() {
-    this.document.location.href = `${this.callbackUrl}?signedRequest=${this.signedRequest}`;
+    this.document.location.href = `${this.callbackUrl}${encodeURIComponent(JSON.stringify({signedRequest: this.signedRequest}))}`;
   }
 
 }
