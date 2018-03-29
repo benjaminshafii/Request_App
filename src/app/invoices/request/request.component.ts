@@ -79,7 +79,6 @@ export class RequestComponent implements OnInit, OnDestroy {
   async watchRequestByTxHash() {
     if (this.searchValue) { return console.log('stopped watching txHash'); }
     const result = await this.web3Service.getRequestByTransactionHash(this.txHash);
-    console.log('test');
     if (result.request && result.request.requestId) {
       return this.web3Service.setSearchValue(result.request.requestId);
     } else if (result.message === 'Contract is not supported by request') {

@@ -297,7 +297,7 @@ export class Web3Service {
       const response = await this.requestNetwork.requestCoreService.getRequestByTransactionHash(txHash);
       return response;
     } catch (err) {
-      console.log('Error: ', err.message);
+      // console.log('Error: ', err.message);
       return err;
     }
   }
