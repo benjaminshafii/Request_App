@@ -28,8 +28,10 @@ export class AllowanceComponent implements OnInit {
     this.web3Service.getAllowance(currencyContract.tokenAddress, currencyContract.address, payer)
       .then((allowance) => {
         const isAllowanceGreater = this.web3Service.BN(allowance).gte(payee.expectedAmount.sub(payee.balance)) && !this.web3Service.BN(allowance).isZero();
-        this.onAllowed.emit(isAllowanceGreater);
-        this.onSetAllowance.emit(allowance);
+        if (!this.isRefund) {
+          this.onAllowed.emit(isAllowanceGreater);
+          this.onSetAllowance.emit(allowance);
+        }
       });
 
 
@@ -61,10 +63,13 @@ export class AllowanceComponent implements OnInit {
   submit() {
     const { requestId, payer, payee } = this.request;
     if (this.isRefund) {
-      this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, payee.address, this.callbackTx)
-        .then((res) => this.onAllowed.emit(true), (err) => console.error(err));
+      return this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, payee.address, this.callbackTx)
+        .then((res) => {
+          this.onAllowed.emit(true);
+          this.onSetAllowance.emit(this.web3Service.toWei(this.allowForm.value.allowanceFormControl));
+        }, (err) => console.error(err));
     }
-    this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, payer, this.callbackTx)
+    return this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, payer, this.callbackTx)
       .then((res) => {
         this.onAllowed.emit(true);
         this.onSetAllowance.emit(this.web3Service.toWei(this.allowForm.value.allowanceFormControl));

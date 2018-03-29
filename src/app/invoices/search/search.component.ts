@@ -46,7 +46,6 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
       let requests = resultsList.asPayer.concat(resultsList.asPayee);
       requests = requests.sort((a, b) => b._meta.timestamp - a._meta.timestamp);
       this.getRequestsFromIds(requests);
-      console.log(requests)
       this.dataSource.data = requests;
     });
 

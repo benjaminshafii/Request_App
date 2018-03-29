@@ -1,23 +1,24 @@
 <h1 mat-dialog-title class="fc-primary">Refund Request</h1>
 <mat-dialog-content style="overflow:initial">
-  <ng-template [ngIf]="this.request.currency !== 'ETH'" [ngIfElse]="refund">
+  <ng-template [ngIf]="request.currency !== 'ETH'" [ngIfElse]="refund">
     <mat-accordion>
-      <mat-expansion-panel [disabled]="true" [hideToggle]="true" [expanded]="true">
+      <mat-expansion-panel [disabled]="true" [hideToggle]="true" [expanded]="!isAllowanceGranted">
         <mat-expansion-panel-header>
           <div class="d-flex">
-            <div *ngIf="!this.isAllowanceGranted; then uncheckedBox else checkedBox"></div>
+            <div *ngIf="!isAllowanceGranted; then uncheckedBox else checkedBox"></div>
             <ng-template #uncheckedBox>
               <i class="fa fa-dot-circle-o px-2 align-checkbox" aria-hidden="true"></i>
+              Step 1: you need to allow Request to debit your wallet
             </ng-template>
             <ng-template #checkedBox>
               <i class="fa fa-check-circle px-2 align-checkbox fc-green" aria-hidden="true"></i>
+              Step 1: you've already allowed {{ web3Service.fromWei(allowance) }} {{ request.currency }} to be debited from your wallet
             </ng-template>
-            Step 1: you need to allow Request to debit your wallet
           </div>
         </mat-expansion-panel-header>
-        <app-allowance [isRefund]="true" [request]="request" (onAllowed)="onAllowed($event)"></app-allowance>
+        <app-allowance [isRefund]="true" [request]="request" (onSetAllowance)="onSetAllowance($event)" (onAllowed)="onAllowed($event)"></app-allowance>
       </mat-expansion-panel>
-      <mat-expansion-panel [hideToggle]="true" [expanded]="this.isAllowanceGranted" [disabled]="!this.isAllowanceGranted">
+      <mat-expansion-panel [hideToggle]="true" [expanded]="isAllowanceGranted" [disabled]="!isAllowanceGranted">
         <mat-expansion-panel-header>
           <div class="d-flex">
             <i class="fa fa-dot-circle-o px-2 align-checkbox" aria-hidden="true"></i>
@@ -44,6 +45,9 @@
       </mat-error>
       <mat-error *ngIf="refundFormControl.hasError('pattern')">
         must be a <strong>positive number</strong> with maximum <strong>18 decimals</strong>
+      </mat-error>
+      <mat-error *ngIf="refundFormControl.hasError('max')">
+        must be <strong>inferior or equal</strong> to the allowance amount <a class="error-anchor" (click)="onAllowed(false)">increase your allowance</a>
       </mat-error>
       <span matSuffix><img class="currencyIcon" src="assets/img/cryptoIcons/{{ request.currency }}.png">&nbsp;{{ request.currency }}&nbsp;<a (click)="setMax()" class="fs-12 fc-accent">max</a>
       </span>
