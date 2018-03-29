@@ -4,7 +4,7 @@
       <mat-spinner class="mx-auto"></mat-spinner>
     </div>
     <ng-template #resultBlock>
-      <div class="col-12 text-center" *ngIf="!request.payee.expectedAmount; else requestBlock">
+      <div class="col-12 text-center" *ngIf="!request.payee || !request.payee.expectedAmount; else requestBlock">
         <img class="mx-auto" src="assets/img/searching.png" style="max-width: 120px;">
         <h1 class="my-3">Oops</h1>
         <div *ngIf="request.errorTxHash; else errorRequestIdBlock" class="">
@@ -44,7 +44,7 @@
                 <h4 class="semi-bold fs-18">
                   <span *ngIf="request.requestId; else waitingTemplate" popover="{{request.requestId}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">Request Id: {{request.requestId.substring(0, 5)}}...{{request.requestId.substring(56, 66)}}</span>
                   <ng-template #waitingTemplate>
-                    <span><i class="fa {{request.errorMsg ? 'fa-warning fc-warn' : 'fa-circle-o-notch fa-spin'}}"></i>&nbsp;{{ request.errorMsg || request.waitingMsg || 'waiting for blockchain information...' }}</span>
+                    <span><i class="fa {{request.errorMsg ? 'fa-warning fc-warn' : 'fa-circle-o-notch fa-spin'}}"></i>&nbsp;{{ request.errorMsg || request.waitingMsg || 'searching for blockchain information...' }}</span>
                   </ng-template>
                 </h4>
                 <div class="fs-14" [style.opacity]="'0.5'">

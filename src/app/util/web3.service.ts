@@ -18,7 +18,8 @@ declare let window: any;
 export class Web3Service {
   private web3;
   private requestNetwork: RequestNetwork;
-  private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
+  // private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
+  private infuraNodeUrl = 'https://mainnet.infura.io/BQBjfSi5EKSCQQpXebO';
 
   public metamask = false;
   public ledgerConnected = false;
@@ -114,7 +115,7 @@ export class Web3Service {
       this.networkIdObservable.next(networkId);
     } else {
       console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
-      this.networkIdObservable.next(4);
+      this.networkIdObservable.next(1);
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
     }
 

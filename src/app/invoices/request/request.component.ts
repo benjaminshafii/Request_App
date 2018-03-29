@@ -42,9 +42,9 @@ export class RequestComponent implements OnInit, OnDestroy {
 
     this.subscription = this.web3Service.searchValue.subscribe(async searchValue => {
       if (searchValue && searchValue.length > 42) {
+        this.searchValue = searchValue;
         const request = await this.web3Service.getRequestByRequestId(searchValue);
         await this.setRequest(request);
-        this.searchValue = searchValue;
         this.loading = false;
       }
     });
@@ -70,53 +70,54 @@ export class RequestComponent implements OnInit, OnDestroy {
       await this.setRequest(result.request);
       this.loading = false;
     } else if (result.transaction) {
-      setTimeout(await this.watchTxHash(txHash), 5000);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      await this.watchTxHash(txHash);
     }
   }
 
 
   async watchRequestByTxHash() {
     if (this.searchValue) { return console.log('stopped watching txHash'); }
-
     const result = await this.web3Service.getRequestByTransactionHash(this.txHash);
+    console.log('test');
     if (result.request && result.request.requestId) {
-      this.web3Service.setSearchValue(result.request.requestId);
+      return this.web3Service.setSearchValue(result.request.requestId);
+    } else if (result.message === 'Contract is not supported by request') {
+      return await this.setRequest({ errorTxHash: 'Sorry, we are unable to locate any request matching this transaction hash' });
     } else if (result.transaction) {
       const request = {
-        waitingMsg: 'waiting for transaction to be mined...',
+        waitingMsg: 'transaction found. Waiting for it to be mined...',
         payee: {
           address: result.transaction.method.parameters._payeesIdAddress[0],
           balance: this.web3Service.BN(this.web3Service.toWei('0')),
           expectedAmount: this.web3Service.BN(result.transaction.method.parameters._expectedAmounts[0]),
         },
         payer: result.transaction.method.parameters._payer,
-        data: {data: null},
+        data: { data: null },
       };
       if (result.transaction.method.parameters._data) {
         request.data.data = await this.web3Service.getIpfsData(result.transaction.method.parameters._data);
       }
       await this.setRequest(request);
-
-      setTimeout(await this.watchRequestByTxHash(), 5000);
-
-      // } else if (Object.keys(this.route.snapshot.queryParams).length > 0 && this.route.snapshot.queryParams.payee && this.route.snapshot.queryParams.payee.address && this.route.snapshot.queryParams.payee.balance && this.route.snapshot.queryParams.payee.expectedAmount && this.route.snapshot.queryParams.payer) {
-      //   const queryRequest = {
-      //     payer: this.route.snapshot.queryParams.payer,
-      //     payee: {
-      //       address: this.route.snapshot.queryParams.payee,
-      //       balance: this.web3Service.BN(this.web3Service.toWei('0')),
-      //       expectedAmount: this.web3Service.BN(this.web3Service.toWei(this.route.snapshot.queryParams.expectedAmount))
-      //     },
-      //     data: { data: {} }
-      //   };
-      //   Object.keys(this.route.snapshot.queryParams).forEach((key) => {
-      //     if (!queryRequest[key]) { queryRequest.data.data[key] = this.route.snapshot.queryParams[key]; }
-      //   });
-      //   if (!this.request) { setTimeout(() => this.request.errorMsg = 'unable to locate this Transaction Hash', 5000); }
-      //   this.setRequest(queryRequest);
+    } else if (this.route.snapshot.queryParams.request) {
+      const queryParamRequest = JSON.parse(this.route.snapshot.queryParams.request);
+      if (queryParamRequest.payee && queryParamRequest.payee.address && queryParamRequest.payee.balance && queryParamRequest.payee.expectedAmount && queryParamRequest.payer) {
+        const request = {
+          payer: queryParamRequest.payer,
+          payee: {
+            address: queryParamRequest.payee.address,
+            balance: this.web3Service.BN(this.web3Service.toWei('0')),
+            expectedAmount: this.web3Service.BN(this.web3Service.toWei(queryParamRequest.payee.expectedAmount))
+          },
+          data: queryParamRequest.data
+        };
+        await this.setRequest(request);
+      }
     } else {
-      await this.setRequest({ errorTxHash: 'Sorry, we are unable to locate this Transaction Hash' });
+      return await this.setRequest({ errorTxHash: 'Sorry, we are unable to locate this transaction hash' });
     }
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    return this.watchRequestByTxHash();
   }
 
 
@@ -127,7 +128,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       history.pushState(null, null, `/#/request/requestId/${request.requestId}`);
       this.url = `${window.location.protocol}//${window.location.host}/#/request/requestId/${request.requestId}`;
     }
-    if (request.state) {
+    if (request.state !== undefined) {
       this.web3Service.setRequestStatus(request);
     }
     if (request.requestId && !request.events) {
@@ -135,7 +136,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     }
     this.request = request;
     this.getRequestMode();
-    if (request) { this.progress = 100 * this.request.payee.balance / this.request.payee.expectedAmount; }
+    if (request && request.payee) { this.progress = 100 * this.request.payee.balance / this.request.payee.expectedAmount; }
   }
 
 
@@ -161,7 +162,8 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   getRequestMode() {
-    this.mode = this.request && this.account === this.request.payee.address ? 'payee' : this.request && this.account === this.request.payer ? 'payer' : 'none';
+    if (!this.request || !this.request.payee) { return; }
+    this.mode = this.account === this.request.payee.address ? 'payee' : this.account === this.request.payer ? 'payer' : 'none';
   }
 
 
