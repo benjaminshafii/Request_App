@@ -34,11 +34,11 @@
     <ng-template #selectAddressBlock>
       <div class="px-3 fs-14 semi-bold d-flex justify-content-between">
         <span>Address</span>
-        <span>Balance</span>
+        <span>Balance (ETH)</span>
       </div>
       <a *ngFor="let address of addresses" class="address-row" (click)="instanciateWeb3FromLedger(address.derivationPath)">
         <span>{{ address.address }}</span>
-        <span>&nbsp;{{ address.balance }} ETH</span>
+        <span>&nbsp;{{ address.balance }}</span>
       </a>
     </ng-template>
     <div class="fs-12 fc-warn" *ngIf="error">

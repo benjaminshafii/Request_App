@@ -94,7 +94,7 @@ export class Web3Service {
     engine.start();
 
     this.checkAndInstantiateWeb3(new Web3(engine));
-    this.openSnackBar('Ledger Wallet successfully connected on Rinkeby Test Network.', null, 'success-snackbar');
+    this.openSnackBar('Ledger Wallet successfully connected.', null, 'success-snackbar');
     this.ledgerConnected = true;
   }
 
