@@ -57,11 +57,11 @@ export class RequestComponent implements OnInit, OnDestroy {
     }
 
     // watch Request in background
-    // this.timerInterval = setInterval(async _ => {
-    //   if (!this.searchValue) { return; }
-    //   const request = await this.web3Service.getRequestByRequestId(this.searchValue);
-    //   this.setRequest(request);
-    // }, 10000);
+    this.timerInterval = setInterval(async _ => {
+      if (!this.searchValue) { return; }
+      const request = await this.web3Service.getRequestByRequestId(this.searchValue);
+      this.setRequest(request);
+    }, 7500);
   }
 
   async watchTxHash(txHash) {
@@ -69,9 +69,9 @@ export class RequestComponent implements OnInit, OnDestroy {
     if (result.request && result.request.requestId) {
       await this.setRequest(result.request);
       this.loading = false;
-    } else if (result.transaction) {
+    } else {
       await new Promise(resolve => setTimeout(resolve, 5000));
-      await this.watchTxHash(txHash);
+      this.watchTxHash(txHash);
     }
   }
 
@@ -85,7 +85,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       return await this.setRequest({ errorTxHash: 'Sorry, we are unable to locate any request matching this transaction hash' });
     } else if (result.transaction) {
       const request = {
-        waitingMsg: 'transaction found. Waiting for it to be mined...',
+        waitingMsg: 'Transaction found. Waiting for it to be mined...',
         payee: {
           address: result.transaction.method.parameters._payeesIdAddress[0],
           balance: this.web3Service.BN(this.web3Service.toWei('0')),
@@ -99,18 +99,20 @@ export class RequestComponent implements OnInit, OnDestroy {
       }
       await this.setRequest(request);
     } else if (this.route.snapshot.queryParams.request) {
-      const queryParamRequest = JSON.parse(this.route.snapshot.queryParams.request);
-      if (queryParamRequest.payee && queryParamRequest.payee.address && queryParamRequest.payee.balance && queryParamRequest.payee.expectedAmount && queryParamRequest.payer) {
-        const request = {
-          payer: queryParamRequest.payer,
-          payee: {
-            address: queryParamRequest.payee.address,
-            balance: this.web3Service.BN(this.web3Service.toWei('0')),
-            expectedAmount: this.web3Service.BN(this.web3Service.toWei(queryParamRequest.payee.expectedAmount))
-          },
-          data: queryParamRequest.data
-        };
-        await this.setRequest(request);
+      if (!this.request ||  !this.request.waitingMsg) {
+        const queryParamRequest = JSON.parse(this.route.snapshot.queryParams.request);
+        if (queryParamRequest.payee && queryParamRequest.payee.address && queryParamRequest.payee.balance && queryParamRequest.payee.expectedAmount && queryParamRequest.payer) {
+          const request = {
+            payer: queryParamRequest.payer,
+            payee: {
+              address: queryParamRequest.payee.address,
+              balance: this.web3Service.BN(this.web3Service.toWei('0')),
+              expectedAmount: this.web3Service.BN(this.web3Service.toWei(queryParamRequest.payee.expectedAmount))
+            },
+            data: queryParamRequest.data
+          };
+          await this.setRequest(request);
+        }
       }
     } else {
       return await this.setRequest({ errorTxHash: 'Sorry, we are unable to locate this transaction hash' });
@@ -122,7 +124,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
   async setRequest(request) {
     // if new search
-    if (request.requestId && ((!this.request && this.route.snapshot.params['txHash']) || this.request && this.request.requestId && this.request.requestId !== request.requestId)) {
+    if (request.requestId && (((!this.request || !this.request.requestId) && this.route.snapshot.params['txHash']) || this.request && this.request.requestId && this.request.requestId !== request.requestId)) {
       this.request = null;
       history.pushState(null, null, `/#/request/requestId/${request.requestId}`);
       this.url = `${window.location.protocol}//${window.location.host}/#/request/requestId/${request.requestId}`;
@@ -192,6 +194,8 @@ export class RequestComponent implements OnInit, OnDestroy {
         this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
       } else if (response.message.startsWith('Failed to subscribe to new newBlockHeaders')) {
         return;
+      } else if (response.message.startsWith('Returned error: Error: MetaMask Tx Signature')) {
+        this.web3Service.openSnackBar('MetaMask Tx Signature: User denied transaction signature.');
       } else {
         console.error(response);
         this.web3Service.openSnackBar(response.message);

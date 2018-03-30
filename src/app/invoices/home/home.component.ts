@@ -35,7 +35,6 @@ export class HomeComponent implements OnInit {
     setInterval(() => { this.date = new Date().getTime(); }, 5000);
     setTimeout(() => this.web3Service.setSearchValue(''));
 
-
     this.expectedAmountFormControl = new FormControl('', [Validators.required, Validators.pattern('[0-9]*([\.][0-9]{0,18})?$')]);
     this.payerFormControl = new FormControl('', [Validators.required, Validators.pattern('^(0x)?[0-9a-fA-F]{40}$'), HomeComponent.sameAddressAsPayeeValidator]);
     this.payeeFormControl = new FormControl(this.account);
@@ -110,6 +109,8 @@ export class HomeComponent implements OnInit {
           this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
         } else if (response.message.startsWith('Failed to subscribe to new newBlockHeaders')) {
           return;
+        } else if (response.message.startsWith('Returned error: Error: MetaMask Tx Signature')) {
+          this.web3Service.openSnackBar('MetaMask Tx Signature: User denied transaction signature.');
         } else {
           console.error(response);
           this.web3Service.openSnackBar(response.message);
