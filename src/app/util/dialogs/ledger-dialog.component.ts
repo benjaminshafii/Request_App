@@ -11,8 +11,8 @@ export class LedgerDialogComponent {
   derivationPath = `44'/60'/0'/0`;
   networks = [
     { id: 1, name: 'Main net' },
-    { id: 3, name: 'Ropsten Test Net' },
-    { id: 42, name: 'Kovan Test Net' },
+    // { id: 3, name: 'Ropsten Test Net' },
+    // { id: 42, name: 'Kovan Test Net' },
     { id: 4, name: 'Rinkeby Test Net' }
   ];
   networkId: number;
