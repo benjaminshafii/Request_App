@@ -34,7 +34,7 @@ export class Web3Service {
   public searchValue = new Subject < string > ();
 
   private web3NotReadyMsg = 'Error when trying to instanciate web3.';
-  private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Rinkeby Test Network.';
+  private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Mainnet or Rinkeby Testnet.';
   private walletNotReadyMsg = 'Connect your Metamask or Ledger wallet to create or interact with a Request.';
 
   public fromWei;

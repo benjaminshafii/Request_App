@@ -26,7 +26,7 @@ export class PayWithRequestComponent implements OnInit {
     }
 
     const data = JSON.parse(this.route.snapshot.params.data);
-    if (!data || !data.callbackUrl || !data.signedRequest) {
+    if (!data || !data.callbackUrl || !data.signedRequest || !data.networkId) {
       return this.queryParamError = true;
     }
 
@@ -38,9 +38,22 @@ export class PayWithRequestComponent implements OnInit {
 
     // check signed request
     this.web3Service.accountObservable.subscribe(account => {
+      if (account && this.web3Service.networkIdObservable.value !== data.networkId) {
+        this.web3Service.openSnackBar(`Wrong network detected, please switch to ${this.getNetworkName(data.networkId)}`);
+      }
       // const test = this.web3Service.isSignedRequestHasError(this.signedRequest, account);
     });
   }
+
+  getNetworkName(networkId) {
+    switch (networkId) {
+      case 1:
+        return 'Mainnet';
+      case 4:
+        return 'Rinkeby testnet';
+    }
+  }
+
 
   acceptAndPay() {
     this.web3Service.broadcastSignedRequestAsPayer(this.signedRequest, [this.signedRequest.expectedAmounts[0]])
@@ -54,10 +67,19 @@ export class PayWithRequestComponent implements OnInit {
       .then(
         response => {},
         err => {
-          console.error(err);
-          this.web3Service.openSnackBar(err.message);
+          if (err.message.startsWith('Invalid status 6985')) {
+            this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
+          } else if (err.message.startsWith('Failed to subscribe to new newBlockHeaders')) {
+            return;
+          } else if (err.message.startsWith('Returned error: Error: MetaMask Tx Signature')) {
+            this.web3Service.openSnackBar('MetaMask Tx Signature: User denied transaction signature.');
+          } else {
+            console.error(err);
+            this.web3Service.openSnackBar(err.message);
+          }
         });
   }
+
 
   cancelRequest() {
     this.document.location.href = `${this.callbackUrl}${encodeURIComponent(JSON.stringify({signedRequest: this.signedRequest}))}`;
