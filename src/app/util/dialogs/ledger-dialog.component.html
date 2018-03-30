@@ -18,7 +18,7 @@
         <span class="semi-bold">Please specify your desired network: </span>
         <mat-form-field>
           <mat-select [(ngModel)]="networkId">
-            <mat-option *ngFor="let network of networks" [value]="network.id" [disabled]="network.id !== 4">
+            <mat-option *ngFor="let network of networks" [value]="network.id" [disabled]="network.id !== 4 && network.id !== 1">
               <div class="d-flex align-items-center network-{{ network.id }}">
                 <span class="network-icon"></span>
                 <strong>{{network.name}}</strong>

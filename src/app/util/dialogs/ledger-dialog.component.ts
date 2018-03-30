@@ -20,8 +20,7 @@ export class LedgerDialogComponent {
 
 
   constructor(private web3Service: Web3Service, private dialogRef: MatDialogRef < LedgerDialogComponent > , @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.networkId = 4;
-    // this.networkId = this.web3Service.networkIdObservable.value;
+    this.networkId = this.web3Service.networkIdObservable.value;
   }
 
   checkLedger() {

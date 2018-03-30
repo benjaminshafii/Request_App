@@ -18,8 +18,10 @@ declare let window: any;
 export class Web3Service {
   private web3;
   private requestNetwork: RequestNetwork;
-  // private infuraNodeUrl = 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO';
-  private infuraNodeUrl = 'https://mainnet.infura.io/BQBjfSi5EKSCQQpXebO';
+  private infuraNodeUrl = {
+    1: 'https://mainnet.infura.io/BQBjfSi5EKSCQQpXebO',
+    4: 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO'
+  };
 
   public metamask = false;
   public ledgerConnected = false;
@@ -64,7 +66,7 @@ export class Web3Service {
           async res => {
             const engine = new ProviderEngine();
             engine.addProvider(ledgerWalletSubProvider);
-            engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
+            engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] }));
             engine.start();
             const web3 = new Web3(engine);
             const addresses = Object.entries(res).map(e => ({ derivationPath: e[0], address: e[1], balance: 0 }));
@@ -88,7 +90,7 @@ export class Web3Service {
     const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, derivationPath);
     const engine = new ProviderEngine();
     engine.addProvider(ledgerWalletSubProvider);
-    engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl }));
+    engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] }));
     engine.start();
 
     this.checkAndInstantiateWeb3(new Web3(engine));
@@ -114,9 +116,9 @@ export class Web3Service {
       const networkId = await this.web3.eth.net.getId();
       this.networkIdObservable.next(networkId);
     } else {
-      console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl}.`);
-      this.networkIdObservable.next(1);
-      this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl));
+      console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl[1]}.`);
+      this.networkIdObservable.next(1); // mainnet by default
+      this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl[1]));
     }
 
     // instanciate requestnetwork.js
