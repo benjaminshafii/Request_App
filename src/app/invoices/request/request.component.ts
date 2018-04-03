@@ -110,6 +110,7 @@ export class RequestComponent implements OnInit, OnDestroy {
               balance: this.web3Service.BN(this.web3Service.toWei('0')),
               expectedAmount: this.web3Service.BN(this.web3Service.toWei(queryParamRequest.payee.expectedAmount))
             },
+            currency: queryParamRequest.currency,
             data: queryParamRequest.data
           };
           await this.setRequest(request);
@@ -137,7 +138,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       request.events = await this.web3Service.getRequestEvents(request.requestId);
     }
     this.request = request;
-    this.request.currency = this.web3Service.getCurrency(request);
+    this.request.currency = request.currency || this.web3Service.getCurrency(request);
     this.getRequestMode();
     if (request && request.payee) { this.progress = 100 * this.request.payee.balance / this.request.payee.expectedAmount; }
   }

@@ -99,6 +99,7 @@ export class HomeComponent implements OnInit {
             balance: this.expectedAmountFormControl.value,
             expectedAmount: this.expectedAmountFormControl.value,
           },
+          currency: this.currency.value,
           payer: this.payerFormControl.value,
           data: { data: {} },
         };

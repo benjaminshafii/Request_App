@@ -274,7 +274,7 @@ export class Web3Service {
   }
 
   public getAllowance(tokenAddress: string, contractAddress: string, payer: string) {
-    return this.requestNetwork.requestERC20Service.getTokenAllowance(tokenAddress, contractAddress, { from: payer });
+    return this.requestNetwork.requestERC20Service.getTokenAllowance(contractAddress, { from: payer });
 
   }
 
@@ -357,7 +357,7 @@ export class Web3Service {
     if (request.currencyContract) {
       const { currencyToContract } = environment;
       Object.keys(currencyToContract).forEach((key) => {
-        if (currencyToContract[key] === request.currencyContract.tokenAddress) {
+        if (currencyToContract[key] === request.currencyContract.tokenAddress.toLowerCase()) {
           return currency = key;
         }
       });

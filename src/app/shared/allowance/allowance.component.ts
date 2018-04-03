@@ -60,19 +60,23 @@ export class AllowanceComponent implements OnInit {
     }
   }
 
+  setAllowance = (requestId, address) => (
+    this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, address, this.callbackTx)
+    .on('broadcasted', () => {
+      this.onAllowed.emit(true);
+      this.onSetAllowance.emit(this.web3Service.toWei(this.allowForm.value.allowanceFormControl));
+    })
+    .then(() => {
+      this.onAllowed.emit(true);
+      this.onSetAllowance.emit(this.web3Service.toWei(this.allowForm.value.allowanceFormControl));
+    }, (err) => console.error(err))
+  )
+
   submit() {
     const { requestId, payer, payee } = this.request;
     if (this.isRefund) {
-      return this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, payee.address, this.callbackTx)
-        .then((res) => {
-          this.onAllowed.emit(true);
-          this.onSetAllowance.emit(this.web3Service.toWei(this.allowForm.value.allowanceFormControl));
-        }, (err) => console.error(err));
+      return this.setAllowance(requestId, payee.address);
     }
-    return this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, payer, this.callbackTx)
-      .then((res) => {
-        this.onAllowed.emit(true);
-        this.onSetAllowance.emit(this.web3Service.toWei(this.allowForm.value.allowanceFormControl));
-      }, (err) => console.error(err));
+    return this.setAllowance(requestId, payer);
   }
 }
