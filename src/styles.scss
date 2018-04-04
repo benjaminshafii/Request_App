@@ -35,6 +35,24 @@ a {
   }
 }
 
+@media (max-width: 340px) {
+  .hidden-xs-down {
+    display: none !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .hidden-sm-down {
+    display: none !important;
+  }
+}
+@media (min-width: 577px) {
+  .hidden-sm-up {
+    display: none !important;
+  }
+}
+
+
 .wrapper {
   min-height: 100%;
   display: flex;

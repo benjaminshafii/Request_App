@@ -43,7 +43,6 @@ export class Web3Service {
   public isAddress;
 
   constructor(private snackBar: MatSnackBar) {
-
     window.addEventListener('load', async event => {
       console.log('web3service instantiate web3');
       this.checkAndInstantiateWeb3();

@@ -27,6 +27,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AccountComponent } from './account/account.component';
 import { RouterModule } from '@angular/router';
 import { BlockiesModule } from 'angular-blockies';
+import { PopoverModule } from 'ngx-popover';
 
 
 
@@ -37,6 +38,7 @@ import { BlockiesModule } from 'angular-blockies';
     CommonModule,
     RouterModule,
     BlockiesModule,
+    PopoverModule,
 
     MatButtonModule,
     MatCardModule,
@@ -67,6 +69,7 @@ import { BlockiesModule } from 'angular-blockies';
     ReactiveFormsModule,
     CommonModule,
     BlockiesModule,
+    PopoverModule,
 
     AccountComponent,
     MatButtonModule,

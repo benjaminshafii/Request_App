@@ -22,7 +22,7 @@
         </ng-template>
       </div>
       <ng-template #requestBlock>
-        <div class="col-md-3 p-0">
+        <div class="col-lg-3 mb-5">
           <input mat-button class="url-box fc-blue-grey fs-12 px-3 w-100" [value]="url" disabled>
           <button mat-button class="w-100 fs-16 bor-accent my-3" style="height: 50px" color="accent" type="button" ngxClipboard [cbContent]="url" (cbOnSuccess)="copyToClipboard()">{{copyUrlTxt}}</button>
           <hr style="border-top: 1px solid #617B9F; opacity: 0.2">
@@ -36,7 +36,7 @@
             </div>
           </div>
         </div>
-        <div class="ml-auto col-md-8">
+        <div class="ml-lg-auto col-lg-8">
           <mat-card class="p-0 br-7 sh-blue">
             <div class="d-flex bg-primary p-4 btr-7">
               <img class="px-3" style="max-height: 75px;" src="assets/img/request-logo.png">

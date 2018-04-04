@@ -11,15 +11,13 @@ import { SearchComponent } from './search/search.component';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 
 import { ClipboardModule } from 'ngx-clipboard';
-import { PopoverModule } from 'ngx-popover';
 
 @NgModule({
   imports: [
     SharedModule,
 
     ClipboardModule,
-    PopoverModule,
-
+   
     InvoicesRoutingModule
   ],
   declarations: [
