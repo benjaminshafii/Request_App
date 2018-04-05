@@ -354,12 +354,13 @@ export class Web3Service {
 
   public getCurrency(request: { currencyContract: { tokenAddress: string }, currency: string }) {
     let currency = 'ETH';
-    if (request.currencyContract) {
+    if (request.currencyContract && request.currencyContract.tokenAddress) {
       const { currencyToContract } = environment;
       Object.keys(currencyToContract).forEach((key) => {
         if (currencyToContract[key] === request.currencyContract.tokenAddress.toLowerCase()) {
           return currency = key;
         }
+        return currency = 'unknown token';
       });
     }
     return currency;
@@ -376,9 +377,12 @@ export class Web3Service {
   }
 
 
-  public broadcastSignedRequestAsPayer(signedRequest: string, amountsToPay: any[], callback ? ) {
+  public broadcastSignedRequestAsPayer(signedRequest: string, amountsToPay: any[], currency: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
+    if (currency !== 'ETH') {
+      return this.requestNetwork.requestERC20Service.broadcastSignedRequestAsPayer(signedRequest, amountsToPay);
+    }
     return this.requestNetwork.requestEthereumService.broadcastSignedRequestAsPayer(signedRequest, amountsToPay);
   }
 

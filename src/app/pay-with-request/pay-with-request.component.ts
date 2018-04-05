@@ -11,6 +11,7 @@ import { Web3Service } from '../util/web3.service';
 export class PayWithRequestComponent implements OnInit {
   Object = Object;
   signedRequest: any;
+  currency: string;
   ipfsData: any;
   callbackUrl: string;
   queryParamError: boolean;
@@ -35,6 +36,7 @@ export class PayWithRequestComponent implements OnInit {
     }
     this.callbackUrl = data.callbackUrl;
     this.signedRequest = data.signedRequest;
+    this.currency = 'REQ';
 
     // check signed request
     this.web3Service.accountObservable.subscribe(account => {
@@ -56,7 +58,7 @@ export class PayWithRequestComponent implements OnInit {
 
 
   acceptAndPay() {
-    this.web3Service.broadcastSignedRequestAsPayer(this.signedRequest, [this.signedRequest.expectedAmounts[0]])
+    this.web3Service.broadcastSignedRequestAsPayer(this.signedRequest, [this.signedRequest.expectedAmounts[0]], this.currency)
       .on('broadcasted',
         res => {
           if (res.transaction && res.transaction.hash) {
