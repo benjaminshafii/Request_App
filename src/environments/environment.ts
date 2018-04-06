@@ -7,6 +7,6 @@ export const environment = {
   production: false,
   // a mapping to erc20 address
   currencyToContract: {
-    REQ: '0xf25186B5081Ff5cE73482AD761DB0eB0d25abfBF',
+    REQ: '0x345cA3e014Aaf5dcA488057592ee47305D9B3e10',
   },
 };
