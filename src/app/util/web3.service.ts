@@ -229,7 +229,7 @@ export class Web3Service {
   public createRequestAsPayee(payer: string, expectedAmount: string, data: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     if (!this.web3.utils.isAddress(payer)) { return callback({ message: 'payer\'s address is not a valid Ethereum address' }); }
-    const expectedAmountInWei = this.toWei(expectedAmount, 'ether');
+    const expectedAmountInWei = this.toWei(expectedAmount);
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.createRequestAsPayee([this.accountObservable.value], [expectedAmountInWei], payer, null, null, data);
   }
@@ -251,7 +251,7 @@ export class Web3Service {
 
   public subtractAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
-    const amountInWei = this.toWei(amount.toString(), 'ether');
+    const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.subtractAction(requestId, [amountInWei]);
   }
@@ -259,7 +259,7 @@ export class Web3Service {
 
   public additionalAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
-    const amountInWei = this.toWei(amount.toString(), 'ether');
+    const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.additionalAction(requestId, [amountInWei]);
   }
@@ -267,7 +267,7 @@ export class Web3Service {
 
   public paymentAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
-    const amountInWei = this.toWei(amount.toString(), 'ether');
+    const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.paymentAction(requestId, [amountInWei], []);
   }
@@ -275,7 +275,7 @@ export class Web3Service {
 
   public refundAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
-    const amountInWei = this.toWei(amount.toString(), 'ether');
+    const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.refundAction(requestId, amountInWei);
   }
