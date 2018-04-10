@@ -12,9 +12,11 @@ export class RefundDialogComponent implements OnInit {
   refundFormControl: FormControl;
   isAllowanceGranted: boolean;
   allowance: string;
+  allow: any;
   amountValidator: [any];
 
   constructor(public web3Service: Web3Service, private formBuilder: FormBuilder, private dialogRef: MatDialogRef < RefundDialogComponent > , @Inject(MAT_DIALOG_DATA) private data: any) {
+    this.allow = data.allow;
     this.request = data.request;
   }
 

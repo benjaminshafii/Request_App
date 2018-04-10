@@ -16,7 +16,7 @@
             </ng-template>
           </div>
         </mat-expansion-panel-header>
-        <app-allowance [isRefund]="true" [request]="request" (onSetAllowance)="onSetAllowance($event)" (onAllowed)="onAllowed($event)"></app-allowance>
+        <app-allowance [allow]="allow" [isRefund]="true" [request]="request" (onSetAllowance)="onSetAllowance($event)" (onAllowed)="onAllowed($event)"></app-allowance>
       </mat-expansion-panel>
       <mat-expansion-panel [hideToggle]="true" [expanded]="isAllowanceGranted" [disabled]="!isAllowanceGranted">
         <mat-expansion-panel-header>

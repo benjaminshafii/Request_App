@@ -12,13 +12,17 @@ import { Web3Service } from '../../util/web3.service';
 export class AllowanceComponent implements OnInit {
   @Input() request: any;
   @Input() isRefund: false;
+  @Input() allow: any;
   @Output() onAllowed = new EventEmitter<boolean>();
   @Output() onSetAllowance = new EventEmitter<boolean>();
+  loading: boolean;
   allowForm: FormGroup;
   allowanceFormControl: FormControl;
 
 
-  constructor(public web3Service: Web3Service, private formBuilder: FormBuilder) {}
+  constructor(public web3Service: Web3Service, private formBuilder: FormBuilder) {
+    this.loading = true;
+  }
 
   ngOnInit() {
     const { payee, currencyContract, payer } = this.request;
@@ -27,6 +31,7 @@ export class AllowanceComponent implements OnInit {
 
     this.web3Service.getAllowance(currencyContract.tokenAddress, currencyContract.address, payer)
       .then((allowance) => {
+        this.loading = false;
         const isAllowanceGreater = this.web3Service.BN(allowance).gte(payee.expectedAmount.sub(payee.balance)) && !this.web3Service.BN(allowance).isZero();
         if (!this.isRefund) {
           this.onAllowed.emit(isAllowanceGreater);
@@ -45,24 +50,11 @@ export class AllowanceComponent implements OnInit {
   }
 
 
-  callbackTx(response, msg ? ) {
-    if (response.transaction) {
-      this.web3Service.openSnackBar(msg || 'Transaction in progress.', 'Ok', 'info-snackbar');
-    } else if (response.message) {
-      if (response.message.startsWith('Invalid status 6985')) {
-        this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
-      } else if (response.message.startsWith('Failed to subscribe to new newBlockHeaders')) {
-        return;
-      } else {
-        console.error(response);
-        this.web3Service.openSnackBar(response.message);
-      }
-    }
-  }
 
-  setAllowance = (requestId, address) => (
-    this.web3Service.allow(requestId, this.allowForm.value.allowanceFormControl, address, this.callbackTx)
+  setAllowance = (address) => (
+    this.allow(this.allowForm.value.allowanceFormControl, address)
     .on('broadcasted', () => {
+      this.loading = false;
       this.onAllowed.emit(true);
       this.onSetAllowance.emit(this.web3Service.toWei(this.allowForm.value.allowanceFormControl));
     })
@@ -73,10 +65,11 @@ export class AllowanceComponent implements OnInit {
   )
 
   submit() {
+    this.loading = true;
     const { requestId, payer, payee } = this.request;
     if (this.isRefund) {
-      return this.setAllowance(requestId, payee.address);
+      return this.setAllowance(payee.address);
     }
-    return this.setAllowance(requestId, payer);
+    return this.setAllowance(payer);
   }
 }

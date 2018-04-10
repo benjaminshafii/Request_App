@@ -13,9 +13,13 @@ export class PayDialogComponent implements OnInit {
   isAllowanceGranted: boolean;
   allowance: string;
   amountValidator: [any];
+  allow: any;
+  immutableAmount: boolean;
 
   constructor(public web3Service: Web3Service, private formBuilder: FormBuilder, private dialogRef: MatDialogRef < PayDialogComponent > , @Inject(MAT_DIALOG_DATA) private data: any) {
+    this.immutableAmount = data.immutableAmount;
     this.request = data.request;
+    this.allow = data.allow;
   }
 
 
@@ -48,18 +52,18 @@ export class PayDialogComponent implements OnInit {
   onSetAllowance(allowance: string) {
     this.allowance = allowance;
     // needed to use Validators.max()
-    const allowanceInt = parseInt(this.web3Service.fromWei(allowance), 10);
+    const floatAllowance = parseFloat(this.web3Service.fromWei(allowance));
 
     const remainingAmount = this.request.payee.expectedAmount.sub(this.request.payee.balance);
     const allowanceAmount = this.web3Service.BN(allowance);
 
 
-    this.payForm.controls['amountFormControl'].setValidators([...this.amountValidator, Validators.max(allowanceInt)]);
+    this.payForm.controls['amountFormControl'].setValidators([...this.amountValidator, Validators.max(floatAllowance)]);
     this.payForm.controls['amountFormControl'].updateValueAndValidity();
     if (remainingAmount.gt(allowanceAmount)) {
-      return this.amountFormControl.setValue(this.web3Service.fromWei(allowanceAmount));
+      return this.amountFormControl.setValue(parseFloat(this.web3Service.fromWei(allowanceAmount)));
     }
 
-    return this.amountFormControl.setValue(this.web3Service.fromWei(remainingAmount));
+    return this.amountFormControl.setValue(parseFloat(this.web3Service.fromWei(remainingAmount)));
   }
 }

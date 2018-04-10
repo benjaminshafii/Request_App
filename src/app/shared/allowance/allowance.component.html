@@ -1,3 +1,7 @@
+<div *ngIf="loading; then loadingBlock else formBlock">
+</div>
+
+<ng-template #formBlock>
 <form class="fc-primary" [formGroup]="allowForm" (ngSubmit)="submit()">
   <mat-form-field class="w-100">
     <input matInput type="text" formControlName="allowanceFormControl" placeholder="Amount you want to allow">
@@ -17,3 +21,8 @@
     <button class="col-5" mat-raised-button type="submit" [disabled]="!allowForm.valid" color="accent">Allow</button>
   </mat-dialog-actions>
 </form>
+</ng-template>
+
+<ng-template #loadingBlock>
+      <mat-spinner class="mx-auto"></mat-spinner>
+</ng-template>

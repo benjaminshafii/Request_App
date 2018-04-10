@@ -138,7 +138,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       request.events = await this.web3Service.getRequestEvents(request.requestId);
     }
     this.request = request;
-    this.request.currency = request.currency || this.web3Service.getCurrency(request);
+    this.request.currency = request.currency || this.web3Service.getCurrency(request.currencyContract.tokenAddress);
     this.getRequestMode();
     if (request && request.payee) { this.progress = 100 * this.request.payee.balance / this.request.payee.expectedAmount; }
   }
@@ -293,12 +293,21 @@ export class RequestComponent implements OnInit, OnDestroy {
       });
   }
 
+  allow = (amount, targetAddress) =>
+            this.web3Service.allow(
+              this.request.requestId,
+              amount,
+              targetAddress,
+              this.callbackTx
+            )
 
   payRequest() {
     this.dialog.open(PayDialogComponent, {
         hasBackdrop: true,
         width: '350px',
         data: {
+          allow:  this.allow,
+          immutableAmount: false,
           request: this.request
         }
       }).afterClosed()
@@ -326,6 +335,8 @@ export class RequestComponent implements OnInit, OnDestroy {
         hasBackdrop: true,
         width: '350px',
         data: {
+          allow: this.allow,
+          immutableAmount: false,
           request: this.request
         }
       }).afterClosed()

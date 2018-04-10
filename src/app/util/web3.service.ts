@@ -273,9 +273,16 @@ export class Web3Service {
     return this.requestNetwork.requestEthereumService.subtractAction(requestId, [amountInWei]);
   }
 
-  public getAllowance(tokenAddress: string, contractAddress: string, payer: string) {
+  public getAllowance(tokenAddress: string, contractAddress: string, payer ?) {
     return this.requestNetwork.requestERC20Service.getTokenAllowance(contractAddress, { from: payer });
 
+  }
+
+  public allowSignedRequest(signedRequest: any, amount: string, payer: string, callback ?) {
+    if (this.watchDog()) { return callback(); }
+    this.confirmTxOnLedgerMsg();
+    const amountInWei = this.toWei(amount.toString(), 'ether');
+    return this.requestNetwork.requestERC20Service.approveTokenForSignedRequest(signedRequest, amountInWei, {from: payer});
   }
 
   public allow(requestId: string, amount: string, payer: string, callback ?) {
@@ -301,7 +308,7 @@ export class Web3Service {
     const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
     if (currency !== 'ETH') {
-      return this.requestNetwork.requestERC20Service.paymentAction(requestId, [amountInWei], []);
+      return this.requestNetwork.requestERC20Service.paymentAction(requestId, [amountInWei], [], {skipERC20checkAllowance: true});
     }
     return this.requestNetwork.requestEthereumService.paymentAction(requestId, [amountInWei], []);
   }
@@ -351,13 +358,16 @@ export class Web3Service {
     }
   }
 
+  public async getTokenAddress(currencyContractAddress: string) {
+    return await this.requestNetwork.requestERC20Service.getTokenAddressFromCurrencyContract(currencyContractAddress);
+  }
 
-  public getCurrency(request: { currencyContract: { tokenAddress: string }, currency: string }) {
+  public getCurrency(tokenAddress: string) {
     let currency = 'ETH';
-    if (request.currencyContract && request.currencyContract.tokenAddress) {
+    if (tokenAddress) {
       const { currencyToContract } = environment;
       Object.keys(currencyToContract).forEach((key) => {
-        if (currencyToContract[key] === request.currencyContract.tokenAddress.toLowerCase()) {
+        if (currencyToContract[key] === tokenAddress.toLowerCase()) {
           return currency = key;
         }
         return currency = 'unknown token';
@@ -381,7 +391,7 @@ export class Web3Service {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
     if (currency !== 'ETH') {
-      return this.requestNetwork.requestERC20Service.broadcastSignedRequestAsPayer(signedRequest, amountsToPay);
+      return this.requestNetwork.requestERC20Service.broadcastSignedRequestAsPayer(signedRequest, amountsToPay, [], { skipERC20checkAllowance: true });
     }
     return this.requestNetwork.requestEthereumService.broadcastSignedRequestAsPayer(signedRequest, amountsToPay);
   }
