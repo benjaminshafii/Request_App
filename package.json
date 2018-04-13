@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:rinkeby": "ng build --env=staging --prod --aot --build-optimizer",
+    "build:rinkeby": "ng build --env=staging --aot --build-optimizer",
     "build:prod": "ng build --prod --aot --build-optimizer",
     "test": "ng test",
     "lint": "ng lint",
