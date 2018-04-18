@@ -23,8 +23,10 @@ import { MatTableModule } from '@angular/material/table';
 // import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { AccountComponent } from './account/account.component';
+import { AllowanceComponent } from './allowance/allowance.component';
 import { RouterModule } from '@angular/router';
 import { BlockiesModule } from 'angular-blockies';
 import { PopoverModule } from 'ngx-popover';
@@ -39,30 +41,33 @@ import { PopoverModule } from 'ngx-popover';
     RouterModule,
     BlockiesModule,
     PopoverModule,
-
     MatButtonModule,
     MatCardModule,
     // MatCheckboxModule,
     // MatChipsModule,
-    MatDialogModule,
-    MatIconModule,
-    MatMenuModule,
-    MatInputModule,
     // MatListModule,
+    // MatSidenavModule,
+    // MatTabsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatInputModule,
+    MatMenuModule,
     MatPaginatorModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    // MatSidenavModule,
     MatSnackBarModule,
     MatSortModule,
     MatTableModule,
-    // MatTabsModule,
     MatToolbarModule,
     MatTooltipModule
   ],
   declarations: [
-    AccountComponent
+    AccountComponent,
+    AllowanceComponent,
   ],
   exports: [
     FormsModule,
@@ -72,11 +77,13 @@ import { PopoverModule } from 'ngx-popover';
     PopoverModule,
 
     AccountComponent,
+    AllowanceComponent,
     MatButtonModule,
     MatCardModule,
     // MatCheckboxModule,
     // MatChipsModule,
     MatDialogModule,
+    MatExpansionModule,
     MatIconModule,
     MatMenuModule,
     MatInputModule,

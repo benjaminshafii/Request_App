@@ -19,8 +19,8 @@ export class HomeComponent implements OnInit {
   payerFormControl: FormControl;
   reasonFormControl: FormControl;
   dateFormControl: FormControl;
-  // currency = new FormControl('ETH');
-  // currencies = [{ name: 'ether', iso: 'ETH' }];
+  currency = new FormControl('ETH');
+  currencies = [{ name: 'ether', iso: 'ETH' }, { name: 'request', iso: 'REQ' }];
 
   static sameAddressAsPayeeValidator(control: FormControl) {
     const result = control.value && control.root.get('payee').value.toLowerCase() === control.value.toLowerCase() ? { sameAddressAsPayee: true } : null;
@@ -62,7 +62,7 @@ export class HomeComponent implements OnInit {
   }
 
 
-  createRequest() {
+  createRequest = () => {
     if (this.createLoading) { return; }
 
     this.createLoading = true;
@@ -99,6 +99,7 @@ export class HomeComponent implements OnInit {
             balance: this.expectedAmountFormControl.value,
             expectedAmount: this.expectedAmountFormControl.value,
           },
+          currency: this.currency.value,
           payer: this.payerFormControl.value,
           data: { data: {} },
         };
@@ -118,7 +119,7 @@ export class HomeComponent implements OnInit {
       }
     };
 
-    this.web3Service.createRequestAsPayee(this.payerFormControl.value, this.expectedAmountFormControl.value, JSON.stringify(data), callback)
+    this.web3Service.createRequestAsPayee(this.payerFormControl.value, this.expectedAmountFormControl.value, JSON.stringify(data), this.currency.value, callback)
       .on('broadcasted', response => {
         console.log('callback createRequestAsPayee: ', response);
         callback(response);
