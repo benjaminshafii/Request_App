@@ -17,7 +17,9 @@ export class PayWithRequestComponent implements OnInit {
   redirectUrl: string;
   date = new Date();
 
+
   constructor(@Inject(DOCUMENT) private document: any, public web3Service: Web3Service, public router: Router, private route: ActivatedRoute) {}
+
 
   async ngOnInit() {
     if (!this.web3Service || !this.web3Service.web3Ready) {
@@ -44,6 +46,7 @@ export class PayWithRequestComponent implements OnInit {
       // const test = this.web3Service.isSignedRequestHasError(this.signedRequest, account);
     });
   }
+
 
   getNetworkName(networkId) {
     switch (networkId) {
