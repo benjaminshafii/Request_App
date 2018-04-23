@@ -59,6 +59,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const request of requests) {
       this.web3Service.getRequestByRequestId(request.requestId).then(
         response => {
+          response.currency = this.web3Service.getCurrency(response.currencyContract.tokenAddress);
           request.request = response;
         });
     }

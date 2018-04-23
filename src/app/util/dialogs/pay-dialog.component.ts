@@ -10,18 +10,29 @@ export class PayDialogComponent implements OnInit {
   request;
   payForm: FormGroup;
   amountFormControl: FormControl;
+  isAllowanceGranted: boolean;
+  allowance: string;
+  amountValidator: [any];
+  allow: any;
+  immutableAmount: boolean;
 
   constructor(public web3Service: Web3Service, private formBuilder: FormBuilder, private dialogRef: MatDialogRef < PayDialogComponent > , @Inject(MAT_DIALOG_DATA) private data: any) {
+    this.immutableAmount = data.immutableAmount;
     this.request = data.request;
+    this.allow = data.allow;
   }
 
 
   ngOnInit() {
     const initialAmountValue = this.request.payee.expectedAmount.gt(this.request.payee.balance) ? this.web3Service.fromWei(this.request.payee.expectedAmount.sub(this.request.payee.balance).toString()) : '0';
-    this.amountFormControl = new FormControl(initialAmountValue, [Validators.required, Validators.pattern('[0-9]*([\.][0-9]{0,18})?$')]);
+    this.amountValidator = [Validators.required, Validators.pattern('[0-9]*([\.][0-9]{0,18})?$')];
+
+    this.amountFormControl = new FormControl(initialAmountValue, this.amountValidator);
     this.payForm = this.formBuilder.group({
       amountFormControl: this.amountFormControl,
     });
+
+    this.isAllowanceGranted = false;
   }
 
 
@@ -34,4 +45,25 @@ export class PayDialogComponent implements OnInit {
     this.dialogRef.close(this.amountFormControl.value);
   }
 
+  onAllowed(allowed: boolean) {
+    this.isAllowanceGranted = allowed;
+  }
+
+  onSetAllowance(allowance: string) {
+    this.allowance = allowance;
+    // needed to use Validators.max()
+    const floatAllowance = parseFloat(this.web3Service.fromWei(allowance));
+
+    const remainingAmount = this.request.payee.expectedAmount.sub(this.request.payee.balance);
+    const allowanceAmount = this.web3Service.BN(allowance);
+
+
+    this.payForm.controls['amountFormControl'].setValidators([...this.amountValidator, Validators.max(floatAllowance)]);
+    this.payForm.controls['amountFormControl'].updateValueAndValidity();
+    if (remainingAmount.gt(allowanceAmount)) {
+      return this.amountFormControl.setValue(parseFloat(this.web3Service.fromWei(allowanceAmount)));
+    }
+
+    return this.amountFormControl.setValue(parseFloat(this.web3Service.fromWei(remainingAmount)));
+  }
 }

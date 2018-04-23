@@ -7,6 +7,7 @@ import { PayDialogComponent } from '../../util/dialogs/pay-dialog.component';
 import { SubtractDialogComponent } from '../../util/dialogs/subtract-dialog.component';
 import { AdditionalDialogComponent } from '../../util/dialogs/additional-dialog.component';
 import { RefundDialogComponent } from '../../util/dialogs/refund-dialog.component';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -109,6 +110,7 @@ export class RequestComponent implements OnInit, OnDestroy {
               balance: this.web3Service.BN(this.web3Service.toWei('0')),
               expectedAmount: this.web3Service.BN(this.web3Service.toWei(queryParamRequest.payee.expectedAmount))
             },
+            currency: queryParamRequest.currency,
             data: queryParamRequest.data
           };
           await this.setRequest(request);
@@ -136,6 +138,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       request.events = await this.web3Service.getRequestEvents(request.requestId);
     }
     this.request = request;
+    this.request.currency = request.currency || this.web3Service.getCurrency(request.currencyContract.tokenAddress);
     this.getRequestMode();
     if (request && request.payee) { this.progress = 100 * this.request.payee.balance / this.request.payee.expectedAmount; }
   }
@@ -205,7 +208,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   cancelRequest() {
-    this.web3Service.cancel(this.request.requestId, this.callbackTx)
+    this.web3Service.cancel(this.request.requestId, this.request.currency, this.callbackTx)
       .on('broadcasted', response => {
         this.callbackTx(response, 'The request is being cancelled. Please wait a few moments for it to appear on the Blockchain.');
       }).then(
@@ -222,7 +225,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
 
   acceptRequest() {
-    this.web3Service.accept(this.request.requestId, this.callbackTx)
+    this.web3Service.accept(this.request.requestId, this.request.currency, this.callbackTx)
       .on('broadcasted', response => {
         this.callbackTx(response, 'The request is being accepted. Please wait a few moments for it to appear on the Blockchain.');
       }).then(
@@ -247,7 +250,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       }).afterClosed()
       .subscribe(subtractValue => {
         if (subtractValue) {
-          this.web3Service.subtractAction(this.request.requestId, subtractValue, this.callbackTx)
+          this.web3Service.subtractAction(this.request.requestId, subtractValue, this.request.currency, this.callbackTx)
             .on('broadcasted', response => {
               this.callbackTx(response, 'Subtract in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
@@ -274,7 +277,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       }).afterClosed()
       .subscribe(subtractValue => {
         if (subtractValue) {
-          this.web3Service.additionalAction(this.request.requestId, subtractValue, this.callbackTx)
+          this.web3Service.additionalAction(this.request.requestId, subtractValue, this.request.currency, this.callbackTx)
             .on('broadcasted', response => {
               this.callbackTx(response, 'Additional in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
@@ -290,18 +293,27 @@ export class RequestComponent implements OnInit, OnDestroy {
       });
   }
 
+  allow = (amount, targetAddress) =>
+            this.web3Service.allow(
+              this.request.requestId,
+              amount,
+              targetAddress,
+              this.callbackTx
+            )
 
   payRequest() {
     this.dialog.open(PayDialogComponent, {
         hasBackdrop: true,
         width: '350px',
         data: {
+          allow:  this.allow,
+          immutableAmount: false,
           request: this.request
         }
       }).afterClosed()
       .subscribe(amountValue => {
         if (amountValue) {
-          this.web3Service.paymentAction(this.request.requestId, amountValue, this.callbackTx)
+          this.web3Service.paymentAction(this.request.requestId, amountValue, this.request.currency, this.callbackTx)
             .on('broadcasted', response => {
               this.callbackTx(response, 'Payment is being done. Please wait a few moments for it to appear on the Blockchain.');
             }).then(
@@ -323,12 +335,14 @@ export class RequestComponent implements OnInit, OnDestroy {
         hasBackdrop: true,
         width: '350px',
         data: {
+          allow: this.allow,
+          immutableAmount: false,
           request: this.request
         }
       }).afterClosed()
       .subscribe(amountValue => {
         if (amountValue) {
-          this.web3Service.refundAction(this.request.requestId, amountValue, this.callbackTx)
+          this.web3Service.refundAction(this.request.requestId, amountValue, this.request.currency, this.callbackTx)
             .on('broadcasted', response => {
               this.callbackTx(response, 'Refund in progress. Please wait a few moments for it to appear on the Blockchain.');
             }).then(

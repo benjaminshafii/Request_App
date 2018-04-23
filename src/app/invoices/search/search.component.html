@@ -42,14 +42,14 @@
         <ng-container matColumnDef="request.payee.expectedAmount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
           <mat-cell *matCellDef="let req">
-            <span *ngIf="req.request">{{ this.web3Service.fromWei(req.request.payee.expectedAmount.toString()) }}&nbsp;ETH</span>
+            <span *ngIf="req.request">{{ this.web3Service.fromWei(req.request.payee.expectedAmount.toString()) }}&nbsp;{{ req.request.currency }}</span>
           </mat-cell>
         </ng-container>
         <!-- Amount Received Column -->
         <ng-container matColumnDef="request.payee.balance">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Amount Received</mat-header-cell>
           <mat-cell *matCellDef="let req">
-            <span *ngIf="req.request">{{ this.web3Service.fromWei(req.request.payee.balance.toString()) }}&nbsp;ETH</span>
+            <span *ngIf="req.request">{{ this.web3Service.fromWei(req.request.payee.balance.toString()) }}&nbsp;{{ req.request.currency }}</span>
           </mat-cell>
         </ng-container>
         <!-- Status Column -->

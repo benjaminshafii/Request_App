@@ -1,28 +1,64 @@
-<form class="fc-primary" [formGroup]="refundForm" (ngSubmit)="submit()">
-  <h1 mat-dialog-title>Refund Request</h1>
-  <mat-dialog-content>
+<h1 mat-dialog-title class="fc-primary">Refund Request</h1>
+<mat-dialog-content style="overflow:initial">
+  <ng-template [ngIf]="request.currency !== 'ETH'" [ngIfElse]="refund">
+    <mat-accordion>
+      <mat-expansion-panel [disabled]="true" [hideToggle]="true" [expanded]="!isAllowanceGranted">
+        <mat-expansion-panel-header>
+          <div class="d-flex">
+            <div *ngIf="!isAllowanceGranted; then uncheckedBox else checkedBox"></div>
+            <ng-template #uncheckedBox>
+              <i class="fa fa-dot-circle-o px-2 align-checkbox" aria-hidden="true"></i>
+              Step 1: you need to allow Request to debit your wallet
+            </ng-template>
+            <ng-template #checkedBox>
+              <i class="fa fa-check-circle px-2 align-checkbox fc-green" aria-hidden="true"></i>
+              Step 1: you've already allowed {{ web3Service.fromWei(allowance) }} {{ request.currency }} to be debited from your wallet
+            </ng-template>
+          </div>
+        </mat-expansion-panel-header>
+        <app-allowance [allow]="allow" [isRefund]="true" [request]="request" (onSetAllowance)="onSetAllowance($event)" (onAllowed)="onAllowed($event)"></app-allowance>
+      </mat-expansion-panel>
+      <mat-expansion-panel [hideToggle]="true" [expanded]="isAllowanceGranted" [disabled]="!isAllowanceGranted">
+        <mat-expansion-panel-header>
+          <div class="d-flex">
+            <i class="fa fa-dot-circle-o px-2 align-checkbox" aria-hidden="true"></i>
+            Step 2: confirm your request payment
+          </div>
+        </mat-expansion-panel-header>
+        <ng-container *ngTemplateOutlet="refund"></ng-container>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-template>
+</mat-dialog-content>
+
+
+<ng-template #refund>
+  <form class="fc-primary" [formGroup]="refundForm" (ngSubmit)="submit()">
     <div class="fs-12 d-flex justify-content-between mb-1">
       <div><strong>Already paid</strong></div>
-      <div>{{ web3Service.fromWei(request.payee.balance.toString()) }}<small>&nbsp;ETH</small></div>
+      <div>{{ web3Service.fromWei(request.payee.balance.toString()) }}<small>&nbsp;{{ request.currency }}</small></div>
     </div>
     <mat-form-field class="w-100">
-      <input matInput type="text" formControlName="refundFormControl" placeholder="amount to refund">
+      <input  matInput type="text" formControlName="refundFormControl" placeholder="amount to refund">
       <mat-error *ngIf="refundFormControl.hasError('required')">
         amount is <strong>required</strong>
       </mat-error>
       <mat-error *ngIf="refundFormControl.hasError('pattern')">
         must be a <strong>positive number</strong> with maximum <strong>18 decimals</strong>
       </mat-error>
-      <span matSuffix><img class="currencyIcon" src="assets/img/cryptoIcons/ETH.png">&nbsp;ETH&nbsp;<a (click)="setMax()" class="fs-12 fc-accent">max</a>
+      <mat-error *ngIf="refundFormControl.hasError('max')">
+        must be <strong>inferior or equal</strong> to the allowance amount <a class="error-anchor" (click)="onAllowed(false)">increase your allowance</a>
+      </mat-error>
+      <span matSuffix><img class="currencyIcon" src="assets/img/cryptoIcons/{{ request.currency }}.png">&nbsp;{{ request.currency }}&nbsp;<a (click)="setMax()" class="fs-12 fc-accent">max</a>
       </span>
     </mat-form-field>
     <div class="fs-12 d-flex justify-content-between my-3">
       <div><strong>Will remain</strong></div>
-      <div>{{ refundFormControl.value && refundFormControl.valid ? web3Service.fromWei(request.payee.balance.sub(web3Service.BN(web3Service.toWei(refundFormControl.value))).toString()) : '...' }}&nbsp;<small>ETH</small></div>
+      <div>{{ refundFormControl.value && refundFormControl.valid ? web3Service.fromWei(request.payee.balance.sub(web3Service.BN(web3Service.toWei(refundFormControl.value))).toString()) : '...' }}&nbsp;<small>{{ request.currency }}</small></div>
     </div>
-  </mat-dialog-content>
-  <mat-dialog-actions class="mt-3 d-flex justify-content-around w-100">
-    <button class="col-5" mat-raised-button type="button" mat-dialog-close>Cancel</button>
-    <button class="col-5" mat-raised-button type="submit" [disabled]="!refundForm.valid" color="accent">Refund</button>
-  </mat-dialog-actions>
-</form>
+    <mat-dialog-actions class="mt-3 d-flex justify-content-around w-100">
+      <button class="col-5" mat-raised-button type="button" mat-dialog-close>Cancel</button>
+      <button class="col-5" mat-raised-button type="submit" [disabled]="!refundForm.valid" color="accent">Refund</button>
+    </mat-dialog-actions>
+  </form>
+</ng-template>
