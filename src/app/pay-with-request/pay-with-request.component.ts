@@ -37,7 +37,7 @@ export class PayWithRequestComponent implements OnInit {
       return this.ngOnInit();
     }
 
-    const data = JSON.parse(this.route.snapshot.params.data);
+    const data = JSON.parse(atob(this.route.snapshot.params.data));
     if (!data || !data.callbackUrl || !data.signedRequest || !data.networkId) {
       return (this.queryParamError = true);
     }
