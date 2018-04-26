@@ -50,6 +50,15 @@
                 </span>
               </mat-form-field> 
             </div>
+            <mat-form-field class="w-100" *ngIf="paymentAddressFlow">
+              <input matInput maxlength="42" placeholder="Payment Address" [formControl]="paymentAddressFormControl">
+              <mat-error *ngIf="paymentAddressFormControl.hasError('pattern')">
+                ETH address format <strong>not valid</strong>
+              </mat-error>
+              <mat-error *ngIf="paymentAddressFormControl.hasError('sameAddressAsPayee')">
+                payer's address must be <strong>different from yours</strong>
+              </mat-error>
+            </mat-form-field>
             <mat-form-field class="w-100">
               <input matInput maxlength="42" placeholder="Payer's ETH address" [formControl]="payerFormControl">
               <mat-error *ngIf="payerFormControl.hasError('required')">
