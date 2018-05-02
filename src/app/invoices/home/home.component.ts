@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder, ValidationErrors } from '@angular/forms';
+import { environment } from '../../../environments/environment';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
@@ -12,11 +13,13 @@ export class HomeComponent implements OnInit {
   date: number = new Date().getTime();
   account: string;
   createLoading = false;
+  paymentAddressFlow = environment.paymentAddressFlow;
 
   requestForm: FormGroup;
   expectedAmountFormControl: FormControl;
   payeeFormControl: FormControl;
   payerFormControl: FormControl;
+  paymentAddressFormControl: FormControl;
   reasonFormControl: FormControl;
   dateFormControl: FormControl;
   currency = new FormControl('ETH');
@@ -37,6 +40,7 @@ export class HomeComponent implements OnInit {
 
     this.expectedAmountFormControl = new FormControl('', [Validators.required, Validators.pattern('[0-9]*([\.][0-9]{0,18})?$')]);
     this.payerFormControl = new FormControl('', [Validators.required, Validators.pattern('^(0x)?[0-9a-fA-F]{40}$'), HomeComponent.sameAddressAsPayeeValidator]);
+    this.paymentAddressFormControl = new FormControl('', [Validators.pattern('^(0x)?[0-9a-fA-F]{40}$'), HomeComponent.sameAddressAsPayeeValidator]);
     this.payeeFormControl = new FormControl(this.account);
     this.dateFormControl = new FormControl('');
     this.reasonFormControl = new FormControl('');
@@ -45,6 +49,7 @@ export class HomeComponent implements OnInit {
       expectedAmount: this.expectedAmountFormControl,
       payee: this.payeeFormControl,
       payer: this.payerFormControl,
+      paymentAddress: this.paymentAddressFormControl,
       date: this.dateFormControl,
       Reason: this.reasonFormControl,
     });
@@ -58,6 +63,7 @@ export class HomeComponent implements OnInit {
       this.account = account;
       this.payeeFormControl.setValue(this.account);
       this.payerFormControl.updateValueAndValidity();
+      this.paymentAddressFormControl.updateValueAndValidity();
     });
   }
 
@@ -119,7 +125,11 @@ export class HomeComponent implements OnInit {
       }
     };
 
-    this.web3Service.createRequestAsPayee(this.payerFormControl.value, this.expectedAmountFormControl.value, JSON.stringify(data), this.currency.value, callback)
+    const options = {
+      currency: this.currency.value,
+      paymentAddresses: [this.paymentAddressFormControl.value]
+    };
+    this.web3Service.createRequestAsPayee(this.payerFormControl.value, this.expectedAmountFormControl.value, JSON.stringify(data), options,  callback)
       .on('broadcasted', response => {
         console.log('callback createRequestAsPayee: ', response);
         callback(response);

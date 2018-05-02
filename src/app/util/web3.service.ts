@@ -229,7 +229,8 @@ export class Web3Service {
   }
 
 
-  public createRequestAsPayee(payer: string, expectedAmount: string, data: string, currency: string, callback ? ) {
+  public createRequestAsPayee(payer: string, expectedAmount: string, data: string, options: any, callback ? ) {
+    const { currency, paymentAddresses } = options;
     if (this.watchDog()) { return callback(); }
     if (!this.web3.utils.isAddress(payer)) { return callback({ message: 'payer\'s address is not a valid Ethereum address' }); }
     const expectedAmountInWei = this.toWei(expectedAmount);
@@ -237,9 +238,9 @@ export class Web3Service {
 
     if (currency !== 'ETH') {
        const { currencyToContract } = environment;
-       return this.requestNetwork.requestERC20Service.createRequestAsPayee(currencyToContract[currency], [this.accountObservable.value], [expectedAmountInWei], payer, null, null, data);
+       return this.requestNetwork.requestERC20Service.createRequestAsPayee(currencyToContract[currency], [this.accountObservable.value], [expectedAmountInWei], payer, paymentAddresses, null, data);
     }
-    return this.requestNetwork.requestEthereumService.createRequestAsPayee([this.accountObservable.value], [expectedAmountInWei], payer, null, null, data);
+    return this.requestNetwork.requestEthereumService.createRequestAsPayee([this.accountObservable.value], [expectedAmountInWei], payer, paymentAddresses, null, data);
   }
 
 
