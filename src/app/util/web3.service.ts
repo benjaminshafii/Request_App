@@ -3,27 +3,31 @@ import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { MatSnackBar } from '@angular/material';
 
-import RequestNetwork from '@requestnetwork/request-network.js';
-import ProviderEngine from 'web3-provider-engine';
-import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
-import LedgerWalletSubprovider from 'ledger-wallet-provider';
-import { environment } from '../../environments/environment';
+import RequestNetwork, {
+  Types,
+  utils
+} from '@requestnetwork/request-network.js';
+import * as Web3ProviderEngine from 'web3-provider-engine';
+import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
+import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
 
+import {
+  ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
+  LedgerSubprovider
+} from '@0xproject/subproviders';
 
 const Web3 = require('web3');
-
-/* beautify preserve:start */
 declare let window: any;
-/* beautify preserve:end */
 
 @Injectable()
 export class Web3Service {
   private web3;
-  private requestNetwork: RequestNetwork;
-  private infuraNodeUrl = {
+  private requestNetwork;
+  public infuraNodeUrl = {
     1: 'https://mainnet.infura.io/BQBjfSi5EKSCQQpXebO',
     4: 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO'
   };
+  private defaultGasPrice = 8000000000; // 8 gwei
 
   public metamask = false;
   public ledgerConnected = false;
@@ -31,9 +35,9 @@ export class Web3Service {
 
   public etherscanUrl: string;
 
-  public accountObservable = new BehaviorSubject < string > (null);
-  public networkIdObservable = new BehaviorSubject < number > (null);
-  public searchValue = new Subject < string > ();
+  public accountObservable = new BehaviorSubject<string>(null);
+  public networkIdObservable = new BehaviorSubject<number>(null);
+  public searchValue = new Subject<string>();
 
   private web3NotReadyMsg = 'Error when trying to instanciate web3.';
   private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Mainnet or Rinkeby Testnet.';
@@ -44,88 +48,117 @@ export class Web3Service {
   public BN;
   public isAddress;
 
-
   constructor(private snackBar: MatSnackBar) {
+    this.networkIdObservable.subscribe(networkId => {
+      this.setEtherscanUrl();
+    });
+
     window.addEventListener('load', async event => {
       console.log('web3service instantiate web3');
-      this.checkAndInstantiateWeb3();
-      this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
-      setInterval(async _ => await this.refreshAccounts(), 1000);
+      await this.checkAndInstantiateWeb3();
+      setInterval(async () => await this.refreshAccounts(), 1000);
+      this.web3Ready = true;
     });
   }
 
+  public currencyFromContractAddress(address) {
+    return Types.Currency[utils.currencyFromContractAddress(address)];
+  }
 
-  public checkLedger(networkId, derivationPath) {
-    return new Promise(async(resolve, reject) => {
-      const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, derivationPath);
-      const ledger = ledgerWalletSubProvider.ledger;
+  public getDecimalsForCurrency(currency) {
+    return utils.decimalsForCurrency(Types.Currency[currency]);
+  }
 
-      if (!ledger.isU2FSupported) {
-        reject('Ledger Wallet uses U2F which is not supported by your browser.');
+  public async checkLedger(
+    networkId: number,
+    derivationPath?: string,
+    derivationPathIndex?: number
+  ) {
+    const ledgerSubprovider = new LedgerSubprovider({
+      ledgerEthereumClientFactoryAsync,
+      networkId
+    });
+    ledgerSubprovider.setPath(derivationPath || `44'/60'/0'`);
+    ledgerSubprovider.setPathIndex(derivationPathIndex || 0);
+
+    try {
+      const accounts = await ledgerSubprovider.getAccountsAsync();
+      return accounts.map(acc => ({
+        address: acc,
+        index: (derivationPathIndex || 0) + accounts.indexOf(acc)
+      }));
+    } catch (err) {
+      if (err.message === 'invalid transport instance') {
+        return 'Timeout error. Please verify your ledger is connected and the Ethereum application opened.';
+      } else if (err.message.includes('6801')) {
+        return 'Invalid status 6801. Check to make sure the right application is selected on your ledger.';
+      } else if (err.message) {
+        return err.message;
       }
-
-      ledger.getMultipleAccounts(derivationPath, 0, 10).then(
-          async res => {
-            const engine = new ProviderEngine();
-            engine.addProvider(ledgerWalletSubProvider);
-            engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] }));
-            engine.start();
-            const web3 = new Web3(engine);
-            const addresses = Object.entries(res).map(e => ({ derivationPath: e[0], address: e[1], balance: 0 }));
-            for (const address of addresses) {
-              address.balance = this.fromWei(await web3.eth.getBalance(address.address.toString()));
-            }
-            resolve(addresses);
-          })
-        .catch(err => {
-          if (err.metaData && err.metaData.code === 5) {
-            reject('Timeout error. Please verify your ledger is connected and the Ethereum application opened.');
-          } else if (err === 'Invalid status 6801') {
-            reject('Invalid status 6801. Check to make sure the right application is selected on your ledger.');
-          }
-        });
-    });
+    }
   }
 
+  public instanciateWeb3FromLedger(
+    networkId: number,
+    derivationPath?: string,
+    derivationPathIndex?: number
+  ) {
+    const ledgerSubprovider = new LedgerSubprovider({
+      ledgerEthereumClientFactoryAsync,
+      networkId
+    });
+    ledgerSubprovider.setPath(derivationPath || `44'/60'/0'`);
+    ledgerSubprovider.setPathIndex(derivationPathIndex || 0);
 
-  public async instanciateWeb3FromLedger(networkId, derivationPath) {
-    const ledgerWalletSubProvider = await LedgerWalletSubprovider(() => networkId, derivationPath);
-    const engine = new ProviderEngine();
-    engine.addProvider(ledgerWalletSubProvider);
-    engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] }));
+    const engine = new Web3ProviderEngine();
+    engine.setMaxListeners(100);
+    engine.addProvider(ledgerSubprovider);
+    engine.addProvider(new FilterSubprovider());
+    engine.addProvider(
+      new FetchSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] })
+    );
     engine.start();
 
-    this.checkAndInstantiateWeb3(new Web3(engine));
-    this.openSnackBar('Ledger Wallet successfully connected.', null, 'success-snackbar');
-    this.ledgerConnected = true;
+    this.checkAndInstantiateWeb3(engine);
+
+    this.openSnackBar(
+      'Ledger Wallet successfully connected.',
+      null,
+      'success-snackbar'
+    );
   }
 
-
-  public async checkAndInstantiateWeb3(web3 ? ) {
-    if (web3 || typeof window.web3 !== 'undefined') {
-      console.log(`Using web3 detected from external source. If you find that your accounts don\'t appear, ensure you\'ve configured that source properly.`);
-
-      if (web3) {
+  public async checkAndInstantiateWeb3(providerEngine?) {
+    if (providerEngine || typeof window.web3 !== 'undefined') {
+      if (providerEngine) {
         // if Ledger wallet
-        this.web3 = web3;
+        this.web3 = new Web3(providerEngine);
+        this.ledgerConnected = true;
         this.refreshAccounts(true);
       } else {
         // if Web3 has been injected by the browser (Mist/MetaMask)
-        this.metamask = window.web3.currentProvider.isMetaMask;
         this.ledgerConnected = false;
+        this.metamask = window.web3.currentProvider.isMetaMask;
         this.web3 = new Web3(window.web3.currentProvider);
       }
       const networkId = await this.web3.eth.net.getId();
       this.networkIdObservable.next(networkId);
     } else {
-      console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl[1]}.`);
+      console.warn(
+        `No web3 detected. Falling back to ${this.infuraNodeUrl[1]}.`
+      );
       this.networkIdObservable.next(1); // mainnet by default
-      this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl[1]));
+      this.web3 = new Web3(
+        new Web3.providers.HttpProvider(this.infuraNodeUrl[1])
+      );
     }
 
     // instanciate requestnetwork.js
     try {
-      this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
+      this.requestNetwork = new RequestNetwork(
+        this.web3.currentProvider,
+        this.networkIdObservable.value
+      );
     } catch (err) {
       this.openSnackBar(this.requestNetworkNotReadyMsg);
       console.error(err);
@@ -137,23 +170,16 @@ export class Web3Service {
     this.BN = mixed => new this.web3.utils.BN(mixed);
   }
 
-
-  /* beautify preserve:start */
-  private async refreshAccounts(force ?: boolean) {
-  /* beautify preserve:end */
-    if (this.ledgerConnected && !force) { return; }
-
-    const accs = await this.web3.eth.getAccounts();
-    if (!accs || accs.length === 0) {
-      this.accountObservable.next(null);
-    } else if (this.accountObservable.value !== accs[0]) {
-      this.accountObservable.next(accs[0]);
+  private async refreshAccounts(force?: boolean) {
+    if (this.ledgerConnected && !force) {
+      return;
     }
 
-    if (this.web3Ready === undefined) { this.web3Ready = true; }
-
+    const accs = await this.web3.eth.getAccounts();
+    if (this.accountObservable.value !== accs[0]) {
+      this.accountObservable.next(accs[0]);
+    }
   }
-
 
   private setEtherscanUrl() {
     switch (this.networkIdObservable.value) {
@@ -174,34 +200,44 @@ export class Web3Service {
     }
   }
 
-
-  private watchDog() {
-    const stop = !this.web3 || !this.requestNetwork || !this.accountObservable.value;
-    if (stop) { this.openSnackBar(); }
+  public watchDog() {
+    const stop =
+      !this.web3 || !this.requestNetwork || !this.accountObservable.value;
+    if (stop) {
+      this.openSnackBar();
+    }
     return stop;
   }
 
-
-  /* beautify preserve:start */
-  public openSnackBar(msg ?: string, ok ?: string, panelClass ?: string, duration ?: number) {
-  /* beautify preserve:end */
+  public openSnackBar(
+    msg?: string,
+    ok?: string,
+    panelClass?: string,
+    duration?: number
+  ) {
     if (!msg) {
-      msg = !this.web3 ? this.web3NotReadyMsg : !this.requestNetwork ? this.requestNetworkNotReadyMsg : !this.accountObservable.value ? this.walletNotReadyMsg : '';
-      if (msg === '') { return; }
+      msg = !this.web3
+        ? this.web3NotReadyMsg
+        : !this.requestNetwork
+          ? this.requestNetworkNotReadyMsg
+          : !this.accountObservable.value
+            ? this.walletNotReadyMsg
+            : '';
+      if (msg === '') {
+        return;
+      }
     }
     this.snackBar.open(msg, ok || 'Ok', {
-      duration: duration || 5000,
+      duration: duration || 7000,
       horizontalPosition: 'right',
       verticalPosition: 'top',
-      panelClass: panelClass || 'warning-snackbar',
+      panelClass: panelClass || 'warning-snackbar'
     });
   }
-
 
   public setSearchValue(searchValue: string) {
     this.searchValue.next(searchValue);
   }
-
 
   public setRequestStatus(request) {
     if (request.state === 2) {
@@ -221,115 +257,210 @@ export class Web3Service {
     }
   }
 
-
   private confirmTxOnLedgerMsg() {
     if (this.ledgerConnected) {
-      setTimeout(_ => { this.openSnackBar('Please confirm transaction on your ledger.', null, 'info-snackbar'); }, 1500);
+      setTimeout(() => {
+        this.openSnackBar(
+          'Please confirm transaction on your ledger.',
+          null,
+          'info-snackbar'
+        );
+      }, 2000);
     }
   }
 
-
-  public createRequestAsPayee(payer: string, expectedAmount: string, data: string, options: any, callback ? ) {
-    const { currency, paymentAddresses } = options;
-    if (this.watchDog()) { return callback(); }
-    if (!this.web3.utils.isAddress(payer)) { return callback({ message: 'payer\'s address is not a valid Ethereum address' }); }
-    const expectedAmountInWei = this.toWei(expectedAmount);
-    this.confirmTxOnLedgerMsg();
-
-    if (currency !== 'ETH') {
-       const { currencyToContract } = environment;
-       return this.requestNetwork.requestERC20Service.createRequestAsPayee(currencyToContract[currency], [this.accountObservable.value], [expectedAmountInWei], payer, paymentAddresses, null, data);
+  public createRequestAsPayee(
+    payer: string,
+    expectedAmount: string,
+    currency: string,
+    paymentAddress: string,
+    requestOptions: any = {}
+  ) {
+    if (this.watchDog()) {
+      return;
     }
-    return this.requestNetwork.requestEthereumService.createRequestAsPayee([this.accountObservable.value], [expectedAmountInWei], payer, paymentAddresses, null, data);
+
+    requestOptions.transactionOptions = {
+      gasPrice: this.defaultGasPrice
+    };
+
+    this.confirmTxOnLedgerMsg();
+    return this.requestNetwork.createRequest(
+      Types.Role.Payee,
+      Types.Currency[currency],
+      [
+        {
+          idAddress: this.accountObservable.value,
+          paymentAddress,
+          expectedAmount: this.toWei(expectedAmount)
+        }
+      ],
+      {
+        idAddress: payer,
+        refundAddress: payer
+      },
+      requestOptions
+    );
   }
 
-
-  public cancel(requestId: string, currency: string, callback ? ) {
-    if (this.watchDog()) { return callback(); }
-    this.confirmTxOnLedgerMsg();
-    if (currency !== 'ETH') {
-      return this.requestNetwork.requestERC20Service.cancel(requestId);
+  public cancel(
+    requestObject: any,
+    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+  ) {
+    if (this.watchDog()) {
+      return;
     }
-    return this.requestNetwork.requestEthereumService.cancel(requestId);
+    this.confirmTxOnLedgerMsg();
+    return requestObject.cancel(transactionOptions);
   }
 
-
-  public accept(requestId: string, currency, callback ? ) {
-    if (this.watchDog()) { return callback(); }
-    this.confirmTxOnLedgerMsg();
-    if (currency !== 'ETH') {
-      return this.requestNetwork.requestERC20Service.accept(requestId);
+  public accept(
+    requestObject: any,
+    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+  ) {
+    if (this.watchDog()) {
+      return;
     }
-    return this.requestNetwork.requestEthereumService.accept(requestId);
+    this.confirmTxOnLedgerMsg();
+    return requestObject.accept(transactionOptions);
   }
 
-
-  public subtractAction(requestId: string, amount: string, currency: string, callback ? ) {
-    if (this.watchDog()) { return callback(); }
-    const amountInWei = this.toWei(amount.toString());
-    this.confirmTxOnLedgerMsg();
-    if (currency !== 'ETH') {
-      return this.requestNetwork.requestERC20Service.subtractAction(requestId, [amountInWei]);
+  public subtract(
+    requestObject: any,
+    amount: string,
+    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+  ) {
+    if (this.watchDog()) {
+      return;
     }
-    return this.requestNetwork.requestEthereumService.subtractAction(requestId, [amountInWei]);
-  }
-
-  public getAllowance(tokenAddress: string, contractAddress: string, payer ?) {
-    return this.requestNetwork.requestERC20Service.getTokenAllowance(contractAddress, { from: payer });
-
-  }
-
-  public allowSignedRequest(signedRequest: any, amount: string, payer: string, callback ?) {
-    if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
-    const amountInWei = this.toWei(amount.toString(), 'ether');
-    return this.requestNetwork.requestERC20Service.approveTokenForSignedRequest(signedRequest, amountInWei, {from: payer});
+
+    return requestObject.addSubtractions(
+      [this.toWei(amount)],
+      transactionOptions
+    );
   }
 
-  public allow(requestId: string, amount: string, payer: string, callback ?) {
-    if (this.watchDog()) { return callback(); }
-    this.confirmTxOnLedgerMsg();
-    const amountInWei = this.toWei(amount.toString(), 'ether');
-    return this.requestNetwork.requestERC20Service.approveTokenForRequest(requestId, amountInWei, {from: payer});
-  }
-
-  public additionalAction(requestId: string, amount: string, currency: string, callback ? ) {
-    if (this.watchDog()) { return callback(); }
-    const amountInWei = this.toWei(amount.toString());
-    this.confirmTxOnLedgerMsg();
-    if (currency !== 'ETH') {
-      return this.requestNetwork.requestERC20Service.additionalAction(requestId, [amountInWei]);
+  public additional(
+    requestObject: any,
+    amount: string,
+    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+  ) {
+    if (this.watchDog()) {
+      return;
     }
-    return this.requestNetwork.requestEthereumService.additionalAction(requestId, [amountInWei]);
-  }
-
-
-  public paymentAction(requestId: string, amount: string, currency, callback ? ) {
-    if (this.watchDog()) { return callback(); }
-    const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
-    if (currency !== 'ETH') {
-      return this.requestNetwork.requestERC20Service.paymentAction(requestId, [amountInWei], [], {skipERC20checkAllowance: true});
-    }
-    return this.requestNetwork.requestEthereumService.paymentAction(requestId, [amountInWei], []);
+    return requestObject.addAdditionals(
+      [this.toWei(amount)],
+      transactionOptions
+    );
   }
 
-
-  public refundAction(requestId: string, amount: string, currency: string, callback ? ) {
-    if (this.watchDog()) { return callback(); }
-    const amountInWei = this.toWei(amount.toString());
+  public pay(
+    requestObject: any,
+    amount: string,
+    transactionOptions: any = {
+      gasPrice: this.defaultGasPrice,
+      skipERC20checkAllowance: true
+    }
+  ) {
+    if (this.watchDog()) {
+      return;
+    }
     this.confirmTxOnLedgerMsg();
-    if (currency !== 'ETH') {
-      return this.requestNetwork.requestERC20Service.refundAction(requestId, amountInWei);
-    }
-    return this.requestNetwork.requestEthereumService.refundAction(requestId, amountInWei);
+
+    transactionOptions.gasPrice = this.defaultGasPrice;
+    return requestObject.pay([this.toWei(amount)], null, transactionOptions);
   }
 
+  public refund(
+    requestObject: any,
+    amount: string,
+    transactionOptions: any = {
+      gasPrice: this.defaultGasPrice,
+      skipERC20checkAllowance: true
+    }
+  ) {
+    if (this.watchDog()) {
+      return;
+    }
+    this.confirmTxOnLedgerMsg();
+    return requestObject.refund(this.toWei(amount), transactionOptions);
+  }
+
+  public allowSignedRequest(
+    signedRequest: any,
+    amount: string,
+    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+  ) {
+    if (this.watchDog()) {
+      return;
+    }
+    this.confirmTxOnLedgerMsg();
+    return this.requestNetwork.requestERC20Service.approveTokenForSignedRequest(
+      signedRequest,
+      this.toWei(amount),
+      transactionOptions
+    );
+  }
+
+  public allow(
+    requestId: string,
+    amount: string,
+    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+  ) {
+    if (this.watchDog()) {
+      return;
+    }
+    this.confirmTxOnLedgerMsg();
+    return this.requestNetwork.requestERC20Service.approveTokenForRequest(
+      requestId,
+      this.toWei(amount),
+      transactionOptions
+    );
+  }
+
+  public getAllowance(contractAddress: string) {
+    if (this.watchDog()) {
+      return;
+    }
+    return this.requestNetwork.requestERC20Service.getTokenAllowance(
+      contractAddress
+    );
+  }
+
+  public broadcastSignedRequestAsPayer(
+    signedRequestObject: any,
+    amountsToPay: any[],
+    requestOptions: any = {
+      transactionOptions: {
+        gasPrice: this.defaultGasPrice,
+        skipERC20checkAllowance: true
+      }
+    }
+  ) {
+    if (this.watchDog()) {
+      return;
+    }
+    this.confirmTxOnLedgerMsg();
+
+    return this.requestNetwork.broadcastSignedRequest(
+      signedRequestObject,
+      {
+        idAddress: this.accountObservable.value
+      },
+      null,
+      { amountsToPayAtCreation: amountsToPay },
+      requestOptions
+    );
+  }
 
   public async getRequestByRequestId(requestId: string) {
     try {
-      const request = await this.requestNetwork.requestCoreService.getRequest(requestId);
-      this.setRequestStatus(request);
+      const request = await this.requestNetwork.fromRequestId(requestId);
+      request.requestData = await request.getData();
+      request.requestData.currency = Types.Currency[request.currency];
+      this.setRequestStatus(request.requestData);
       return request;
     } catch (err) {
       console.log('Error: ', err.message);
@@ -337,49 +468,35 @@ export class Web3Service {
     }
   }
 
-
   public async getRequestByTransactionHash(txHash: string) {
     try {
-      const response = await this.requestNetwork.requestCoreService.getRequestByTransactionHash(txHash);
+      const response = await this.requestNetwork.requestCoreService.getRequestByTransactionHash(
+        txHash
+      );
       return response;
-    } catch (err) {
-      // console.log('Error: ', err.message);
-      return err;
-    }
-  }
-
-
-  public async getRequestEvents(requestId: string) {
-    try {
-      const events = await this.requestNetwork.requestCoreService.getRequestEvents(requestId);
-      return events.sort((a, b) => b._meta.timestamp - a._meta.timestamp);
     } catch (err) {
       console.log('Error: ', err.message);
       return err;
     }
   }
 
-  public async getTokenAddress(currencyContractAddress: string) {
-    return await this.requestNetwork.requestERC20Service.getTokenAddressFromCurrencyContract(currencyContractAddress);
-  }
-
-  public getCurrency(tokenAddress: string) {
-    let currency = 'ETH';
-    if (tokenAddress) {
-      const { currencyToContract } = environment;
-      Object.keys(currencyToContract).forEach((key) => {
-        if (currencyToContract[key] === tokenAddress.toLowerCase()) {
-          return currency = key;
-        }
-        return currency = 'unknown token';
-      });
+  public async getRequestEvents(requestId: string) {
+    try {
+      const events = await this.requestNetwork.requestCoreService.getRequestEvents(
+        requestId
+      );
+      return events.sort((a, b) => a._meta.timestamp - b._meta.timestamp);
+    } catch (err) {
+      console.log('Error: ', err.message);
+      return err;
     }
-    return currency;
   }
 
   public async getRequestsByAddress(address: string) {
     try {
-      const requests = await this.requestNetwork.requestCoreService.getRequestsByAddress(address);
+      const requests = await this.requestNetwork.requestCoreService.getRequestsByAddress(
+        address
+      );
       return requests;
     } catch (err) {
       console.log('Error: ', err.message);
@@ -387,20 +504,11 @@ export class Web3Service {
     }
   }
 
-
-  public broadcastSignedRequestAsPayer(signedRequest: string, amountsToPay: any[], currency: string, callback ? ) {
-    if (this.watchDog()) { return callback(); }
-    this.confirmTxOnLedgerMsg();
-    if (currency !== 'ETH') {
-      return this.requestNetwork.requestERC20Service.broadcastSignedRequestAsPayer(signedRequest, amountsToPay, [], { skipERC20checkAllowance: true });
-    }
-    return this.requestNetwork.requestEthereumService.broadcastSignedRequestAsPayer(signedRequest, amountsToPay);
-  }
-
-
   public async getIpfsData(hash: string) {
     try {
-      const result = await this.requestNetwork.requestCoreService.getIpfsFile(hash);
+      const result = await this.requestNetwork.requestCoreService.getIpfsFile(
+        hash
+      );
       return JSON.parse(result);
     } catch (err) {
       console.log('Error: ', err.message);
@@ -408,10 +516,48 @@ export class Web3Service {
     }
   }
 
+  public async buildRequestFromCreateRequestTransactionParams(transaction) {
+    const request = {
+      waitingMsg: 'Transaction found. Waiting for it to be mined...',
+      creator: transaction.from,
+      currency: this.currencyFromContractAddress(transaction.to),
+      currencyContract: {
+        address: transaction.to,
+        payeePaymentAddress:
+          transaction.method.parameters._payeesPaymentAddress[0] || null,
+        payerRefundAddress: transaction.method.parameters._payerRefundAddress,
+        subPayeesPaymentAddress: transaction.method.parameters._payeesPaymentAddress.slice(
+          1
+        )
+      },
+      data: {
+        data: await this.getIpfsData(transaction.method.parameters._data),
+        hash: transaction.method.parameters._data
+      },
+      payee: {
+        address: transaction.method.parameters._payeesIdAddress[0],
+        balance: this.BN(this.toWei('0')),
+        expectedAmount: this.BN(
+          transaction.method.parameters._expectedAmounts[0]
+        )
+      },
+      payer: transaction.method.parameters._payer,
+      subPayees: []
+    };
 
-  public isSignedRequestHasError(signedRequest: any, payer: string) {
-    return this.requestNetwork.requestEthereumService.isSignedRequestHasError(signedRequest, payer);
+    for (const [
+      index,
+      subPayee
+    ] of transaction.method.parameters._payeesIdAddress.slice(1).entries) {
+      subPayee[index] = {
+        address: subPayee,
+        balance: this.BN(this.toWei('0')),
+        expectedAmount: this.BN(
+          transaction.method.parameters._expectedAmounts[1 + index]
+        )
+      };
+    }
+
+    return request;
   }
-
-
 }

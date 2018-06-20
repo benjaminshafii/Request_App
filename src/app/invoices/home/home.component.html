@@ -7,8 +7,8 @@
         <div>What you can do with the BETA version Request:</div>
         <ul>
           <li>Connect to your Metamask or Ledger Nano S wallet</li>
-          <li>Create and send a request in ETH</li>
-          <li>Pay a request in ETH</li>
+          <li>Create and send a request</li>
+          <li>Pay a request</li>
           <li>Pay a request multiple times</li>
           <li>Update a request (add a subtract as the payee or an additional as the payer)</li>
           <li>Check your requests associated with an ETH address</li>
@@ -29,51 +29,55 @@
         </div>
         <form [formGroup]="requestForm" (ngSubmit)="createRequest()">
           <div class="p-4 mb-5">
+            <mat-form-field class="w-100">
+              <input matInput type="text" name="paymentETHAddress" placeholder="On which ETH address do you want to receive the funds?" maxlength="42" [formControl]="paymentAddressFormControl">
+              <mat-error *ngIf="paymentAddressFormControl.hasError('required')">
+                ETH payment address is <strong>required</strong>
+              </mat-error>
+              <mat-error *ngIf="paymentAddressFormControl.hasError('invalidETHAddress')">
+                <strong>Invalid</strong> ETH address
+              </mat-error>
+            </mat-form-field>
             <div class="d-flex w-100">
               <mat-form-field class="w-100">
-                <input matInput type="text" placeholder="Request amount" [formControl]="expectedAmountFormControl">
+                <input matInput type="text" name="expectedAmount" placeholder="Request amount" [formControl]="expectedAmountFormControl">
                 <mat-error *ngIf="expectedAmountFormControl.hasError('required')">
                   amount is <strong>required</strong>
                 </mat-error>
                 <mat-error *ngIf="expectedAmountFormControl.hasError('pattern')">
-                  amount must be a <strong>positive number</strong> with maximum <strong>18 decimals</strong>
+                  amount must be a <strong>positive number</strong> with maximum <strong>{{ this.web3Service.getDecimalsForCurrency(this.currencyFormControl.value) }} decimals</strong>
                 </mat-error>
               </mat-form-field>
-               <mat-form-field [style.width]="'80px'">
-                <mat-select [formControl]="currency" name="currency">
-                  <mat-option *ngFor="let c of currencies" [value]="c.iso">
-                    <img class="currencyIcon" src="assets/img/cryptoIcons/{{c.iso}}.png">&nbsp;{{c.iso}}
+              <mat-form-field [style.width]="'80px'">
+                <mat-select [formControl]="currencyFormControl" name="currency" panelClass="currencySelect">
+                  <mat-option *ngFor="let c of currencies" [value]="c">
+                    <img class="currencyIcon" src="assets/img/cryptoIcons/{{c}}.png">
+                    <span>&nbsp;{{ c }}</span>
                   </mat-option>
                 </mat-select>
                 <span matPrefix>
-                  <img class="currencyIcon" src="assets/img/cryptoIcons/{{currency.value}}.png">&nbsp;
+                  <img *ngIf="currencies && currencyFormControl.value" class="currencyIcon" src="assets/img/cryptoIcons/{{currencyFormControl.value}}.png">&nbsp;
                 </span>
-              </mat-form-field> 
+              </mat-form-field>
             </div>
-            <mat-form-field class="w-100" *ngIf="paymentAddressFlow">
-              <input matInput maxlength="42" placeholder="Payment Address" [formControl]="paymentAddressFormControl">
-              <mat-error *ngIf="paymentAddressFormControl.hasError('pattern')">
-                ETH address format <strong>not valid</strong>
-              </mat-error>
-              <mat-error *ngIf="paymentAddressFormControl.hasError('sameAddressAsPayee')">
-                payer's address must be <strong>different from yours</strong>
-              </mat-error>
-            </mat-form-field>
             <mat-form-field class="w-100">
-              <input matInput maxlength="42" placeholder="Payer's ETH address" [formControl]="payerFormControl">
+              <input matInput type="text" name="payerETHAddress" placeholder="Payer's ETH address" maxlength="42" [formControl]="payerFormControl">
               <mat-error *ngIf="payerFormControl.hasError('required')">
                 payer's ETH address is <strong>required</strong>
               </mat-error>
-              <mat-error *ngIf="payerFormControl.hasError('pattern')">
-                ETH address format <strong>not valid</strong>
-              </mat-error>
-              <mat-error *ngIf="payerFormControl.hasError('sameAddressAsPayee')">
+              <mat-error *ngIf="payerFormControl.hasError('sameAddressAsPayeeAddress')">
                 payer's address must be <strong>different from yours</strong>
+              </mat-error>
+              <mat-error *ngIf="payerFormControl.hasError('sameAddressAsPaymentAddress')">
+                payer's address must be <strong>different from payment address</strong>
+              </mat-error>
+              <mat-error *ngIf="payerFormControl.hasError('invalidETHAddress')">
+                <strong>Invalid</strong> ETH address
               </mat-error>
             </mat-form-field>
             <mat-form-field class="w-100" hintLabel="Max 256 characters">
-              <input matInput maxlength="256" placeholder="Reason (optional)" [formControl]="reasonFormControl">
-              <mat-hint align="end">{{reasonFormControl?.value.length || 0}}/256</mat-hint>
+              <input matInput type="text" name="reason" placeholder="Reason (optional)" maxlength="256" [formControl]="reasonFormControl">
+              <mat-hint align="end">{{ reasonFormControl?.value.length || 0 }}/256</mat-hint>
             </mat-form-field>
           </div>
           <mat-toolbar class="p-0 bbr-7 cta-toolbar" [style.height]="'60px'">

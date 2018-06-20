@@ -9,7 +9,9 @@
         <h1 class="my-3">Oops</h1>
         <div *ngIf="request.errorTxHash; else errorRequestIdBlock" class="">
           <p>{{ request.errorTxHash }}</p>
-          <p><a style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{txHash}}" target="_blank"><i>{{ web3Service.etherscanUrl}}tx/{{txHash.substring(0, 10) }}...{{ txHash.substring(txHash.length-5, txHash.length) }}</i></a></p>
+          <p>
+            <a style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{txHash}}" target="_blank"><i>{{ web3Service.etherscanUrl}}tx/{{txHash.substring(0, 10) }}...{{ txHash.substring(txHash.length-5, txHash.length) }}</i></a>
+          </p>
           <div>
             <button mat-raised-button routerLink="/" class="mx-3 px-5 my-5" color="accent">Back home</button>
             <button mat-raised-button (click)="refresh()" class="mx-3 px-5 my-5" color="accent">Try again</button>
@@ -47,7 +49,7 @@
                     <span><i class="fa {{request.errorMsg ? 'fa-warning fc-warn' : 'fa-circle-o-notch fa-spin'}}"></i>&nbsp;{{ request.errorMsg || request.waitingMsg || 'searching for blockchain information...' }}</span>
                   </ng-template>
                 </h4>
-                <div class="fs-14" [style.opacity]="'0.5'">
+                <div *ngIf="request.data && request.data.data && request.data.data.date" class="fs-14" [style.opacity]="'0.5'">
                   <i>{{request.data.data.date | date: 'fullDate'}}</i>
                 </div>
                 <div class="mt-1">
@@ -58,30 +60,49 @@
             </div>
             <div class="bg-grey-whiter fc-blue-grey p-4 d-flex flex-wrap">
               <div class="d-flex mb-3 m-lg-0" style="flex: 1">
-                <div class="px-3">
-                  <angular-blockies *ngIf="request.payee.address" [options]="{ seed: request.payee.address.toLowerCase() }" class="blockies" style="width: 50px; height: 50px;"></angular-blockies>
-                </div>
                 <div class="fs-14 lh-18">
-                  <div class="mb-1" [style.opacity]="'0.5'">FROM</div>
-                  <div class="semi-bold">ETH address</div>
-                  <div popover="{{request.payee.address}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payee.address.substring(0, 10)}}...{{request.payee.address.substring(32, 42)}}</div>
+                  <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYEE</div>
+                  <div class="d-flex align-items-end">
+                    <div class="px-3">
+                      <angular-blockies *ngIf="request.payee.address" [options]="{ seed: request.payee.address.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+                    </div>
+                    <div>
+                      <div class="semi-bold">{{ request.currencyContract.payeePaymentAddress && request.currencyContract.payeePaymentAddress.toLowerCase() !== request.payee.address.toLowerCase() ? 'ID address' : 'ETH address' }}</div>
+                      <div popover="{{request.payee.address}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payee.address.substring(0, 10)}}...{{request.payee.address.substring(32, 42)}}</div>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-end mt-1" *ngIf="request.currencyContract.payeePaymentAddress && request.currencyContract.payeePaymentAddress.toLowerCase() !== request.payee.address.toLowerCase()">
+                    <div class="px-3">
+                      <angular-blockies [options]="{ seed: request.currencyContract.payeePaymentAddress.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+                    </div>
+                    <div>
+                      <div class="semi-bold">Payment address</div>
+                      <div popover="{{request.currencyContract.payeePaymentAddress}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.currencyContract.payeePaymentAddress.substring(0, 10)}}...{{request.currencyContract.payeePaymentAddress.substring(32, 42)}}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="d-flex" style="flex: 1">
-                <div class="px-3">
-                  <angular-blockies *ngIf="request.payer" [options]="{ seed: request.payer.toLowerCase() }" class="blockies" style="width: 50px; height: 50px;"></angular-blockies>
-                </div>
                 <div class="fs-14 lh-18">
-                  <div class="mb-1" [style.opacity]="'0.5'">TO</div>
-                  <div class="semi-bold">ETH address</div>
-                  <div popover="{{request.payer}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payer.substring(0, 10)}}...{{request.payer.substring(32, 42)}}</div>
+                  <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYER</div>
+                  <div class="d-flex align-items-end">
+                    <div class="px-3">
+                      <angular-blockies *ngIf="request.payer" [options]="{ seed: request.payer.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+                    </div>
+                    <div>
+                      <div class="semi-bold">ETH address</div>
+                      <div popover="{{request.payer}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payer.substring(0, 10)}}...{{request.payer.substring(32, 42)}}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="fc-blue-grey p-4" style="border-bottom: 1px solid #DFE5EC">
-              <div class="px-3" *ngFor="let data of objectKeys(request.data.data)" [hidden]="data == 'date'">
-                <div class="semi-bold">{{data}}</div>
-                <div>{{request.data.data[data]}}</div>
+              <div *ngIf="request.data && request.data.data">
+                <div class="px-3" *ngFor="let data of objectKeys(request.data.data)" [hidden]="data == 'date'">
+                  <div class="semi-bold">{{data}}</div>
+                  <div>{{request.data.data[data]}}</div>
+                </div>
               </div>
             </div>
             <div class="d-flex">

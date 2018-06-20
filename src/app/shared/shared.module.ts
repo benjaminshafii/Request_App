@@ -26,7 +26,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 
 import { AccountComponent } from './account/account.component';
-import { AllowanceComponent } from './allowance/allowance.component';
 import { RouterModule } from '@angular/router';
 import { BlockiesModule } from 'angular-blockies';
 import { PopoverModule } from 'ngx-popover';
@@ -67,7 +66,6 @@ import { PopoverModule } from 'ngx-popover';
   ],
   declarations: [
     AccountComponent,
-    AllowanceComponent,
   ],
   exports: [
     FormsModule,
@@ -77,7 +75,6 @@ import { PopoverModule } from 'ngx-popover';
     PopoverModule,
 
     AccountComponent,
-    AllowanceComponent,
     MatButtonModule,
     MatCardModule,
     // MatCheckboxModule,

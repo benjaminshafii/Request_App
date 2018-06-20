@@ -1,69 +1,111 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  FormBuilder
+} from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
   templateUrl: './pay-dialog.component.html'
 })
 export class PayDialogComponent implements OnInit {
-  request;
-  payForm: FormGroup;
+  requestObject: any;
+  request: any;
   amountFormControl: FormControl;
+  payForm: FormGroup;
+  loading: boolean;
+  allowanceMode: boolean;
   isAllowanceGranted: boolean;
-  allowance: string;
-  amountValidator: [any];
-  allow: any;
+  callbackTx: any;
   immutableAmount: boolean;
 
-  constructor(public web3Service: Web3Service, private formBuilder: FormBuilder, private dialogRef: MatDialogRef < PayDialogComponent > , @Inject(MAT_DIALOG_DATA) private data: any) {
+  constructor(
+    public web3Service: Web3Service,
+    private formBuilder: FormBuilder,
+    private dialogRef: MatDialogRef<PayDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: any
+  ) {
+    this.requestObject = data.requestObject;
+    this.request = data.requestObject.requestData;
     this.immutableAmount = data.immutableAmount;
-    this.request = data.request;
-    this.allow = data.allow;
-  }
+    this.callbackTx = data.callbackTx;
+    this.loading = false;
+    this.isAllowanceGranted = false;
 
+    this.allowanceMode =
+      this.request.currency !== 'ETH' && this.request.currency !== 'BTC'
+        ? true
+        : false;
+  }
 
   ngOnInit() {
-    const initialAmountValue = this.request.payee.expectedAmount.gt(this.request.payee.balance) ? this.web3Service.fromWei(this.request.payee.expectedAmount.sub(this.request.payee.balance).toString()) : '0';
-    this.amountValidator = [Validators.required, Validators.pattern('[0-9]*([\.][0-9]{0,18})?$')];
+    const initialAmountValue = this.request.payee.expectedAmount.gt(
+      this.request.payee.balance
+    )
+      ? this.web3Service.fromWei(
+          this.request.payee.expectedAmount
+            .sub(this.request.payee.balance)
+            .toString()
+        )
+      : '0';
 
-    this.amountFormControl = new FormControl(initialAmountValue, this.amountValidator);
+    this.amountFormControl = new FormControl(initialAmountValue, [
+      Validators.required,
+      Validators.pattern('[0-9]*([.][0-9]{0,18})?$')
+    ]);
+
     this.payForm = this.formBuilder.group({
-      amountFormControl: this.amountFormControl,
+      amountFormControl: this.amountFormControl
     });
-
-    this.isAllowanceGranted = false;
   }
-
 
   setMax() {
-    this.amountFormControl.setValue(this.web3Service.fromWei(this.request.payee.expectedAmount.sub(this.request.payee.balance).toString()));
+    this.amountFormControl.setValue(
+      this.web3Service.fromWei(
+        this.request.payee.expectedAmount
+          .sub(this.request.payee.balance)
+          .toString()
+      )
+    );
   }
 
-
-  submit() {
-    this.dialogRef.close(this.amountFormControl.value);
-  }
-
-  onAllowed(allowed: boolean) {
-    this.isAllowanceGranted = allowed;
-  }
-
-  onSetAllowance(allowance: string) {
-    this.allowance = allowance;
-    // needed to use Validators.max()
-    const floatAllowance = parseFloat(this.web3Service.fromWei(allowance));
-
-    const remainingAmount = this.request.payee.expectedAmount.sub(this.request.payee.balance);
-    const allowanceAmount = this.web3Service.BN(allowance);
-
-
-    this.payForm.controls['amountFormControl'].setValidators([...this.amountValidator, Validators.max(floatAllowance)]);
-    this.payForm.controls['amountFormControl'].updateValueAndValidity();
-    if (remainingAmount.gt(allowanceAmount)) {
-      return this.amountFormControl.setValue(parseFloat(this.web3Service.fromWei(allowanceAmount)));
+  submitAllowance() {
+    if (this.loading) {
+      return;
     }
+    this.loading = true;
+    this.web3Service
+      .allow(this.request.requestId, this.amountFormControl.value)
+      .on('broadcasted', txHash => {
+        this.loading = false;
+        this.isAllowanceGranted = true;
+      })
+      .catch(err => {
+        this.loading = false;
+        this.callbackTx(err);
+      });
+  }
 
-    return this.amountFormControl.setValue(parseFloat(this.web3Service.fromWei(remainingAmount)));
+  submitPay() {
+    if (this.loading) {
+      return;
+    }
+    this.loading = true;
+    this.web3Service
+      .pay(this.requestObject, this.amountFormControl.value)
+      .on('broadcasted', response => {
+        this.callbackTx(
+          response,
+          'Payment is being done. Please wait a few moments for it to appear on the Blockchain.'
+        );
+        this.dialogRef.close();
+      })
+      .catch(err => {
+        this.loading = false;
+        this.callbackTx(err);
+      });
   }
 }

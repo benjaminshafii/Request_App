@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Web3Service } from '../web3.service';
+const Web3 = require('web3');
 
 @Component({
   templateUrl: './ledger-dialog.component.html'
@@ -8,7 +9,7 @@ import { Web3Service } from '../web3.service';
 export class LedgerDialogComponent {
   error: any;
   loading = false;
-  derivationPath = `44'/60'/0'/0`;
+  derivationPath = `44'/60'/0'`;
   networks = [
     { id: 1, name: 'Main net' },
     // { id: 3, name: 'Ropsten Test Net' },
@@ -18,31 +19,52 @@ export class LedgerDialogComponent {
   networkId: number;
   addresses: any;
 
-
-  constructor(private web3Service: Web3Service, private dialogRef: MatDialogRef < LedgerDialogComponent > , @Inject(MAT_DIALOG_DATA) public data: any) {
+  constructor(
+    private web3Service: Web3Service,
+    private dialogRef: MatDialogRef<LedgerDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
     this.networkId = this.web3Service.networkIdObservable.value;
   }
 
-  checkLedger() {
-    if (this.loading) { return true; }
+  async checkLedger(derivationPathIndex?) {
+    if (this.loading) {
+      return true;
+    }
     this.error = '';
     this.loading = true;
 
-    this.web3Service.checkLedger(this.networkId, this.derivationPath).then(
-      res => {
-        this.loading = false;
-        this.addresses = res;
-      },
-      err => {
-        this.loading = false;
-        this.error = err;
-      });
+    const accounts = await this.web3Service.checkLedger(
+      this.networkId,
+      this.derivationPath,
+      derivationPathIndex
+    );
+
+    this.loading = false;
+
+    if (Array.isArray(accounts)) {
+      this.addresses = accounts;
+      const web3 = new Web3(
+        new Web3.providers.HttpProvider(
+          this.web3Service.infuraNodeUrl[this.networkId]
+        )
+      );
+      for (const address of this.addresses) {
+        web3.eth.getBalance(address.address).then(balance => {
+          address.balance = this.web3Service.fromWei(balance);
+        });
+      }
+    } else {
+      this.error = accounts;
+    }
   }
 
-
-  async instanciateWeb3FromLedger(derivationPath) {
-    await this.web3Service.instanciateWeb3FromLedger(this.networkId, derivationPath);
+  instanciateWeb3FromLedger(derivationPathIndex) {
+    this.web3Service.instanciateWeb3FromLedger(
+      this.networkId,
+      this.derivationPath,
+      derivationPathIndex
+    );
     this.dialogRef.close();
   }
-
 }

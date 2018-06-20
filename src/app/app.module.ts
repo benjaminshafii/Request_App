@@ -13,10 +13,10 @@ import { InvoicesModule } from './invoices/invoices.module';
 
 import { LedgerDialogComponent } from './util/dialogs/ledger-dialog.component';
 import { PayDialogComponent } from './util/dialogs/pay-dialog.component';
+import { BroadcastDialogComponent } from './util/dialogs/broadcast-dialog.component';
 import { SubtractDialogComponent } from './util/dialogs/subtract-dialog.component';
 import { AdditionalDialogComponent } from './util/dialogs/additional-dialog.component';
 import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
-
 
 @NgModule({
   imports: [
@@ -37,22 +37,21 @@ import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
 
     LedgerDialogComponent,
     PayDialogComponent,
+    BroadcastDialogComponent,
     SubtractDialogComponent,
     AdditionalDialogComponent,
-    RefundDialogComponent
+    RefundDialogComponent,
   ],
   entryComponents: [
     LedgerDialogComponent,
     PayDialogComponent,
+    BroadcastDialogComponent,
+
     SubtractDialogComponent,
     AdditionalDialogComponent,
-    RefundDialogComponent
+    RefundDialogComponent,
   ],
-  providers: [
-    UtilModule
-  ],
-  bootstrap: [
-    AppComponent
-  ]
+  providers: [UtilModule],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

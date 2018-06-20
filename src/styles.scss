@@ -23,9 +23,13 @@ body {
 
 * {
   &:active,
-   :focus {
+  :focus {
     outline: none !important;
   }
+}
+
+.mat-sort-header-container {
+  justify-content: center !important;
 }
 
 a {
@@ -46,13 +50,14 @@ a {
     display: none !important;
   }
 }
+
 @media (min-width: 577px) {
   .hidden-sm-up {
     display: none !important;
   }
 }
-// related to  expansion pannel on payment dialog
 
+// related to  expansion pannel on payment dialog
 .align-checkbox {
   position: relative;
   top: 3px;
@@ -76,12 +81,11 @@ a {
   color: $blue-grey !important;
 }
 
-.mat-expansion-panel-header, .mat-expansion-panel-body {
+.mat-expansion-panel-header,
+.mat-expansion-panel-body {
   color: $blue-grey;
   padding: initial !important;
 }
-
-
 
 .wrapper {
   min-height: 100%;
@@ -110,12 +114,12 @@ header {
 
 .status-cancelled {
   @extend .status;
-  background-color: #ED6852;
+  background-color: #ed6852;
 }
 
 .status-in-progress {
   @extend .status;
-  background-color: #8AB4FA;
+  background-color: #8ab4fa;
 }
 
 .status-complete {
@@ -138,23 +142,33 @@ header {
   background-color: $orange;
 }
 
+.currencySelect {
+  .mat-option {
+    height: 2rem !important;
+    color: #617b9f !important;
+    font-size: 14px !important;
+    font-weight: 400;
+  }
+  box-shadow: 2px 2px 18px 0px rgba(212, 227, 255, 0.5) !important;
+}
+
 .currencyIcon {
   max-height: 16px;
   max-width: 16px;
   position: relative;
-  top: -2px;
+  top: -1px;
 }
 
 .warning-snackbar {
-  background-color: #FCB352 !important;
+  background-color: #fcb352 !important;
 }
 
 .info-snackbar {
-  background-color: #5392FF !important;
+  background-color: #5392ff !important;
 }
 
 .success-snackbar {
-  background-color: #1DCC8C !important;
+  background-color: #1dcc8c !important;
 }
 
 .mat-simple-snackbar {
@@ -169,7 +183,7 @@ header {
 }
 
 mat-toolbar.cta-toolbar {
-   :first-child {
+  :first-child {
     border-bottom-left-radius: 7px;
     flex: 1;
   }
@@ -313,14 +327,14 @@ mat-toolbar.mat-toolbar {
 .network-3 {
   span.network-icon {
     display: flex;
-    background: #E91550;
+    background: #e91550;
     border-radius: 10px;
   }
   span.network-name {
     &::before {
       content: 'Ropsten Test Net';
       margin-left: 0;
-      color: #E91550;
+      color: #e91550;
     }
   }
 }
@@ -343,18 +357,16 @@ mat-toolbar.mat-toolbar {
 .network-4 {
   span.network-icon {
     display: flex;
-    background: #EBB33F;
+    background: #ebb33f;
   }
   span.network-name {
     &::before {
       content: 'Rinkeby Test Net';
       margin-left: 0;
-      color: #EBB33F;
+      color: #ebb33f;
     }
   }
 }
-
-
 
 // CUSTOMIZE MAT-INPUT CSS
 input.mat-input-element,
@@ -499,13 +511,13 @@ input {
 }
 
 // remove number input spinners
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 // supports Mozilla
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }

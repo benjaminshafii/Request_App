@@ -1,19 +1,18 @@
 @import 'variables';
 
 .mat-table {
-  overflow: auto;
-  max-height: 528px;
-  font-weight: 400;
+	overflow: auto;
+	max-height: 528px;
+	font-weight: 400;
 }
 
-.mat-cell, .mat-header-cell {
-  font-size: 12px;
+.mat-cell,
+.mat-header-cell {
+	text-align: center;
+	font-size: 12px;
 	color: $primary;
 }
 
-.text-center.mat-header-cell {
-	display: flex;
-	.mat-sort-header-container {
-		margin: auto;
-	}
+.mat-sort-header-container {
+	justify-content: center !important;
 }

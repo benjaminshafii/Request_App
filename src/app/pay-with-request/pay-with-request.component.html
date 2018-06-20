@@ -17,7 +17,7 @@
   <div class="wrapper bg-grey-white-blue">
     <header class="d-flex flex-wrap justify-content-between align-items-center px-sm-5">
       <div class="py-3" style="flex: 1">
-        <a routerLink="/" class="d-flex align-items-center">
+        <a routerLink="/" class="d-flex-inline align-items-center">
           <img class="px-3 request-logo" src="assets/img/request-logo.png">
           <span class="semi-bold fc-primary">Request&nbsp;<sup><small><small>BETA</small></small></sup></span>
         </a>
@@ -49,16 +49,23 @@
                 </div>
                 <div class="bg-grey-whiter fc-blue-grey p-4 d-flex flex-wrap">
                   <div class="d-flex mb-3 m-lg-0" style="flex: 1">
-                    <div class="px-3">
-                      <angular-blockies *ngIf="signedRequest.payeesIdAddress[0]" [options]="{ seed: signedRequest.payeesIdAddress[0].toLowerCase() }" class="blockies" style="width: 50px; height: 50px;"></angular-blockies>
-                    </div>
-                    <div>
-                      <div class="fs-14 lh-18">
-                        <div class="mb-1" [style.opacity]="'0.5'">FROM</div>
-                        <div class="semi-bold">ID address</div>
-                        <div class="hidden-sm-up" popover="{{signedRequest.payeesIdAddress[0]}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{signedRequest.payeesIdAddress[0].substring(0, 10)}}...{{signedRequest.payeesIdAddress[0].substring(32, 42)}}</div>
-                        <div class="hidden-sm-down">{{ signedRequest.payeesIdAddress[0] }}</div>
-                        <div *ngIf="signedRequest.payeesPaymentAddress[0]">
+                    <div class="fs-14 lh-18">
+                      <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYEE</div>
+                      <div class="d-flex align-items-end">
+                        <div class="px-3">
+                          <angular-blockies *ngIf="signedRequest.payeesIdAddress[0]" [options]="{ seed: signedRequest.payeesIdAddress[0].toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+                        </div>
+                        <div>
+                          <div class="semi-bold">{{ signedRequest.payeesPaymentAddress[0] && signedRequest.payeesPaymentAddress[0].toLowerCase() !== signedRequest.payeesIdAddress[0].toLowerCase() ? 'ID address' : 'ETH address' }}</div>
+                          <div class="hidden-sm-up" popover="{{signedRequest.payeesIdAddress[0]}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{signedRequest.payeesIdAddress[0].substring(0, 10)}}...{{signedRequest.payeesIdAddress[0].substring(32, 42)}}</div>
+                          <div class="hidden-sm-down">{{ signedRequest.payeesIdAddress[0] }}</div>
+                        </div>
+                      </div>
+                      <div class="d-flex align-items-end mt-1" *ngIf="signedRequest.payeesPaymentAddress[0] && signedRequest.payeesPaymentAddress[0].toLowerCase() !== signedRequest.payeesIdAddress[0].toLowerCase()">
+                        <div class="px-3">
+                          <angular-blockies [options]="{ seed: signedRequest.payeesPaymentAddress[0].toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+                        </div>
+                        <div>
                           <div class="semi-bold">Payment address</div>
                           <div class="hidden-sm-up" popover="{{signedRequest.payeesPaymentAddress[0]}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{signedRequest.payeesPaymentAddress[0].substring(0, 10)}}...{{signedRequest.payeesPaymentAddress[0].substring(32, 42)}}</div>
                           <div class="hidden-sm-down">{{ signedRequest.payeesPaymentAddress[0] }}</div>
@@ -78,7 +85,7 @@
                 <div class="d-flex">
                   <div class="ml-auto d-inline-block semi-bold fc-primary px-5 py-3" style="background: #DFE5EC">
                     <div class="fs-14">AMOUNT</div>
-                    <div class="fs-24">{{ web3Service.fromWei(signedRequest.expectedAmounts[0].toString()) }} {{ currency }}</div>
+                    <div class="fs-24">{{ web3Service.fromWei(signedRequest.expectedAmounts[0].toString()) }} {{ signedRequest.currency }}</div>
                   </div>
                 </div>
                 <div class="p-5">

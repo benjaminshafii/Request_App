@@ -10,31 +10,35 @@
       <mat-table #table matSort [dataSource]="dataSource">
         <!-- ID Column -->
         <ng-container matColumnDef="requestId">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
-          <mat-cell *matCellDef="let req"><a routerLink="/request/requestId/{{req.requestId}}" class="fc-accent">{{ req.requestId.substring(0,5)}}...{{ req.requestId.substring(61,66) }}</a></mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+          <mat-cell *matCellDef="let req"><a routerLink="/request/requestId/{{req.requestId}}" class="fc-accent">{{ req.requestId.substring(0,5) }}...{{ req.requestId.substring(61,66) }}</a></mat-cell>
         </ng-container>
         <!-- Age Column -->
         <ng-container matColumnDef="_meta.timestamp">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Age </mat-header-cell>
-          <mat-cell *matCellDef="let req">{{ getAgeFromTimeStamp( req._meta.timestamp) }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Age</mat-header-cell>
+          <mat-cell *matCellDef="let req">{{ getAgeFromTimeStamp(req._meta.timestamp) }}</mat-cell>
         </ng-container>
         <!-- From Column -->
         <ng-container matColumnDef="request.payee.address">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> From </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>From</mat-header-cell>
           <mat-cell *matCellDef="let req">
             <div *ngIf="req.request">
-              <a (click)="web3Service.setSearchValue(req.request.payee.address)" *ngIf="req.request.payee.address != searchValue; else payeeSpan" class="fc-accent">{{ req.request.payee.address.substring(0, 5) }}...{{req.request.payee.address.substring(37, 42) }}</a>
-              <ng-template #payeeSpan><span *ngIf="req.request">{{ req.request.payee.address.substring(0, 5) }}...{{req.request.payee.address.substring(37, 42) }}</span></ng-template>
+              <a (click)="web3Service.setSearchValue(req.request.payee.address)" *ngIf="req.request.payee.address != searchValue; else payeeSpan" class="fc-accent">{{ req.request.payee.address.substring(0, 5) }}...{{ req.request.payee.address.substring(37, 42) }}</a>
+              <ng-template #payeeSpan>
+                <span>{{ req.request.payee.address.substring(0, 5) }}...{{ req.request.payee.address.substring(37, 42) }}</span>
+              </ng-template>
             </div>
           </mat-cell>
         </ng-container>
         <!-- To Column -->
         <ng-container matColumnDef="request.payer">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> To </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>To</mat-header-cell>
           <mat-cell *matCellDef="let req">
             <div *ngIf="req.request">
-              <a (click)="web3Service.setSearchValue(req.request.payer)" *ngIf="req.request.payer != searchValue; else payerSpan" class="fc-accent">{{ req.request.payer.substring(0, 5) }}...{{req.request.payer.substring(37, 42) }}</a>
-              <ng-template #payerSpan><span *ngIf="req.request">{{ req.request.payer.substring(0, 5) }}...{{req.request.payer.substring(37, 42) }}</span></ng-template>
+              <a (click)="web3Service.setSearchValue(req.request.payer)" *ngIf="req.request.payer != searchValue; else payerSpan" class="fc-accent">{{ req.request.payer.substring(0, 5) }}...{{ req.request.payer.substring(37, 42) }}</a>
+              <ng-template #payerSpan>
+                <span>{{ req.request.payer.substring(0, 5) }}...{{ req.request.payer.substring(37, 42) }}</span>
+              </ng-template>
             </div>
           </mat-cell>
         </ng-container>
@@ -42,21 +46,28 @@
         <ng-container matColumnDef="request.payee.expectedAmount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
           <mat-cell *matCellDef="let req">
-            <span *ngIf="req.request">{{ this.web3Service.fromWei(req.request.payee.expectedAmount.toString()) }}&nbsp;{{ req.request.currency }}</span>
+            <div *ngIf="req.request; else spinSpan">{{ this.web3Service.fromWei(req.request.payee.expectedAmount.toString()) }}&nbsp;{{ req.request.currency }}</div>
+            <ng-template #spinSpan>
+              <span>
+                <i class="fa fa-circle-o-notch fa-spin"></i>
+              </span>
+            </ng-template>
           </mat-cell>
         </ng-container>
         <!-- Amount Received Column -->
         <ng-container matColumnDef="request.payee.balance">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Amount Received</mat-header-cell>
           <mat-cell *matCellDef="let req">
-            <span *ngIf="req.request">{{ this.web3Service.fromWei(req.request.payee.balance.toString()) }}&nbsp;{{ req.request.currency }}</span>
+            <div *ngIf="req.request">{{ this.web3Service.fromWei(req.request.payee.balance.toString()) }}&nbsp;{{ req.request.currency }}</div>
           </mat-cell>
         </ng-container>
         <!-- Status Column -->
         <ng-container matColumnDef="request.status">
-          <mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Status</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
           <mat-cell *matCellDef="let req" class="text-center">
-            <span *ngIf="req.request" class="status-{{req.request.status.replace(' ','-')}}">{{ req.request.status }}</span>
+            <div *ngIf="req.request">
+              <span class="status-{{ req.request.status.replace(' ','-') }}">{{ req.request.status }}</span>
+            </div>
           </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

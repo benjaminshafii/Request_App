@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <!-- General meta -->
   <title>Request Beta</title>
@@ -33,7 +32,6 @@
   html {
     height: 100%;
   }
-
   .app-loading {
     display: flex;
     flex-direction: column;
@@ -41,14 +39,12 @@
     justify-content: center;
     height: 100%;
   }
-
   .app-loading .spinner {
     height: 200px;
     width: 200px;
     animation: rotate 2s linear infinite;
     transform-origin: center center;
   }
-
   .app-loading .spinner .path {
     stroke-dasharray: 1, 200;
     stroke-dashoffset: 0;
@@ -56,7 +52,6 @@
     stroke-linecap: round;
     stroke: #103B56;
   }
-
   .app-loading .logo-flex-box {
     display: flex;
     flex-direction: column;
@@ -64,7 +59,6 @@
     justify-content: center;
     margin-bottom: 5rem;
   }
-
   .app-loading .logo {
     position: absolute;
     width: 100px;
@@ -72,18 +66,15 @@
     background-size: 45% !important;
     background: url(./assets/img/request-logo.png) center center no-repeat;
   }
-
   #redirection {
     color: #103B56;
     text-align: center;
   }
-
   @keyframes rotate {
     100% {
       transform: rotate(360deg);
     }
   }
-
   @keyframes dash {
     0% {
       stroke-dasharray: 1, 200;
@@ -98,14 +89,12 @@
       stroke-dashoffset: -124px;
     }
   }
-
-  </style>
+</style>
 </head>
-
 <body>
-<app-root>
+  <app-root>
     <div class="app-loading">
-      <div id="redirection">Redirecting to Request Network gateway to pay in ETH...</div>
+      <div id="redirection">Redirecting to Request Network gateway for payment...</div>
       <div class="logo-flex-box">
         <div class="logo"></div>
         <svg class="spinner" viewBox="25 25 50 50">
@@ -114,12 +103,11 @@
       </div>
     </div>
     <script type="text/javascript">
-    console.log(window.location.href);
-    if (window.location.href.indexOf('pay-with-request') == -1) {
-      document.getElementById('redirection').style.display = 'none';
-    }
+      console.log(window.location.href);
+      if (window.location.href.indexOf('pay-with-request') == -1) {
+        document.getElementById('redirection').style.display = 'none';
+      }
     </script>
   </app-root>
 </body>
-
 </html>

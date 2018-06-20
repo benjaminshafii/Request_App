@@ -26,19 +26,26 @@
             </mat-option>
           </mat-select>
           <span class="d-flex network-{{ networkId }}" matPrefix>
-              <span class="network-icon"></span>
+            <span class="network-icon"></span>
           </span>
         </mat-form-field>
       </div>
     </div>
     <ng-template #selectAddressBlock>
-      <div class="px-3 fs-14 semi-bold d-flex justify-content-between">
+      <div class="px-2 fs-14 semi-bold d-flex justify-content-between">
         <span>Address</span>
         <span>Balance (ETH)</span>
       </div>
-      <a *ngFor="let address of addresses" class="address-row" (click)="instanciateWeb3FromLedger(address.derivationPath)">
-        <span>{{ address.address }}</span>
-        <span>&nbsp;{{ address.balance }}</span>
+      <a *ngFor="let address of addresses" class="address-row" (click)="instanciateWeb3FromLedger(address.index)">
+        <div>{{ address.address }}</div>
+        <div class="pull-right">
+          <span *ngIf="address.balance; else spinSpan">&nbsp;{{ address.balance }}</span>
+          <ng-template #spinSpan>
+            <span class="pr-3">
+              <i class="fa fa-circle-o-notch fa-spin"></i>
+            </span>
+          </ng-template>
+        </div>
       </a>
     </ng-template>
     <div class="fs-12 fc-warn" *ngIf="error">
