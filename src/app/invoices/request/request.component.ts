@@ -74,8 +74,8 @@ export class RequestComponent implements OnInit, OnDestroy {
         return;
       }
       const rd = await this.requestObject.getData();
+      await this.setRequest(rd);
       this.requestObject.requestData = rd;
-      await this.setRequest(this.requestObject.requestData);
     }, 10000);
   }
 
@@ -86,8 +86,8 @@ export class RequestComponent implements OnInit, OnDestroy {
         setTimeout(async () => {
           if (result.request.requestId && this.requestObject.requestId) {
             const rd = await this.requestObject.getData();
+            await this.setRequest(rd);
             this.requestObject.requestData = rd;
-            await this.setRequest(this.requestObject.requestData);
           }
           this.loading = false;
         }, 5000)
