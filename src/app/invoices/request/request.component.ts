@@ -46,7 +46,6 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.subscription = this.web3Service.searchValue.subscribe(
       async searchValue => {
         if (searchValue && searchValue.length > 42) {
-          this.requestObject = null;
           this.request = null;
           this.requestObject = await this.web3Service.getRequestByRequestId(
             searchValue

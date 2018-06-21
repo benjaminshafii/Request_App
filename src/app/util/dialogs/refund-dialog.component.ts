@@ -4,12 +4,12 @@ import {
   FormGroup,
   FormControl,
   Validators,
-  FormBuilder,
+  FormBuilder
 } from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
-  templateUrl: './refund-dialog.component.html',
+  templateUrl: './refund-dialog.component.html'
 })
 export class RefundDialogComponent implements OnInit {
   requestObject: any;
@@ -20,6 +20,7 @@ export class RefundDialogComponent implements OnInit {
   allowanceMode: boolean;
   isAllowanceGranted: boolean;
   callbackTx: any;
+  waitAllowance: boolean;
 
   constructor(
     public web3Service: Web3Service,
@@ -32,6 +33,7 @@ export class RefundDialogComponent implements OnInit {
     this.request = data.requestObject.requestData;
     this.loading = false;
     this.isAllowanceGranted = false;
+    this.waitAllowance = false;
 
     this.allowanceMode =
       this.request.currency !== 'ETH' && this.request.currency !== 'BTC'
@@ -42,10 +44,10 @@ export class RefundDialogComponent implements OnInit {
   ngOnInit() {
     this.refundFormControl = new FormControl('', [
       Validators.required,
-      Validators.pattern('[0-9]*([.][0-9]{0,18})?$'),
+      Validators.pattern('[0-9]*([.][0-9]{0,18})?$')
     ]);
     this.refundForm = this.formBuilder.group({
-      refundFormControl: this.refundFormControl,
+      refundFormControl: this.refundFormControl
     });
   }
 
@@ -63,13 +65,14 @@ export class RefundDialogComponent implements OnInit {
     }
     this.loading = true;
     this.web3Service
-      .allow(
-        this.request.requestId,
-        this.refundFormControl.value
-      )
+      .allow(this.request.requestId, this.refundFormControl.value)
       .on('broadcasted', txHash => {
         this.loading = false;
         this.isAllowanceGranted = true;
+        this.waitAllowance = true;
+        setTimeout(() => {
+          this.waitAllowance = false;
+        }, 30000);
       })
       .catch(err => {
         this.loading = false;
@@ -83,13 +86,9 @@ export class RefundDialogComponent implements OnInit {
     }
     this.loading = true;
     this.web3Service
-      .refund(
-        this.requestObject,
-        this.refundFormControl.value,
-        {
-          skipERC20checkAllowance: true,
-        }
-      )
+      .refund(this.requestObject, this.refundFormControl.value, {
+        skipERC20checkAllowance: true
+      })
       .on('broadcasted', response => {
         this.callbackTx(
           response,

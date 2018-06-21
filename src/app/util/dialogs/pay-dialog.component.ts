@@ -21,6 +21,7 @@ export class PayDialogComponent implements OnInit {
   isAllowanceGranted: boolean;
   callbackTx: any;
   immutableAmount: boolean;
+  waitAllowance: boolean;
 
   constructor(
     public web3Service: Web3Service,
@@ -34,6 +35,7 @@ export class PayDialogComponent implements OnInit {
     this.callbackTx = data.callbackTx;
     this.loading = false;
     this.isAllowanceGranted = false;
+    this.waitAllowance = false;
 
     this.allowanceMode =
       this.request.currency !== 'ETH' && this.request.currency !== 'BTC'
@@ -82,6 +84,10 @@ export class PayDialogComponent implements OnInit {
       .on('broadcasted', txHash => {
         this.loading = false;
         this.isAllowanceGranted = true;
+        this.waitAllowance = true;
+        setTimeout(() => {
+          this.waitAllowance = false;
+        }, 30000);
       })
       .catch(err => {
         this.loading = false;

@@ -17,6 +17,7 @@ export class BroadcastDialogComponent implements OnInit {
   loading: boolean;
   allowanceMode: boolean;
   isAllowanceGranted: boolean;
+  waitAllowance: boolean;
   callbackTx: any;
 
   constructor(
@@ -54,6 +55,10 @@ export class BroadcastDialogComponent implements OnInit {
       .on('broadcasted', txHash => {
         this.loading = false;
         this.isAllowanceGranted = true;
+        this.waitAllowance = true;
+        setTimeout(() => {
+          this.waitAllowance = false;
+        }, 30000);
       })
       .catch(err => {
         this.loading = false;

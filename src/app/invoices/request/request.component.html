@@ -32,9 +32,11 @@
             <p class="semi-bold mb-2 fs-14">
               History
             </p>
-            <div *ngFor="let e of request.events" class="fs-12 d-flex justify-content-between">
-              <span>{{ spaceBeforeCapital(e.name) }} </span>
-              <span>{{ getAgeFromTimeStamp(e._meta.timestamp) }}</span>
+            <div *ngIf="request && request.events">
+              <div *ngFor="let e of request.events" class="fs-12 d-flex justify-content-between">
+                <span>{{ spaceBeforeCapital(e.name) }} </span>
+                <span>{{ getAgeFromTimeStamp(e._meta.timestamp) }}</span>
+              </div>
             </div>
           </div>
         </div>

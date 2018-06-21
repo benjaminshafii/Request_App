@@ -22,13 +22,21 @@
           Step 2: Confirm payment transaction
         </div>
       </mat-expansion-panel-header>
-      <div class="mt-3 d-flex justify-content-around w-100">
-        <button class="col-5" mat-raised-button type="button" mat-dialog-close>Cancel</button>
-        <button class="col-5" mat-raised-button type="button" color="accent" (click)="submitPay()">
-          <i *ngIf="loading" class="fa fa-circle-o-notch fa-spin"></i>
-          <span>Pay</span>
-        </button>
-      </div>
+      <ng-template [ngIf]="waitAllowance" [ngIfElse]="payERC20Template">
+        <div class="d-flex flex-column align-items-center">
+          <mat-spinner class="mx-auto mb-3" [diameter]="30"></mat-spinner>
+          <small class="text-center">Please wait a few seconds for allowance to be processed</small>
+        </div>
+      </ng-template>
+      <ng-template #payERC20Template>
+        <div class="mt-3 d-flex justify-content-around w-100">
+          <button class="col-5" mat-raised-button type="button" mat-dialog-close>Cancel</button>
+          <button class="col-5" mat-raised-button type="button" color="accent" (click)="submitPay()">
+            <i *ngIf="loading" class="fa fa-circle-o-notch fa-spin"></i>
+            <span>Pay</span>
+          </button>
+        </div>
+      </ng-template>
     </mat-expansion-panel>
   </mat-accordion>
 </mat-dialog-content>
