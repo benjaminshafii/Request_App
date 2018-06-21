@@ -89,7 +89,6 @@ export class HomeComponent implements OnInit {
     this.expectedAmountFormControl = new FormControl('', [
       Validators.required,
       this.decimalValidator.bind(this)
-      // Validators.pattern('[0-9]*([.][0-9]{0,18})?$')
     ]);
     this.payerFormControl = new FormControl('', [
       Validators.required,

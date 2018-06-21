@@ -47,6 +47,7 @@ export class Web3Service {
   public toWei;
   public BN;
   public isAddress;
+  public getBlockNumber;
 
   constructor(private snackBar: MatSnackBar) {
     this.networkIdObservable.subscribe(networkId => {
@@ -111,7 +112,7 @@ export class Web3Service {
     ledgerSubprovider.setPathIndex(derivationPathIndex || 0);
 
     const engine = new Web3ProviderEngine();
-    engine.setMaxListeners(100);
+    engine.setMaxListeners(200);
     engine.addProvider(ledgerSubprovider);
     engine.addProvider(new FilterSubprovider());
     engine.addProvider(
@@ -168,6 +169,7 @@ export class Web3Service {
     this.toWei = this.web3.utils.toWei;
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
+    this.getBlockNumber = this.web3.eth.getBlockNumber;
   }
 
   private async refreshAccounts(force?: boolean) {

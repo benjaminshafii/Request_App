@@ -108,7 +108,12 @@ export class RequestComponent implements OnInit, OnDestroy {
       this.txHash
     );
     if (result.request && result.request.requestId) {
-      return this.web3Service.setSearchValue(result.request.requestId);
+      const blockNumber = await this.web3Service.getBlockNumber();
+      // wait 1 confirmation
+      console.log(blockNumber - result.transaction.blockNumber);
+      if (blockNumber - result.transaction.blockNumber > 0) {
+        return this.web3Service.setSearchValue(result.request.requestId);
+      }
     } else if (result.message === 'Contract is not supported by request') {
       return await this.setRequest({
         errorTxHash:
@@ -195,11 +200,7 @@ export class RequestComponent implements OnInit, OnDestroy {
   watchAccount() {
     // reload requestObject with its web3 if account has changed
     this.web3Service.accountObservable.subscribe(account => {
-      if (
-        this.account !== account &&
-        this.request &&
-        this.request.requestId
-      ) {
+      if (this.account !== account && this.request && this.request.requestId) {
         this.web3Service.setSearchValue(this.request.requestId);
       }
       this.account = account;
