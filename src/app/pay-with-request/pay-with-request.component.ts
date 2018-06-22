@@ -15,6 +15,8 @@ export class PayWithRequestComponent implements OnInit {
   callbackUrl: string;
   queryParamError: boolean;
   redirectUrl: string;
+  max: any;
+  min: any;
   date = new Date();
 
   constructor(@Inject(DOCUMENT) private document: any, public web3Service: Web3Service, public router: Router, private route: ActivatedRoute) {}
@@ -35,6 +37,8 @@ export class PayWithRequestComponent implements OnInit {
     }
     this.callbackUrl = data.callbackUrl;
     this.signedRequest = data.signedRequest;
+    this.min = 0;
+    this.max = 0;
 
     // check signed request
     this.web3Service.accountObservable.subscribe(account => {
@@ -54,9 +58,47 @@ export class PayWithRequestComponent implements OnInit {
     }
   }
 
+  getTotalExpectedAmounts() {
+    var total = 0;
+    for (var i=0; i<this.signedRequest.expectedAmounts.length; i++) {
+      total += parseFloat(this.web3Service.fromWei(this.signedRequest.expectedAmounts[i]));
+    }
+    return total;
+  }
+
+  getNextPayees() {
+    if (this.signedRequest.payeesIdAddress.length < 6) {
+      this.max = this.max + this.signedRequest.payeesIdAddress.length;
+    }
+    else {
+      if ((this.signedRequest.payeesIdAddress.length - this.max) >= 5) {
+        this.min = this.max;
+        this.max = this.max + 5;
+      }
+      else {
+        this.min = this.max;
+        this.max = this.max + (this.signedRequest.payeesIdAddress.length - this.max);
+      }
+    }
+  }
+
+  seeOnlyMainPayee() {
+    this.max = 0;
+  }
+
+  getLastPayees() {
+    this.min = this.min - 5;
+    if (this.max % 5 != 0) {
+      this.max = this.max - (this.max % 5);
+    }
+    else {
+      this.max = this.max - 5;
+    }
+  }
+
 
   acceptAndPay() {
-    this.web3Service.broadcastSignedRequestAsPayer(this.signedRequest, [this.signedRequest.expectedAmounts[0]])
+    this.web3Service.broadcastSignedRequestAsPayer(this.signedRequest, this.signedRequest.expectedAmounts)
       .on('broadcasted',
         res => {
           if (res.transaction && res.transaction.hash) {

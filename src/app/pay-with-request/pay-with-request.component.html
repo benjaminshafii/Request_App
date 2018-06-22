@@ -54,15 +54,41 @@
                     </div>
                     <div>
                       <div class="fs-14 lh-18">
-                        <div class="mb-1" [style.opacity]="'0.5'">FROM</div>
-                        <div class="semi-bold">ID address</div>
-                        <div class="hidden-sm-up" popover="{{signedRequest.payeesIdAddress[0]}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{signedRequest.payeesIdAddress[0].substring(0, 10)}}...{{signedRequest.payeesIdAddress[0].substring(32, 42)}}</div>
-                        <div class="hidden-sm-down">{{ signedRequest.payeesIdAddress[0] }}</div>
-                        <div *ngIf="signedRequest.payeesPaymentAddress[0]">
+                          <div *ngIf="signedRequest.payeesPaymentAddress.length > 1; else soloPayee">
+                            <div *ngIf="max == 0; else showMainOnly;" class="mb-1" [style.opacity]="'0.5'">PAYEES - <u><a (click)="getNextPayees()">see all the payees</a></u></div>
+                            <ng-template #showMainOnly>
+                              <div class="mb-1" [style.opacity]="'0.5'">PAYEES - <u><a (click)="seeOnlyMainPayee()">see the main payee only</a></u></div>
+                            </ng-template>
+                            <div class="hidden-sm-up" popover="{{signedRequest.payeesPaymentAddress[0]}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{signedRequest.payeesPaymentAddress[0].substring(0, 10)}}...{{signedRequest.payeesPaymentAddress[0].substring(32, 42)}}</div>
+                            <div *ngIf="max == 0">
+                              <div class="semi-bold">Main Payee</div>
+                              <div class="hidden-sm-down">ID: {{ signedRequest.payeesIdAddress[0] }}</div>
+                              <div class="hidden-sm-down">Paymnent: {{ signedRequest.payeesPaymentAddress[0] }}</div>
+                            </div>
+                            <div *ngFor="let payee of signedRequest.payeesPaymentAddress | slice:min:[max]; let i = index;">
+                              <div *ngIf="min == 0 && i == 0; else otherPayees">
+                                <div class="semi-bold">Main Payee</div>
+                                <div class="hidden-sm-down">ID: {{ signedRequest.payeesIdAddress[min+i] }}</div>
+                                <div class="hidden-sm-down">Paymnent: {{ payee }}</div>
+                              </div>
+                              <ng-template #otherPayees>
+                                <div class="semi-bold">Payee #{{ min+i+1 }}</div>
+                                <div class="hidden-sm-down">ID: {{ signedRequest.payeesIdAddress[min+i] }}</div>
+                                <div class="hidden-sm-down">Payment: {{ payee }}</div>
+                              </ng-template>
+                            </div>
+                            <div *ngIf="max !=0 && signedRequest.payeesIdAddress.length-max != 0" align="right" class="mb-1" [style.opacity]="'0.5'"><u><a (click)="getNextPayees()">see the {{ signedRequest.payeesIdAddress.length-max }} next payees</a></u></div>
+                            <div *ngIf="max !=0 && max > 6" align="left" class="mb-1" [style.opacity]="'0.5'"><u><a (click)="getLastPayees()">see the 5 last payees</a></u></div>
+                          </div>
+                        <ng-template #soloPayee>
+                          <div class="mb-1" [style.opacity]="'0.5'">FROM</div>
+                          <div class="semi-bold">ID address</div>
+                          <div class="hidden-sm-up" popover="{{signedRequest.payeesIdAddress[0]}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{signedRequest.payeesIdAddress[0].substring(0, 10)}}...{{signedRequest.payeesIdAddress[0].substring(32, 42)}}</div>
+                          <div class="hidden-sm-down">{{ signedRequest.payeesIdAddress[0] }}</div>
                           <div class="semi-bold">Payment address</div>
                           <div class="hidden-sm-up" popover="{{signedRequest.payeesPaymentAddress[0]}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{signedRequest.payeesPaymentAddress[0].substring(0, 10)}}...{{signedRequest.payeesPaymentAddress[0].substring(32, 42)}}</div>
-                          <div class="hidden-sm-down">{{ signedRequest.payeesPaymentAddress[0] }}</div>
-                        </div>
+                          <div class="hidden-sm-down"> {{ signedRequest.payeesPaymentAddress[0] }}</div>
+                        </ng-template>
                       </div>
                     </div>
                   </div>
@@ -78,7 +104,8 @@
                 <div class="d-flex">
                   <div class="ml-auto d-inline-block semi-bold fc-primary px-5 py-3" style="background: #DFE5EC">
                     <div class="fs-14">AMOUNT</div>
-                    <div class="fs-24">{{ web3Service.fromWei(signedRequest.expectedAmounts[0].toString()) }} ETH</div>
+                    <!-- <div class="fs-24">{{ getTotalExpectedAmounts(signedRequest.expectedAmounts) }} ETH</div> -->
+                    <div class="fs-24">{{ getTotalExpectedAmounts() }} ETH</div>
                   </div>
                 </div>
                 <div class="p-5">
