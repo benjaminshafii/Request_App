@@ -7,7 +7,6 @@
     "start": "ng serve",
     "dev:https": "ng serve --ssl 1 --ssl-key 'ssl/local.app.request.network.key' --ssl-cert 'ssl/local.app.request.network.crt' --port 8080",
     "build": "ng build",
-    "build:rinkeby": "ng build --env=staging --prod --aot --build-optimizer",
     "build:prod": "ng build --prod --aot --build-optimizer",
     "test": "ng test",
     "lint": "ng lint",
