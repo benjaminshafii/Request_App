@@ -20,7 +20,6 @@ export class RefundDialogComponent implements OnInit {
   allowanceMode: boolean;
   isAllowanceGranted: boolean;
   callbackTx: any;
-  waitAllowance: boolean;
 
   constructor(
     public web3Service: Web3Service,
@@ -33,7 +32,6 @@ export class RefundDialogComponent implements OnInit {
     this.request = data.requestObject.requestData;
     this.loading = false;
     this.isAllowanceGranted = false;
-    this.waitAllowance = false;
 
     this.allowanceMode =
       this.request.currency !== 'ETH' && this.request.currency !== 'BTC'
@@ -69,10 +67,6 @@ export class RefundDialogComponent implements OnInit {
       .on('broadcasted', txHash => {
         this.loading = false;
         this.isAllowanceGranted = true;
-        this.waitAllowance = true;
-        setTimeout(() => {
-          this.waitAllowance = false;
-        }, 30000);
       })
       .catch(err => {
         this.loading = false;
