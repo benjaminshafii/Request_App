@@ -21,6 +21,8 @@ export class PayWithRequestComponent implements OnInit {
   requestNetworkId: number;
   queryParamError: boolean;
   redirectUrl: string;
+  max: number;
+  min: number;
   date = new Date();
 
   constructor(
@@ -29,7 +31,10 @@ export class PayWithRequestComponent implements OnInit {
     public router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.min = 0;
+    this.max = 0;
+  }
 
   async ngOnInit() {
     if (!this.web3Service || !this.web3Service.web3Ready) {
@@ -47,10 +52,6 @@ export class PayWithRequestComponent implements OnInit {
       return (this.queryParamError = true);
     }
 
-    this.ipfsData = await this.web3Service.getIpfsData(
-      queryParams.signedRequest.data
-    );
-
     this.callbackUrl = queryParams.callbackUrl;
     this.requestNetworkId = queryParams.networkId;
 
@@ -59,6 +60,9 @@ export class PayWithRequestComponent implements OnInit {
     this.signedRequest.currency = this.web3Service.currencyFromContractAddress(
       this.signedRequest.currencyContract
     );
+    this.ipfsData = queryParams.signedRequest.data
+      ? await this.web3Service.getIpfsData(queryParams.signedRequest.data)
+      : null;
 
     this.web3Service.networkIdObservable.subscribe(networkId => {
       if (networkId !== this.requestNetworkId) {
@@ -81,6 +85,42 @@ export class PayWithRequestComponent implements OnInit {
     }
   }
 
+  getTotalExpectedAmounts() {
+    return this.signedRequest.expectedAmounts.reduce(
+      (a, b) => this.web3Service.BN(a).add(this.web3Service.BN(b)),
+      0
+    );
+  }
+
+  getNextPayees(init) {
+    if (init) {
+      this.max = 0;
+    }
+    if (this.signedRequest.payeesIdAddress.length <= 5) {
+      this.max += this.signedRequest.payeesIdAddress.length;
+    } else {
+      this.min = this.max;
+      if (this.signedRequest.payeesIdAddress.length - this.max >= 5) {
+        this.max += 5;
+      } else {
+        this.max += this.signedRequest.payeesIdAddress.length - this.max;
+      }
+    }
+  }
+
+  seeOnlyMainPayee() {
+    this.max = 0;
+  }
+
+  getLastPayees() {
+    this.min = this.min - 5;
+    if (this.max % 5 !== 0) {
+      this.max = this.max - this.max % 5;
+    } else {
+      this.max = this.max - 5;
+    }
+  }
+
   acceptAndPay() {
     if (this.web3Service.networkIdObservable.value !== this.requestNetworkId) {
       return this.web3Service.openSnackBar(
@@ -89,6 +129,49 @@ export class PayWithRequestComponent implements OnInit {
         )}`
       );
     }
+
+    this.web3Service
+      .broadcastSignedRequestAsPayer(
+        this.signedRequest,
+        this.signedRequest.expectedAmounts
+      )
+      .on('broadcasted', res => {
+        if (res.transaction && res.transaction.hash) {
+          this.redirectUrl = `${this.callbackUrl}${res.transaction.hash}`;
+          setTimeout(
+            _ =>
+              (this.document.location.href = `${this.callbackUrl}${
+                res.transaction.hash
+              }`),
+            5000
+          );
+        }
+      })
+      .then(
+        response => {},
+        err => {
+          if (err.message.startsWith('Invalid status 6985')) {
+            this.web3Service.openSnackBar(
+              'Invalid status 6985. User denied transaction.'
+            );
+          } else if (
+            err.message.startsWith('Failed to subscribe to new newBlockHeaders')
+          ) {
+            return;
+          } else if (
+            err.message.startsWith(
+              'Returned error: Error: MetaMask Tx Signature'
+            )
+          ) {
+            this.web3Service.openSnackBar(
+              'MetaMask Tx Signature: User denied transaction signature.'
+            );
+          } else {
+            console.error(err);
+            this.web3Service.openSnackBar(err.message);
+          }
+        }
+      );
 
     const callbackTx = err => {
       if (err.message.startsWith('Invalid status 6985')) {
