@@ -109,7 +109,6 @@ export class RequestComponent implements OnInit, OnDestroy {
     if (result.request && result.request.requestId) {
       const blockNumber = await this.web3Service.getBlockNumber();
       // wait 1 confirmation
-      console.log(blockNumber - result.transaction.blockNumber);
       if (blockNumber - result.transaction.blockNumber > 0) {
         return this.web3Service.setSearchValue(result.request.requestId);
       }

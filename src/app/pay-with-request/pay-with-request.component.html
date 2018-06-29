@@ -49,31 +49,39 @@
                 </div>
                 <div class="bg-grey-whiter fc-blue-grey p-4 d-flex flex-wrap">
                   <div class="d-flex mb-3 m-lg-0" style="flex: 1">
+                    <div class="px-3">
+                      <angular-blockies [options]="{ seed: signedRequest.payeesIdAddress[0].toLowerCase() }" class="blockies" style="width: 50px; height: 50px;"></angular-blockies>
+                    </div>
                     <div class="fs-14 lh-18">
-                      <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYEE</div>
-                      <div class="d-flex align-items-end">
-                        <div class="px-3">
-                          <angular-blockies *ngIf="signedRequest.payeesIdAddress[0]" [options]="{ seed: signedRequest.payeesIdAddress[0].toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
-                        </div>
-                        <div>
-                          <div class="semi-bold">{{ signedRequest.payeesPaymentAddress[0] && signedRequest.payeesPaymentAddress[0].toLowerCase() !== signedRequest.payeesIdAddress[0].toLowerCase() ? 'ID address' : 'ETH address' }}</div>
-                          <div class="hidden-sm-up" popover="{{signedRequest.payeesIdAddress[0]}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{signedRequest.payeesIdAddress[0].substring(0, 10)}}...{{signedRequest.payeesIdAddress[0].substring(32, 42)}}</div>
-                          <div class="hidden-sm-down">{{ signedRequest.payeesIdAddress[0] }}</div>
-                        </div>
+                      <div>
+                        <span>{{ signedRequest.payeesPaymentAddress.length > 1 ? 'PAYEES - ' : 'PAYEE' }}</span>
+                        <span [style.textDecoration]="'underline'" *ngIf="signedRequest.payeesPaymentAddress.length > 1">
+                          <ng-template [ngIf]="max === 0" [ngIfElse]="seeOnlyMainPayeeAnchor"><a (click)="getNextPayees(true)">see all the payees <i class="fa fa-caret-right"></i></a></ng-template>
+                          <ng-template #seeOnlyMainPayeeAnchor><a (click)="seeOnlyMainPayee()">see main payee only <i class="fa fa-caret-down"></i></a></ng-template>
+                        </span>
                       </div>
-                      <div class="d-flex align-items-end mt-1" *ngIf="signedRequest.payeesPaymentAddress[0] && signedRequest.payeesPaymentAddress[0].toLowerCase() !== signedRequest.payeesIdAddress[0].toLowerCase()">
-                        <div class="px-3">
-                          <angular-blockies [options]="{ seed: signedRequest.payeesPaymentAddress[0].toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+                      <div *ngFor="let payee of signedRequest.payeesIdAddress | slice:min:[max || 1]; let i = index;" class="my-1">
+                        <div class="semi-bold">
+                          <ng-template [ngIf]="min === 0 && i === 0" [ngIfElse]="otherPayees">Main Payee</ng-template>
+                          <ng-template #otherPayees>Payee #{{ min+i+1 }}</ng-template>
                         </div>
-                        <div>
-                          <div class="semi-bold">Payment address</div>
-                          <div class="hidden-sm-up" popover="{{signedRequest.payeesPaymentAddress[0]}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{signedRequest.payeesPaymentAddress[0].substring(0, 10)}}...{{signedRequest.payeesPaymentAddress[0].substring(32, 42)}}</div>
-                          <div class="hidden-sm-down">{{ signedRequest.payeesPaymentAddress[0] }}</div>
-                        </div>
+
+                        <ng-template [ngIf]="signedRequest.payeesPaymentAddress[min+i] && payee !== signedRequest.payeesPaymentAddress[min+i]" [ngIfElse]="samePaymentAddress">
+                          <div>ID address: {{ payee }}</div>
+                          <div>Payment address: {{ signedRequest.payeesPaymentAddress[min+i] }}</div>
+                        </ng-template>
+                        <ng-template #samePaymentAddress>
+                          <div>Address: {{ payee }}</div>
+                        </ng-template>
+                      </div>
+                      <div class="my-1" [style.textDecoration]="'underline !important'">
+                        <a (click)="getNextPayees()" *ngIf="max !== 0 && signedRequest.payeesIdAddress.length - max > 0" class="pull-right">see the {{ signedRequest.payeesIdAddress.length - max }} next payees <i class="fa fa-caret-right"></i></a>
+                        <a (click)="getLastPayees()" *ngIf="max !== 0 && max > 5"><i class="fa fa-caret-left"></i> see the 5 previous payees</a>
                       </div>
                     </div>
                   </div>
                 </div>
+                <!-- request ipfs data -->
                 <div class="fc-blue-grey p-4" style="border-bottom: 1px solid #DFE5EC">
                   <div *ngIf="ipfsData">
                     <div class="px-3" *ngFor="let e of Object.entries(ipfsData)">
@@ -85,7 +93,7 @@
                 <div class="d-flex">
                   <div class="ml-auto d-inline-block semi-bold fc-primary px-5 py-3" style="background: #DFE5EC">
                     <div class="fs-14">AMOUNT</div>
-                    <div class="fs-24">{{ web3Service.fromWei(signedRequest.expectedAmounts[0].toString()) }} {{ signedRequest.currency }}</div>
+                    <div class="fs-24">{{ web3Service.fromWei(getTotalExpectedAmounts().toString()) }} ETH</div>
                   </div>
                 </div>
                 <div class="p-5">
