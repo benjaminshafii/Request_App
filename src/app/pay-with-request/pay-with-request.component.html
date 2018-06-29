@@ -74,9 +74,9 @@
                           <div>Address: {{ payee }}</div>
                         </ng-template>
                       </div>
-                      <div class="my-1" [style.textDecoration]="'underline !important'">
-                        <a (click)="getNextPayees()" *ngIf="max !== 0 && signedRequest.payeesIdAddress.length - max > 0" class="pull-right">see the {{ signedRequest.payeesIdAddress.length - max }} next payees <i class="fa fa-caret-right"></i></a>
-                        <a (click)="getLastPayees()" *ngIf="max !== 0 && max > 5"><i class="fa fa-caret-left"></i> see the 5 previous payees</a>
+                      <div class="my-1">
+                        <a [style.textDecoration]="'underline'" (click)="getNextPayees()" *ngIf="max !== 0 && signedRequest.payeesIdAddress.length - max > 0" class="pull-right">see the {{ signedRequest.payeesIdAddress.length - max }} next payees <i class="fa fa-caret-right"></i></a>
+                        <a [style.textDecoration]="'underline'" (click)="getLastPayees()" *ngIf="max !== 0 && max > 5"><i class="fa fa-caret-left"></i> see the 5 previous payees</a>
                       </div>
                     </div>
                   </div>

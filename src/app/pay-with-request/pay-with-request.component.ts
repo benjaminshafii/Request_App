@@ -55,7 +55,11 @@ export class PayWithRequestComponent implements OnInit {
     this.callbackUrl = queryParams.callbackUrl;
     this.requestNetworkId = queryParams.networkId;
 
-    this.signedRequestObject = new SignedRequest(queryParams.signedRequest);
+    // reload requestObject with its web3 if account has changed
+    this.web3Service.accountObservable.subscribe(account => {
+      this.signedRequestObject = new SignedRequest(queryParams.signedRequest);
+    });
+
     this.signedRequest = this.signedRequestObject.signedRequestData;
     this.signedRequest.currency = this.web3Service.currencyFromContractAddress(
       this.signedRequest.currencyContract
@@ -129,49 +133,6 @@ export class PayWithRequestComponent implements OnInit {
         )}`
       );
     }
-
-    this.web3Service
-      .broadcastSignedRequestAsPayer(
-        this.signedRequest,
-        this.signedRequest.expectedAmounts
-      )
-      .on('broadcasted', res => {
-        if (res.transaction && res.transaction.hash) {
-          this.redirectUrl = `${this.callbackUrl}${res.transaction.hash}`;
-          setTimeout(
-            _ =>
-              (this.document.location.href = `${this.callbackUrl}${
-                res.transaction.hash
-              }`),
-            5000
-          );
-        }
-      })
-      .then(
-        response => {},
-        err => {
-          if (err.message.startsWith('Invalid status 6985')) {
-            this.web3Service.openSnackBar(
-              'Invalid status 6985. User denied transaction.'
-            );
-          } else if (
-            err.message.startsWith('Failed to subscribe to new newBlockHeaders')
-          ) {
-            return;
-          } else if (
-            err.message.startsWith(
-              'Returned error: Error: MetaMask Tx Signature'
-            )
-          ) {
-            this.web3Service.openSnackBar(
-              'MetaMask Tx Signature: User denied transaction signature.'
-            );
-          } else {
-            console.error(err);
-            this.web3Service.openSnackBar(err.message);
-          }
-        }
-      );
 
     const callbackTx = err => {
       if (err.message.startsWith('Invalid status 6985')) {
