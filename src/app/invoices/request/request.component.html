@@ -35,7 +35,7 @@
             <div *ngIf="request && request.events && request.events.length > 0">
               <div *ngFor="let e of request.events" class="fs-12 d-flex justify-content-between">
                 <span>{{ spaceBeforeCapital(e.name) }} </span>
-                <span>{{ getAgeFromTimeStamp(e._meta.timestamp) }}</span>
+                <span>{{ utilService.getAgeFromTimeStamp(e._meta.timestamp) }}</span>
               </div>
             </div>
           </div>

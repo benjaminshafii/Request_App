@@ -8,6 +8,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { Web3Service } from '../../util/web3.service';
 import { MatPaginator, MatTableDataSource, MatSort } from '@angular/material';
+import { UtilService } from '../../util/util.service';
 
 @Component({
   selector: 'app-search',
@@ -15,7 +16,6 @@ import { MatPaginator, MatTableDataSource, MatSort } from '@angular/material';
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
-  date = new Date().getTime();
   searchValue: string;
   subscription;
   displayedColumns = [
@@ -36,7 +36,8 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private web3Service: Web3Service,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private utilService: UtilService
   ) {}
 
   async ngOnInit() {
@@ -79,28 +80,17 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getRequestsFromIds(resultsList) {
+    const promises = [];
     for (const result of resultsList) {
-      this.web3Service
-        .getRequestByRequestId(result.requestId)
-        .then(requestObject => {
-          result.request = requestObject.requestData;
-        });
+      promises.push(
+        this.web3Service
+          .getRequestByRequestId(result.requestId)
+          .then(requestObject => {
+            result.request = requestObject.requestData;
+          })
+      );
     }
-  }
-
-  getAgeFromTimeStamp(timestamp) {
-    if (!timestamp) {
-      return '';
-    }
-    const time = this.date - timestamp * 1000;
-    const days = Math.floor(time / (1000 * 60 * 60 * 24));
-    let msg = days === 1 ? `${days} day ` : days > 1 ? `${days} days ` : '';
-    const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
-    msg += hours === 1 ? `${hours} hr ` : hours > 1 ? `${hours} hrs ` : '';
-    const minutes = Math.floor((time / (1000 * 60)) % 60);
-    msg +=
-      minutes === 1 ? `${minutes} min ` : minutes > 1 ? `${minutes} mins ` : '';
-    return msg ? `${msg}ago` : 'less than 1 min ago';
+    return Promise.all(promises);
   }
 
   ngAfterViewInit() {

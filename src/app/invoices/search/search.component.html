@@ -16,7 +16,7 @@
         <!-- Age Column -->
         <ng-container matColumnDef="_meta.timestamp">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Age</mat-header-cell>
-          <mat-cell *matCellDef="let req">{{ getAgeFromTimeStamp(req._meta.timestamp) }}</mat-cell>
+          <mat-cell *matCellDef="let req">{{ utilService.getAgeFromTimeStamp(req._meta.timestamp) }}</mat-cell>
         </ng-container>
         <!-- From Column -->
         <ng-container matColumnDef="request.payee.address">
