@@ -1,9 +1,13 @@
 import { TestBed, inject } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material';
 import { UtilService } from './util.service';
 
 describe('Service: UtilService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [
+        MatSnackBarModule,
+      ],
       providers: [UtilService]
     });
     jasmine.clock().install();

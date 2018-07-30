@@ -1,7 +1,6 @@
 import { Injectable, HostListener } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { MatSnackBar } from '@angular/material';
+import { UtilService } from './util.service';
 
 import RequestNetwork, {
   Types,
@@ -37,7 +36,6 @@ export class Web3Service {
 
   public accountObservable = new BehaviorSubject<string>(null);
   public networkIdObservable = new BehaviorSubject<number>(null);
-  public searchValue = new Subject<string>();
 
   private web3NotReadyMsg = 'Error when trying to instanciate web3.';
   private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Mainnet or Rinkeby Testnet.';
@@ -49,7 +47,7 @@ export class Web3Service {
   public isAddress;
   public getBlockNumber;
 
-  constructor(private snackBar: MatSnackBar) {
+  constructor(private utilService: UtilService) {
     this.networkIdObservable.subscribe(networkId => {
       this.setEtherscanUrl();
     });
@@ -122,7 +120,7 @@ export class Web3Service {
 
     this.checkAndInstantiateWeb3(engine);
 
-    this.openSnackBar(
+    this.utilService.openSnackBar(
       'Ledger Wallet successfully connected.',
       null,
       'success-snackbar'
@@ -161,7 +159,7 @@ export class Web3Service {
         this.networkIdObservable.value
       );
     } catch (err) {
-      this.openSnackBar(this.requestNetworkNotReadyMsg);
+      this.utilService.openSnackBar(this.requestNetworkNotReadyMsg);
       console.error(err);
     }
 
@@ -206,39 +204,16 @@ export class Web3Service {
     const stop =
       !this.web3 || !this.requestNetwork || !this.accountObservable.value;
     if (stop) {
-      this.openSnackBar();
-    }
-    return stop;
-  }
-
-  public openSnackBar(
-    msg?: string,
-    ok?: string,
-    panelClass?: string,
-    duration?: number
-  ) {
-    if (!msg) {
-      msg = !this.web3
+      const msg = !this.web3
         ? this.web3NotReadyMsg
         : !this.requestNetwork
           ? this.requestNetworkNotReadyMsg
           : !this.accountObservable.value
             ? this.walletNotReadyMsg
             : '';
-      if (msg === '') {
-        return;
-      }
+      this.utilService.openSnackBar(msg);
     }
-    this.snackBar.open(msg, ok || 'Ok', {
-      duration: duration || 7000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: panelClass || 'warning-snackbar'
-    });
-  }
-
-  public setSearchValue(searchValue: string) {
-    this.searchValue.next(searchValue);
+    return stop;
   }
 
   public setRequestStatus(request) {
@@ -262,7 +237,7 @@ export class Web3Service {
   private confirmTxOnLedgerMsg() {
     if (this.ledgerConnected) {
       setTimeout(() => {
-        this.openSnackBar(
+        this.utilService.openSnackBar(
           'Please confirm transaction on your ledger.',
           null,
           'info-snackbar'

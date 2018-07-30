@@ -5,6 +5,7 @@ import { Web3Service } from '../util/web3.service';
 import { BroadcastDialogComponent } from '../util/dialogs/broadcast-dialog.component';
 import { MatDialog } from '@angular/material';
 import { SignedRequest } from '@requestnetwork/request-network.js';
+import { UtilService } from '../util/util.service';
 
 @Component({
   selector: 'app-pay-with-request',
@@ -30,7 +31,8 @@ export class PayWithRequestComponent implements OnInit {
     public web3Service: Web3Service,
     public router: Router,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private utilService: UtilService
   ) {
     this.min = 0;
     this.max = 0;
@@ -70,7 +72,7 @@ export class PayWithRequestComponent implements OnInit {
 
     this.web3Service.networkIdObservable.subscribe(networkId => {
       if (networkId !== this.requestNetworkId) {
-        this.web3Service.openSnackBar(
+        this.utilService.openSnackBar(
           `Wrong network detected, please switch to ${this.getNetworkName(
             this.requestNetworkId
           )}`
@@ -127,7 +129,7 @@ export class PayWithRequestComponent implements OnInit {
 
   acceptAndPay() {
     if (this.web3Service.networkIdObservable.value !== this.requestNetworkId) {
-      return this.web3Service.openSnackBar(
+      return this.utilService.openSnackBar(
         `Wrong network detected, please switch to ${this.getNetworkName(
           this.requestNetworkId
         )}`
@@ -136,7 +138,7 @@ export class PayWithRequestComponent implements OnInit {
 
     const callbackTx = err => {
       if (err.message.startsWith('Invalid status 6985')) {
-        this.web3Service.openSnackBar(
+        this.utilService.openSnackBar(
           'Invalid status 6985. User denied transaction.'
         );
       } else if (
@@ -144,22 +146,22 @@ export class PayWithRequestComponent implements OnInit {
       ) {
         return;
       } else if (err.message.startsWith('_from must be different')) {
-        this.web3Service.openSnackBar(
+        this.utilService.openSnackBar(
           `You can't create a request for yourself`
         );
       } else if (err.message.startsWith('balance of token is too low')) {
-        this.web3Service.openSnackBar(
+        this.utilService.openSnackBar(
           'Insufficient funds, check your token balance '
         );
       } else if (
         err.message.startsWith('Returned error: Error: MetaMask Tx Signature')
       ) {
-        this.web3Service.openSnackBar(
+        this.utilService.openSnackBar(
           'MetaMask Tx Signature: User denied transaction signature.'
         );
       } else {
         console.error(err);
-        this.web3Service.openSnackBar(err.message);
+        this.utilService.openSnackBar(err.message);
       }
     };
 

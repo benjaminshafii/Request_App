@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { Web3Service } from '../../util/web3.service';
+import { UtilService } from '../../util/util.service';
 import { MatDialog } from '@angular/material';
 import { LedgerDialogComponent } from '../../util/dialogs/ledger-dialog.component';
 
@@ -11,7 +12,7 @@ import { LedgerDialogComponent } from '../../util/dialogs/ledger-dialog.componen
 })
 export class AccountComponent {
 
-  constructor(public web3Service: Web3Service, private dialog: MatDialog) {}
+  constructor(public web3Service: Web3Service, private dialog: MatDialog, private utilService: UtilService) {}
 
 
   openLedgerDialog() {

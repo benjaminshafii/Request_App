@@ -8,6 +8,7 @@ import {
   ValidationErrors
 } from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
+import { UtilService } from '../../util/util.service';
 
 @Component({
   selector: 'app-home',
@@ -74,13 +75,14 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private web3Service: Web3Service,
+    private utilService: UtilService,
     private formBuilder: FormBuilder,
     private router: Router
   ) {
     setInterval(() => {
       this.date = new Date().getTime();
     }, 5000);
-    this.web3Service.setSearchValue('');
+    this.utilService.setSearchValue('');
 
     this.paymentAddressFormControl = new FormControl('', [
       Validators.required,
@@ -186,7 +188,7 @@ export class HomeComponent implements OnInit {
       this.createLoading = false;
 
       if (response.transaction) {
-        this.web3Service.openSnackBar(
+        this.utilService.openSnackBar(
           'The request is being created. Please wait a few moments for it to appear on the Blockchain.',
           'Ok',
           'info-snackbar'
@@ -220,7 +222,7 @@ export class HomeComponent implements OnInit {
         );
       } else if (response.message) {
         if (response.message.includes('6985')) {
-          return this.web3Service.openSnackBar(
+          return this.utilService.openSnackBar(
             'Invalid status 6985. User denied transaction.'
           );
         } else if (response.message.includes('newBlockHeaders')) {
@@ -230,12 +232,12 @@ export class HomeComponent implements OnInit {
             'Returned error: Error: MetaMask Tx Signature'
           )
         ) {
-          return this.web3Service.openSnackBar(
+          return this.utilService.openSnackBar(
             'MetaMask Tx Signature: User denied transaction signature.'
           );
         } else {
           console.error(response);
-          return this.web3Service.openSnackBar(response.message);
+          return this.utilService.openSnackBar(response.message);
         }
       }
     };
@@ -253,7 +255,7 @@ export class HomeComponent implements OnInit {
       })
       // .then(
       //   response => {
-      //     // setTimeout(() => { this.web3Service.openSnackBar('Request successfully created.', 'Ok', 'success-snackbar'); }, 5000);
+      //     // setTimeout(() => { this.utilService.openSnackBar('Request successfully created.', 'Ok', 'success-snackbar'); }, 5000);
       //   },
       //   err => {}
       // )

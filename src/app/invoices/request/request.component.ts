@@ -44,7 +44,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     }
     this.watchAccount();
 
-    this.subscription = this.web3Service.searchValue.subscribe(
+    this.subscription = this.utilService.searchValue.subscribe(
       async searchValue => {
         if (searchValue && searchValue.length > 42) {
           this.request = null;
@@ -58,7 +58,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     );
 
     if (this.route.snapshot.params['requestId']) {
-      this.web3Service.setSearchValue(this.route.snapshot.params['requestId']);
+      this.utilService.setSearchValue(this.route.snapshot.params['requestId']);
     } else if (this.route.snapshot.params['txHash']) {
       this.txHash = this.route.snapshot.params['txHash'];
       this.watchRequestByTxHash();
@@ -111,7 +111,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       const blockNumber = await this.web3Service.getBlockNumber();
       // wait 1 confirmation
       if (blockNumber - result.transaction.blockNumber > 0) {
-        return this.web3Service.setSearchValue(result.request.requestId);
+        return this.utilService.setSearchValue(result.request.requestId);
       }
     } else if (result.message === 'Contract is not supported by request') {
       return await this.setRequest({
@@ -200,7 +200,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     // reload requestObject with its web3 if account has changed
     this.web3Service.accountObservable.subscribe(account => {
       if (this.account !== account && this.request && this.request.requestId) {
-        this.web3Service.setSearchValue(this.request.requestId);
+        this.utilService.setSearchValue(this.request.requestId);
       }
       this.account = account;
     });
@@ -235,7 +235,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
   callbackTx(response, msg?) {
     if (response.transaction) {
-      this.web3Service.openSnackBar(
+      this.utilService.openSnackBar(
         msg || 'Transaction in progress.',
         'Ok',
         'info-snackbar'
@@ -244,7 +244,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       this.watchTxHash(this.loading);
     } else if (response.message) {
       if (response.message.includes('6985')) {
-        this.web3Service.openSnackBar(
+        this.utilService.openSnackBar(
           'Invalid status 6985. User denied transaction.'
         );
       } else if (response.message.includes('newBlockHeaders')) {
@@ -254,12 +254,12 @@ export class RequestComponent implements OnInit, OnDestroy {
           'Returned error: Error: MetaMask Tx Signature'
         )
       ) {
-        this.web3Service.openSnackBar(
+        this.utilService.openSnackBar(
           'MetaMask Tx Signature: User denied transaction signature.'
         );
       } else {
         console.error(response);
-        this.web3Service.openSnackBar(response.message);
+        this.utilService.openSnackBar(response.message);
       }
     }
   }
@@ -277,7 +277,7 @@ export class RequestComponent implements OnInit, OnDestroy {
         response => {
           // setTimeout(() => {
           //   this.loading = false;
-          //   this.web3Service.openSnackBar('Request successfully cancelled.', 'Ok', 'success-snackbar');
+          //   this.utilService.openSnackBar('Request successfully cancelled.', 'Ok', 'success-snackbar');
           // }, 5000);
         },
         err => {
@@ -299,7 +299,7 @@ export class RequestComponent implements OnInit, OnDestroy {
         response => {
           // setTimeout(() => {
           //   this.loading = false;
-          //   this.web3Service.openSnackBar(
+          //   this.utilService.openSnackBar(
           //     'Request successfully accepted.',
           //     'Ok',
           //     'success-snackbar'

@@ -46,7 +46,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
       return this.ngOnInit();
     }
 
-    this.subscription = this.web3Service.searchValue.subscribe(
+    this.subscription = this.utilService.searchValue.subscribe(
       async searchValue => {
         this.searchValue = searchValue;
         this.loading = true;
@@ -72,7 +72,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.route.snapshot.params['searchValue']) {
       setTimeout(() =>
-        this.web3Service.setSearchValue(
+        this.utilService.setSearchValue(
           this.route.snapshot.params['searchValue']
         )
       );

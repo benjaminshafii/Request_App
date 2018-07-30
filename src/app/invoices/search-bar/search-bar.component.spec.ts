@@ -4,6 +4,7 @@ import { MatInputModule, MatSnackBarModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SearchBarComponent } from './search-bar.component';
 import { Web3Service } from '../../util/web3.service';
+import { UtilService } from '../../util/util.service';
 import { Router } from '@angular/router';
 
 class MockComponent {}
@@ -31,7 +32,7 @@ describe('Component: SearchBar', () => {
         ])
       ],
       declarations: [SearchBarComponent],
-      providers: [Web3Service]
+      providers: [Web3Service, UtilService]
     });
 
     fixture = TestBed.createComponent(SearchBarComponent);
@@ -62,8 +63,8 @@ describe('Component: SearchBar', () => {
     const router = TestBed.get(Router);
     router.routerState.snapshot.url = '/search';
 
-    const web3Service = TestBed.get(Web3Service);
-    const web3SetSearchSpy = spyOn(web3Service, 'setSearchValue');
+    const utilService = TestBed.get(UtilService);
+    const web3SetSearchSpy = spyOn(utilService, 'setSearchValue');
 
     component.search(ETH_ADDR);
     expect(web3SetSearchSpy).toHaveBeenCalledWith(ETH_ADDR);
@@ -96,8 +97,8 @@ describe('Component: SearchBar', () => {
     const router = TestBed.get(Router);
     router.routerState.snapshot.url = '/request/requestId';
 
-    const web3Service = TestBed.get(Web3Service);
-    const web3SetSearchSpy = spyOn(web3Service, 'setSearchValue');
+    const utilService = TestBed.get(UtilService);
+    const web3SetSearchSpy = spyOn(utilService, 'setSearchValue');
 
     component.search(REQ_ID);
     expect(web3SetSearchSpy).toHaveBeenCalledWith(REQ_ID);
