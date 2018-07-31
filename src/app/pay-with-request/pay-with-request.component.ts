@@ -91,13 +91,6 @@ export class PayWithRequestComponent implements OnInit {
     }
   }
 
-  getTotalExpectedAmounts() {
-    return this.signedRequest.expectedAmounts.reduce(
-      (a, b) => this.web3Service.BN(a).add(this.web3Service.BN(b)),
-      0
-    );
-  }
-
   getNextPayees(init) {
     if (init) {
       this.max = 0;
@@ -115,6 +108,7 @@ export class PayWithRequestComponent implements OnInit {
   }
 
   seeOnlyMainPayee() {
+    this.min = 0;
     this.max = 0;
   }
 

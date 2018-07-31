@@ -51,7 +51,7 @@ export class LedgerDialogComponent {
       );
       for (const address of this.addresses) {
         web3.eth.getBalance(address.address).then(balance => {
-          address.balance = this.web3Service.fromWei(balance);
+          address.balance = this.web3Service.BNToAmount(balance, 'ETH');
         });
       }
     } else {

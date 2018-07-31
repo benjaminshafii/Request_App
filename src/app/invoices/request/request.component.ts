@@ -7,6 +7,7 @@ import { PayDialogComponent } from '../../util/dialogs/pay-dialog.component';
 import { SubtractDialogComponent } from '../../util/dialogs/subtract-dialog.component';
 import { AdditionalDialogComponent } from '../../util/dialogs/additional-dialog.component';
 import { RefundDialogComponent } from '../../util/dialogs/refund-dialog.component';
+import { DisplayPayDialogComponent } from '../../util/dialogs/display-pay-dialog.component';
 
 @Component({
   selector: 'app-request',
@@ -136,11 +137,13 @@ export class RequestComponent implements OnInit, OnDestroy {
           queryParamRequest.payer
         ) {
           const request = queryParamRequest;
-          request.payee.balance = this.web3Service.BN(
-            this.web3Service.toWei('0')
+          request.payee.balance = this.web3Service.amountToBN(
+            '0',
+            queryParamRequest.currency
           );
-          request.payee.expectedAmount = this.web3Service.BN(
-            this.web3Service.toWei(queryParamRequest.payee.expectedAmount)
+          request.payee.expectedAmount = this.web3Service.amountToBN(
+            queryParamRequest.payee.expectedAmount,
+            queryParamRequest.currency
           );
           await this.setRequest(request);
         }
@@ -233,6 +236,10 @@ export class RequestComponent implements OnInit, OnDestroy {
     location.reload();
   }
 
+  getBlockchainName() {
+    return this.request.currency === 'BTC' ? 'BTC' : 'ETH';
+  }
+
   callbackTx(response, msg?) {
     if (response.transaction) {
       this.utilService.openSnackBar(
@@ -273,17 +280,9 @@ export class RequestComponent implements OnInit, OnDestroy {
           'The request is being cancelled. Please wait a few moments for it to appear on the Blockchain.'
         );
       })
-      .then(
-        response => {
-          // setTimeout(() => {
-          //   this.loading = false;
-          //   this.utilService.openSnackBar('Request successfully cancelled.', 'Ok', 'success-snackbar');
-          // }, 5000);
-        },
-        err => {
-          this.callbackTx(err);
-        }
-      );
+      .catch(err => {
+        this.callbackTx(err);
+      });
   }
 
   acceptRequest() {
@@ -295,21 +294,9 @@ export class RequestComponent implements OnInit, OnDestroy {
           'The request is being accepted. Please wait a few moments for it to appear on the Blockchain.'
         );
       })
-      .then(
-        response => {
-          // setTimeout(() => {
-          //   this.loading = false;
-          //   this.utilService.openSnackBar(
-          //     'Request successfully accepted.',
-          //     'Ok',
-          //     'success-snackbar'
-          //   );
-          // }, 5000);
-        },
-        err => {
-          this.callbackTx(err);
-        }
-      );
+      .catch(err => {
+        this.callbackTx(err);
+      });
   }
 
   subtractRequest() {
@@ -335,27 +322,50 @@ export class RequestComponent implements OnInit, OnDestroy {
   }
 
   payRequest() {
-    this.dialog.open(PayDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        callbackTx: this.callbackTx.bind(this),
-        immutableAmount: false,
-        requestObject: this.requestObject
-      }
-    });
+    if (this.getBlockchainName() === 'ETH') {
+      this.dialog.open(PayDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        autoFocus: false,
+        data: {
+          callbackTx: this.callbackTx.bind(this),
+          requestObject: this.requestObject
+        }
+      });
+    } else {
+      this.dialog.open(DisplayPayDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        autoFocus: false,
+        data: {
+          mode: 'pay',
+          requestObject: this.requestObject
+        }
+      });
+    }
   }
 
   refundRequest() {
-    this.dialog.open(RefundDialogComponent, {
-      hasBackdrop: true,
-      width: '350px',
-      data: {
-        callbackTx: this.callbackTx.bind(this),
-        immutableAmount: false,
-        requestObject: this.requestObject
-      }
-    });
+    if (this.getBlockchainName() === 'ETH') {
+      this.dialog.open(RefundDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        data: {
+          callbackTx: this.callbackTx.bind(this),
+          requestObject: this.requestObject
+        }
+      });
+    } else {
+      this.dialog.open(DisplayPayDialogComponent, {
+        hasBackdrop: true,
+        width: '350px',
+        autoFocus: false,
+        data: {
+          mode: 'refund',
+          requestObject: this.requestObject
+        }
+      });
+    }
   }
 
   ngOnDestroy() {

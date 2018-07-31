@@ -8,6 +8,7 @@ import {
   ValidationErrors
 } from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
+import * as WAValidator from 'wallet-address-validator';
 import { UtilService } from '../../util/util.service';
 
 @Component({
@@ -21,43 +22,40 @@ export class HomeComponent implements OnInit {
   createLoading = false;
   requestForm: FormGroup;
   expectedAmountFormControl: FormControl;
-  payeeFormControl: FormControl;
-  payerFormControl: FormControl;
-  paymentAddressFormControl: FormControl;
+  payeeIdAddressFormControl: FormControl;
+  payeePaymentAddressFormControl: FormControl;
+  payerAddressFormControl: FormControl;
+  payerRefundAddressFormControl: FormControl;
   reasonFormControl: FormControl;
   dateFormControl: FormControl;
   currencyFormControl: FormControl;
   currencies: String[];
+  BTCRefundAddress;
 
-  sameAddressValidator(control: FormControl) {
-    if (control.value) {
-      if (
-        control.root.get('payee').value &&
-        control.root.get('payee').value.toLowerCase() ===
-          control.value.toLowerCase()
-      ) {
-        return { sameAddressAsPayeeAddress: true };
-      } else if (
-        control.root.get('paymentAddress').value &&
-        control.root.get('paymentAddress').value.toLowerCase() ===
-          control.value.toLowerCase()
-      ) {
-        return { sameAddressAsPaymentAddress: true };
+  isAddressValidator(curr?: string) {
+    return (control: FormControl) => {
+      if (control.value) {
+        const currency = curr
+          ? curr
+          : this.currencyFormControl.value === 'BTC'
+            ? 'BTC'
+            : 'ETH';
+        if (
+          (currency === 'ETH' &&
+            this.web3Service.web3Ready &&
+            !this.web3Service.isAddress(control.value.toLowerCase())) ||
+          (currency !== 'ETH' &&
+            !WAValidator.validate(
+              control.value,
+              currency,
+              this.web3Service.networkIdObservable.value !== 1 ? 'testnet' : ''
+            ))
+        ) {
+          return { invalidAddress: true };
+        }
       }
-    }
-    return null;
-  }
-
-  isAddressValidator(control: FormControl) {
-    if (
-      this.web3Service.web3Ready &&
-      control.value &&
-      !this.web3Service.isAddress(control.value.toLowerCase())
-    ) {
-      return { invalidETHAddress: true };
-    } else {
       return null;
-    }
+    };
   }
 
   decimalValidator(control: FormControl) {
@@ -68,6 +66,25 @@ export class HomeComponent implements OnInit {
       const regexp = new RegExp(`^[0-9]*([.][0-9]{0,${decimal}})?$`);
       if (!regexp.test(control.value)) {
         return { pattern: true };
+      }
+    }
+    return null;
+  }
+
+  sameAddressValidator(control: FormControl) {
+    if (control.value) {
+      if (
+        this.payeeIdAddressFormControl.value &&
+        this.payeeIdAddressFormControl.value.toLowerCase() ===
+          control.value.toLowerCase()
+      ) {
+        return { sameAddressAsPayeeAddress: true };
+      } else if (
+        this.payeePaymentAddressFormControl.value &&
+        this.payeePaymentAddressFormControl.value.toLowerCase() ===
+          control.value.toLowerCase()
+      ) {
+        return { sameAddressAsPaymentAddress: true };
       }
     }
     return null;
@@ -84,33 +101,53 @@ export class HomeComponent implements OnInit {
     }, 5000);
     this.utilService.setSearchValue('');
 
-    this.paymentAddressFormControl = new FormControl('', [
+    this.currencyFormControl = new FormControl('ETH', [Validators.required]);
+    this.payeeIdAddressFormControl = new FormControl('', [Validators.required]);
+    this.payeePaymentAddressFormControl = new FormControl('', [
       Validators.required,
-      this.isAddressValidator.bind(this)
+      this.isAddressValidator().bind(this)
     ]);
     this.expectedAmountFormControl = new FormControl('', [
       Validators.required,
       this.decimalValidator.bind(this)
     ]);
-    this.payerFormControl = new FormControl('', [
+    this.payerAddressFormControl = new FormControl('', [
       Validators.required,
-      this.sameAddressValidator,
-      this.isAddressValidator.bind(this)
+      this.sameAddressValidator.bind(this),
+      this.isAddressValidator('ETH').bind(this)
     ]);
-    this.payeeFormControl = new FormControl('');
+    this.payerRefundAddressFormControl = new FormControl('', [
+      this.isAddressValidator().bind(this),
+      this.sameAddressValidator.bind(this)
+    ]);
     this.dateFormControl = new FormControl('');
     this.reasonFormControl = new FormControl('');
-    this.currencyFormControl = new FormControl('ETH', [Validators.required]);
+
+    this.payeePaymentAddressFormControl.valueChanges.subscribe(() =>
+      this.payerAddressFormControl.updateValueAndValidity()
+    );
 
     this.requestForm = this.formBuilder.group({
-      paymentAddress: this.paymentAddressFormControl,
-      expectedAmount: this.expectedAmountFormControl,
-      payee: this.payeeFormControl,
-      payer: this.payerFormControl,
       currency: this.currencyFormControl,
+      payeePaymentAddress: this.payeePaymentAddressFormControl,
+      payeeIdAddress: this.payeeIdAddressFormControl,
+      expectedAmount: this.expectedAmountFormControl,
+      payerAddress: this.payerAddressFormControl,
+      payerRefundAddress: this.payerRefundAddressFormControl,
       date: this.dateFormControl,
       reason: this.reasonFormControl
     });
+  }
+
+  onCurrencyChange(event) {
+    this.payerRefundAddressFormControl.setValue('');
+    this.payerRefundAddressFormControl.updateValueAndValidity();
+    this.payeePaymentAddressFormControl.markAsTouched();
+    this.payeePaymentAddressFormControl.updateValueAndValidity();
+  }
+
+  getBlockchainSymbol() {
+    return this.currencyFormControl.value === 'BTC' ? 'BTC' : 'ETH';
   }
 
   async ngOnInit() {
@@ -124,10 +161,12 @@ export class HomeComponent implements OnInit {
 
   watchAccount() {
     this.web3Service.accountObservable.subscribe(account => {
+      if (!this.account) {
+        this.payeePaymentAddressFormControl.setValue(account);
+      }
       this.account = account;
-      this.paymentAddressFormControl.setValue(this.account);
-      this.payeeFormControl.setValue(this.account);
-      this.payerFormControl.updateValueAndValidity();
+      this.payeeIdAddressFormControl.setValue(this.account);
+      this.payerAddressFormControl.updateValueAndValidity();
     });
   }
 
@@ -142,7 +181,7 @@ export class HomeComponent implements OnInit {
           break;
       }
       if (!this.currencies.includes(this.currencyFormControl.value)) {
-        this.currencyFormControl.setValue(null);
+        this.currencyFormControl.setValue('ETH');
       }
     });
   }
@@ -158,9 +197,9 @@ export class HomeComponent implements OnInit {
         this.expectedAmountFormControl.markAsTouched();
         this.expectedAmountFormControl.setErrors({ required: true });
       }
-      if (this.payerFormControl.hasError('required')) {
-        this.payerFormControl.markAsTouched();
-        this.payerFormControl.setErrors({ required: true });
+      if (this.payerAddressFormControl.hasError('required')) {
+        this.payerAddressFormControl.markAsTouched();
+        this.payerAddressFormControl.setErrors({ required: true });
       }
       this.createLoading = false;
       return;
@@ -172,9 +211,10 @@ export class HomeComponent implements OnInit {
       if (
         ![
           'expectedAmount',
-          'payer',
-          'paymentAddress',
-          'payee',
+          'payerAddress',
+          'payeePaymentAddress',
+          'payeeIdAddress',
+          'payerRefundAddress',
           'currency'
         ].includes(key) &&
         value &&
@@ -195,19 +235,19 @@ export class HomeComponent implements OnInit {
         );
         const request = {
           payee: {
-            address: this.payeeFormControl.value,
+            address: this.payeeIdAddressFormControl.value,
             balance: this.expectedAmountFormControl.value,
             expectedAmount: this.expectedAmountFormControl.value
           },
           currencyContract: {
             payeePaymentAddress:
-              this.paymentAddressFormControl.value &&
-              this.paymentAddressFormControl.value !== this.account
-                ? this.paymentAddressFormControl.value
+              this.payeePaymentAddressFormControl.value &&
+              this.payeePaymentAddressFormControl.value !== this.account
+                ? this.payeePaymentAddressFormControl.value
                 : null
           },
           currency: this.currencyFormControl.value,
-          payer: this.payerFormControl.value,
+          payer: this.payerAddressFormControl.value,
           data: { data: {} }
         };
 
@@ -243,22 +283,18 @@ export class HomeComponent implements OnInit {
     };
 
     this.web3Service
-      .createRequestAsPayee(
-        this.payerFormControl.value,
+      .createRequest(
+        'Payee',
+        this.payerAddressFormControl.value,
         this.expectedAmountFormControl.value,
         this.currencyFormControl.value,
-        this.paymentAddressFormControl.value,
-        { data }
+        this.payeePaymentAddressFormControl.value,
+        { data },
+        this.payerRefundAddressFormControl.value
       )
       .on('broadcasted', response => {
         callback(response);
       })
-      // .then(
-      //   response => {
-      //     // setTimeout(() => { this.utilService.openSnackBar('Request successfully created.', 'Ok', 'success-snackbar'); }, 5000);
-      //   },
-      //   err => {}
-      // )
       .catch(err => {
         callback(err);
       });

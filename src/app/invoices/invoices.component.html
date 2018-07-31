@@ -16,7 +16,7 @@
   <div style="flex: 1 0 auto">
     <router-outlet></router-outlet>
   </div>
-  <footer class="d-flex flex-wrap justify-content-between p-3" *ngIf="!this.router.routerState.snapshot.url.startsWith('/contact')">
+  <footer class="d-flex flex-wrap justify-content-between p-3">
     <div class="d-flex flex-column m-3">
       <a routerLink="/">
         <img class="request-logo my-1 img-fluid" src="assets/img/request-logo.png">
@@ -53,7 +53,7 @@
       <div class="footer-column">
         <span class="my-3 semi-bold">Organization</span>
         <a href="https://request.network/" target="_blank">About</a>
-        <a routerLink="contact">Contact</a>
+        <a href="https://request.network/#/contact" target="_blank">Contact</a>
       </div>
     </div>
   </footer>

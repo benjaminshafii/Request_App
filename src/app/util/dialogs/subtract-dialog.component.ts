@@ -1,11 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  FormBuilder
-} from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
@@ -39,11 +34,8 @@ export class SubtractDialogComponent implements OnInit {
       }
       control.markAsTouched();
       try {
-        const controlBN = this.web3Service.BN(
-          this.web3Service.toWei(control.value.toString())
-        );
-        return !isNaN(control.value) &&
-          this.request.payee.expectedAmount.lte(controlBN)
+        const controlBN = this.web3Service.amountToBN(control.value, this.request.currency);
+        return !isNaN(control.value) && this.request.payee.expectedAmount.lte(controlBN)
           ? { superiorNumber: true }
           : null;
       } catch (err) {

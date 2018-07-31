@@ -1,11 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  FormBuilder
-} from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
@@ -34,19 +29,14 @@ export class PayDialogComponent implements OnInit {
     this.isAllowanceGranted = false;
 
     this.allowanceMode =
-      this.request.currency !== 'ETH' && this.request.currency !== 'BTC'
-        ? true
-        : false;
+      this.request.currency !== 'ETH' && this.request.currency !== 'BTC' ? true : false;
   }
 
   ngOnInit() {
-    const initialAmountValue = this.request.payee.expectedAmount.gt(
-      this.request.payee.balance
-    )
-      ? this.web3Service.fromWei(
-          this.request.payee.expectedAmount
-            .sub(this.request.payee.balance)
-            .toString()
+    const initialAmountValue = this.request.payee.expectedAmount.gt(this.request.payee.balance)
+      ? this.web3Service.BNToAmount(
+          this.request.payee.expectedAmount.sub(this.request.payee.balance),
+          this.request.currency
         )
       : '0';
 
@@ -62,10 +52,9 @@ export class PayDialogComponent implements OnInit {
 
   setMax() {
     this.amountFormControl.setValue(
-      this.web3Service.fromWei(
-        this.request.payee.expectedAmount
-          .sub(this.request.payee.balance)
-          .toString()
+      this.web3Service.BNToAmount(
+        this.request.payee.expectedAmount.sub(this.request.payee.balance),
+        this.request.currency
       )
     );
   }

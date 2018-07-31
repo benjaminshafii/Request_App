@@ -17,7 +17,7 @@ import { ClipboardModule } from 'ngx-clipboard';
     SharedModule,
 
     ClipboardModule,
-   
+
     InvoicesRoutingModule
   ],
   declarations: [

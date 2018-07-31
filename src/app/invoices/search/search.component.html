@@ -46,7 +46,7 @@
         <ng-container matColumnDef="request.payee.expectedAmount">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Amount</mat-header-cell>
           <mat-cell *matCellDef="let req">
-            <div *ngIf="req.request; else spinSpan">{{ this.web3Service.fromWei(req.request.payee.expectedAmount.toString()) }}&nbsp;{{ req.request.currency }}</div>
+            <div *ngIf="req.request; else spinSpan">{{ this.web3Service.BNToAmount(req.request.payee.expectedAmount, req.request.currency) }}&nbsp;{{ req.request.currency }}</div>
             <ng-template #spinSpan>
               <span>
                 <i class="fa fa-circle-o-notch fa-spin"></i>
@@ -58,7 +58,7 @@
         <ng-container matColumnDef="request.payee.balance">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Amount Received</mat-header-cell>
           <mat-cell *matCellDef="let req">
-            <div *ngIf="req.request">{{ this.web3Service.fromWei(req.request.payee.balance.toString()) }}&nbsp;{{ req.request.currency }}</div>
+            <div *ngIf="req.request">{{ this.web3Service.BNToAmount(req.request.payee.balance, req.request.currency) }}&nbsp;{{ req.request.currency }}</div>
           </mat-cell>
         </ng-container>
         <!-- Status Column -->

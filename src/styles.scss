@@ -28,8 +28,18 @@ body {
   }
 }
 
+.mat-placeholder-required.mat-form-field-required-marker {
+  display: none !important;
+}
+
 .mat-sort-header-container {
   justify-content: center !important;
+}
+
+qrcode.qr-code {
+  img {
+    margin: auto;
+  }
 }
 
 a {

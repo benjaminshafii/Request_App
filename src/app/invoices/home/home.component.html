@@ -30,12 +30,12 @@
         <form [formGroup]="requestForm" (ngSubmit)="createRequest()">
           <div class="p-4 mb-5">
             <mat-form-field class="w-100">
-              <input matInput type="text" name="paymentETHAddress" placeholder="On which ETH address do you want to receive the funds?" maxlength="42" [formControl]="paymentAddressFormControl">
-              <mat-error *ngIf="paymentAddressFormControl.hasError('required')">
-                ETH payment address is <strong>required</strong>
+              <input matInput type="text" name="ETHAddress" [placeholder]="'On which ' + getBlockchainSymbol() + ' address do you want to receive the funds?'" [formControl]="payeePaymentAddressFormControl">
+              <mat-error *ngIf="payeePaymentAddressFormControl.hasError('required')">
+                Payment address is <strong>required</strong>
               </mat-error>
-              <mat-error *ngIf="paymentAddressFormControl.hasError('invalidETHAddress')">
-                <strong>Invalid</strong> ETH address
+              <mat-error *ngIf="payeePaymentAddressFormControl.hasError('invalidAddress')">
+                <strong>Invalid</strong> {{ getBlockchainSymbol() }} address
               </mat-error>
             </mat-form-field>
             <div class="d-flex w-100">
@@ -49,7 +49,7 @@
                 </mat-error>
               </mat-form-field>
               <mat-form-field [style.width]="'80px'">
-                <mat-select [formControl]="currencyFormControl" name="currency" panelClass="currencySelect">
+                <mat-select [formControl]="currencyFormControl" name="currency" panelClass="currencySelect" (selectionChange)="onCurrencyChange($event)">
                   <mat-option *ngFor="let c of currencies" [value]="c">
                     <img class="currencyIcon" src="assets/img/cryptoIcons/{{c}}.png">
                     <span>&nbsp;{{ c }}</span>
@@ -61,18 +61,30 @@
               </mat-form-field>
             </div>
             <mat-form-field class="w-100">
-              <input matInput type="text" name="payerETHAddress" placeholder="Payer's ETH address" maxlength="42" [formControl]="payerFormControl">
-              <mat-error *ngIf="payerFormControl.hasError('required')">
-                payer's ETH address is <strong>required</strong>
+              <input matInput type="text" name="payerETHAddress" placeholder="Payer's ETH address" [formControl]="payerAddressFormControl">
+              <mat-error *ngIf="payerAddressFormControl.hasError('required')">
+                payer's address is <strong>required</strong>
               </mat-error>
-              <mat-error *ngIf="payerFormControl.hasError('sameAddressAsPayeeAddress')">
+              <mat-error *ngIf="!payerAddressFormControl.hasError('invalidAddress') && payerAddressFormControl.hasError('sameAddressAsPayeeAddress')">
                 payer's address must be <strong>different from yours</strong>
               </mat-error>
-              <mat-error *ngIf="payerFormControl.hasError('sameAddressAsPaymentAddress')">
+              <mat-error *ngIf="!payerAddressFormControl.hasError('invalidAddress') && payerAddressFormControl.hasError('sameAddressAsPaymentAddress')">
                 payer's address must be <strong>different from payment address</strong>
               </mat-error>
-              <mat-error *ngIf="payerFormControl.hasError('invalidETHAddress')">
+              <mat-error *ngIf="payerAddressFormControl.hasError('invalidAddress')">
                 <strong>Invalid</strong> ETH address
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field class="w-100" [hidden]="currencyFormControl.value !== 'BTC'">
+              <input matInput type="text" [name]="getBlockchainSymbol() + 'RefundAddress'" [placeholder]="'On which ' + getBlockchainSymbol() + ' address do you wish to refund the payer?'" [formControl]="payerRefundAddressFormControl" [required]="currencyFormControl.value === 'BTC'">
+              <mat-error *ngIf="payerRefundAddressFormControl.hasError('required')">
+                payer's refund address is <strong>required</strong>
+              </mat-error>
+              <mat-error *ngIf="payerRefundAddressFormControl.hasError('sameAddressAsPaymentAddress')">
+                payer's address must be <strong>different from payment address</strong>
+              </mat-error>
+              <mat-error *ngIf="payerRefundAddressFormControl.hasError('invalidAddress')">
+                <strong>Invalid</strong> {{ getBlockchainSymbol() }} address
               </mat-error>
             </mat-form-field>
             <mat-form-field class="w-100" hintLabel="Max 256 characters">
@@ -82,7 +94,7 @@
           </div>
           <mat-toolbar class="p-0 bbr-7 cta-toolbar" [style.height]="'60px'">
             <div></div>
-            <button class="fs-18" mat-raised-button color="accent" type="submit" [disabled]="requestForm.controls.expectedAmount.touched && requestForm.controls.payer.touched && !requestForm.valid">Create a Request&nbsp;
+            <button class="fs-18" mat-raised-button color="accent" type="submit" [disabled]="(requestForm.controls.expectedAmount.touched || requestForm.controls.payerAddress.touched) && !requestForm.valid">Create a Request&nbsp;
               <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i>
             </button>
           </mat-toolbar>

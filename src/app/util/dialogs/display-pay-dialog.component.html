@@ -1,0 +1,9 @@
+<h1 mat-dialog-title class="fc-primary">{{ mode.charAt(0).toUpperCase() + mode.slice(1) }} Request</h1>
+<mat-dialog-content class="fc-primary" style="overflow:initial">
+	<p class="fs-14">Use your {{ requestObject.requestData.currency }} wallet app and send the expected amount to the following {{ requestObject.requestData.currency }} address:</p>
+	<p class="fs-12 semi-bold text-center">{{ btcAddress }}</p>
+	<qrcode class="qr-code" [qrdata]="'bitcoin:' + btcAddress" size="206" level="L"></qrcode>
+	<mat-dialog-actions class="mt-3 d-flex justify-content-around w-100">
+		<button class="col-5" mat-raised-button color="accent" type="button" mat-dialog-close>Ok</button>
+	</mat-dialog-actions>
+</mat-dialog-content>

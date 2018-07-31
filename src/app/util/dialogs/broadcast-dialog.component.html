@@ -35,7 +35,7 @@
 <ng-template #broadcastTemplate>
   <div class="fs-12 d-flex justify-content-between mb-1">
     <div>The request's total amount is:</div>
-    <div>{{ web3Service.fromWei(requestData.expectedAmounts[0]) }}
+    <div>{{ web3Service.BNToAmount(web3Service.getTotalBNFromAmounts(requestData.expectedAmounts), requestData.currency) }}
       <small>&nbsp;{{ requestData.currency }}</small>
     </div>
   </div>

@@ -41,9 +41,8 @@ export class Web3Service {
   private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Mainnet or Rinkeby Testnet.';
   private walletNotReadyMsg = 'Connect your Metamask or Ledger wallet to create or interact with a Request.';
 
-  public fromWei;
-  public toWei;
-  public BN;
+  private BN;
+  private hexToAscii;
   public isAddress;
   public getBlockNumber;
 
@@ -58,6 +57,55 @@ export class Web3Service {
       setInterval(async () => await this.refreshAccounts(), 1000);
       this.web3Ready = true;
     });
+  }
+
+  public amountToBN(amount, currency) {
+    const comps = amount.split('.');
+    currency =
+      typeof currency === 'string' ? currency : Types.Currency[currency];
+    const base = this.getDecimalsForCurrency(currency);
+
+    if (!comps[0]) {
+      comps[0] = '0';
+    }
+    if (!comps[1]) {
+      comps[1] = '0';
+    }
+    while (comps[1].length < base) {
+      comps[1] += '0';
+    }
+    comps[0] = this.BN(comps[0]);
+    comps[1] = this.BN(comps[1]);
+
+    return comps[0].mul(this.BN(10).pow(this.BN(base))).add(comps[1]);
+  }
+
+  public BNToAmount(bignumber, currency) {
+    currency =
+      typeof currency === 'string' ? currency : Types.Currency[currency];
+    const base = this.getDecimalsForCurrency(currency);
+    const negative = bignumber.lt(this.BN(0));
+
+    if (negative) {
+      bignumber = bignumber.mul(this.BN(-1));
+    }
+
+    let fraction = bignumber.mod(this.BN(10).pow(this.BN(base))).toString();
+    const whole = bignumber.div(this.BN(10).pow(this.BN(base))).toString(10);
+
+    while (fraction.length < base) {
+      fraction = `0${fraction}`;
+    }
+    const matches = fraction.match(/^([0-9]*[1-9]|0)(0*)/);
+    fraction = matches && matches[1] ? matches[1] : fraction;
+
+    return `${negative ? '-' : ''}${whole}${
+      fraction === '0' ? '' : `.${fraction}`
+    }`;
+  }
+
+  public getTotalBNFromAmounts(amountsArray: any[]) {
+    return amountsArray.reduce((a, b) => this.BN(a).add(this.BN(b)), 0);
   }
 
   public currencyFromContractAddress(address) {
@@ -154,19 +202,19 @@ export class Web3Service {
 
     // instanciate requestnetwork.js
     try {
-      this.requestNetwork = new RequestNetwork(
-        this.web3.currentProvider,
-        this.networkIdObservable.value
-      );
+      this.requestNetwork = new RequestNetwork({
+        provider: this.web3.currentProvider,
+        ethNetworkId: this.networkIdObservable.value,
+        bitcoinNetworkId: this.networkIdObservable.value === 1 ? 0 : 3
+      });
     } catch (err) {
       this.utilService.openSnackBar(this.requestNetworkNotReadyMsg);
       console.error(err);
     }
 
-    this.fromWei = this.web3.utils.fromWei;
-    this.toWei = this.web3.utils.toWei;
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
+    this.hexToAscii = this.web3.utils.hexToAscii;
     this.getBlockNumber = this.web3.eth.getBlockNumber;
   }
 
@@ -219,18 +267,18 @@ export class Web3Service {
   public setRequestStatus(request) {
     if (request.state === 2) {
       request.status = 'cancelled';
-    } else if (request.state === 1) {
+    } else {
       if (request.payee.balance.isZero()) {
-        request.status = 'accepted';
+        request.status = request.state === 1 ? 'accepted' : 'created';
       } else if (request.payee.balance.lt(request.payee.expectedAmount)) {
         request.status = 'in progress';
       } else if (request.payee.balance.eq(request.payee.expectedAmount)) {
         request.status = 'complete';
       } else if (request.payee.balance.gt(request.payee.expectedAmount)) {
         request.status = 'overpaid';
+      } else {
+        request.status = 'created';
       }
-    } else {
-      request.status = 'created';
     }
   }
 
@@ -246,12 +294,14 @@ export class Web3Service {
     }
   }
 
-  public createRequestAsPayee(
-    payer: string,
+  public createRequest(
+    role: Types.role,
+    payerAddress: string,
     expectedAmount: string,
     currency: string,
     paymentAddress: string,
-    requestOptions: any = {}
+    requestOptions: any = {},
+    refundAddress?: string
   ) {
     if (this.watchDog()) {
       return;
@@ -263,18 +313,18 @@ export class Web3Service {
 
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.createRequest(
-      Types.Role.Payee,
+      Types.Role[role],
       Types.Currency[currency],
       [
         {
           idAddress: this.accountObservable.value,
           paymentAddress,
-          expectedAmount: this.toWei(expectedAmount)
+          expectedAmount: this.amountToBN(expectedAmount, currency)
         }
       ],
       {
-        idAddress: payer,
-        refundAddress: payer
+        idAddress: payerAddress,
+        bitcoinRefundAddresses: refundAddress ? [refundAddress] : undefined
       },
       requestOptions
     );
@@ -313,7 +363,7 @@ export class Web3Service {
     this.confirmTxOnLedgerMsg();
 
     return requestObject.addSubtractions(
-      [this.toWei(amount)],
+      [this.amountToBN(amount, requestObject.currency)],
       transactionOptions
     );
   }
@@ -328,7 +378,7 @@ export class Web3Service {
     }
     this.confirmTxOnLedgerMsg();
     return requestObject.addAdditionals(
-      [this.toWei(amount)],
+      [this.amountToBN(amount, requestObject.currency)],
       transactionOptions
     );
   }
@@ -347,7 +397,11 @@ export class Web3Service {
     this.confirmTxOnLedgerMsg();
 
     transactionOptions.gasPrice = this.defaultGasPrice;
-    return requestObject.pay([this.toWei(amount)], null, transactionOptions);
+    return requestObject.pay(
+      [this.amountToBN(amount, requestObject.currency)],
+      null,
+      transactionOptions
+    );
   }
 
   public refund(
@@ -362,7 +416,10 @@ export class Web3Service {
       return;
     }
     this.confirmTxOnLedgerMsg();
-    return requestObject.refund(this.toWei(amount), transactionOptions);
+    return requestObject.refund(
+      this.amountToBN(amount, requestObject.currency),
+      transactionOptions
+    );
   }
 
   public allowSignedRequest(
@@ -376,7 +433,7 @@ export class Web3Service {
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestERC20Service.approveTokenForSignedRequest(
       signedRequest,
-      this.toWei(amount),
+      this.amountToBN(amount, signedRequest.currency),
       transactionOptions
     );
   }
@@ -392,7 +449,7 @@ export class Web3Service {
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestERC20Service.approveTokenForRequest(
       requestId,
-      this.toWei(amount),
+      this.amountToBN(amount, 'ETH'),
       transactionOptions
     );
   }
@@ -500,8 +557,13 @@ export class Web3Service {
       currency: this.currencyFromContractAddress(transaction.to),
       currencyContract: {
         address: transaction.to,
-        payeePaymentAddress:
-          transaction.method.parameters._payeesPaymentAddress[0] || null,
+        payeePaymentAddress: Array.isArray(
+          transaction.method.parameters._payeesPaymentAddress
+        )
+          ? transaction.method.parameters._payeesPaymentAddress[0]
+          : this.web3.utils.hexToAscii(
+              transaction.method.parameters._payeesPaymentAddress.slice(4)
+            ),
         payerRefundAddress: transaction.method.parameters._payerRefundAddress,
         subPayeesPaymentAddress: transaction.method.parameters._payeesPaymentAddress.slice(
           1
@@ -513,7 +575,10 @@ export class Web3Service {
       },
       payee: {
         address: transaction.method.parameters._payeesIdAddress[0],
-        balance: this.BN(this.toWei('0')),
+        balance: this.amountToBN(
+          '0',
+          this.currencyFromContractAddress(transaction.to)
+        ),
         expectedAmount: this.BN(
           transaction.method.parameters._expectedAmounts[0]
         )
@@ -528,13 +593,14 @@ export class Web3Service {
     ] of transaction.method.parameters._payeesIdAddress.slice(1).entries) {
       subPayee[index] = {
         address: subPayee,
-        balance: this.BN(this.toWei('0')),
+        balance:
+          this.amountToBN('0', this.currencyFromContractAddress(transaction.to))
+        ,
         expectedAmount: this.BN(
           transaction.method.parameters._expectedAmounts[1 + index]
         )
       };
     }
-
     return request;
   }
 }

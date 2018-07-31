@@ -1,11 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  FormBuilder
-} from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
@@ -34,9 +29,7 @@ export class RefundDialogComponent implements OnInit {
     this.isAllowanceGranted = false;
 
     this.allowanceMode =
-      this.request.currency !== 'ETH' && this.request.currency !== 'BTC'
-        ? true
-        : false;
+      this.request.currency !== 'ETH' && this.request.currency !== 'BTC' ? true : false;
   }
 
   ngOnInit() {
@@ -51,8 +44,9 @@ export class RefundDialogComponent implements OnInit {
 
   setMax() {
     this.refundFormControl.setValue(
-      this.web3Service.fromWei(
-        this.request.payee.balance.isNeg() ? 0 : this.request.payee.balance
+      this.web3Service.BNToAmount(
+        this.request.payee.balance.isNeg() ? 0 : this.request.payee.balance,
+        this.request.currency
       )
     );
   }

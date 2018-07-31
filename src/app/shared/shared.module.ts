@@ -29,8 +29,7 @@ import { AccountComponent } from './account/account.component';
 import { RouterModule } from '@angular/router';
 import { BlockiesModule } from 'angular-blockies';
 import { PopoverModule } from 'ngx-popover';
-
-
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
   imports: [
@@ -40,6 +39,8 @@ import { PopoverModule } from 'ngx-popover';
     RouterModule,
     BlockiesModule,
     PopoverModule,
+    QRCodeModule,
+
     MatButtonModule,
     MatCardModule,
     // MatCheckboxModule,
@@ -64,15 +65,14 @@ import { PopoverModule } from 'ngx-popover';
     MatToolbarModule,
     MatTooltipModule
   ],
-  declarations: [
-    AccountComponent,
-  ],
+  declarations: [AccountComponent],
   exports: [
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
     BlockiesModule,
     PopoverModule,
+    QRCodeModule,
 
     AccountComponent,
     MatButtonModule,
