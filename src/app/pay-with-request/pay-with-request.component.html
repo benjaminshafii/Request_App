@@ -53,8 +53,8 @@
                       <angular-blockies [options]="{ seed: signedRequest.payeesIdAddress[0].toLowerCase() }" class="blockies" style="width: 50px; height: 50px;"></angular-blockies>
                     </div>
                     <div class="fs-14 lh-18">
-                      <div>
-                        <span>{{ signedRequest.payeesPaymentAddress.length > 1 ? 'PAYEES - ' : 'PAYEE' }}</span>
+                      <div *ngIf="signedRequest.payeesPaymentAddress.length > 1">
+                        <span>PAYEES - </span>
                         <span [style.textDecoration]="'underline'" *ngIf="signedRequest.payeesPaymentAddress.length > 1">
                           <ng-template [ngIf]="max === 0" [ngIfElse]="seeOnlyMainPayeeAnchor"><a (click)="getNextPayees(true)">see all the payees <i class="fa fa-caret-right"></i></a></ng-template>
                           <ng-template #seeOnlyMainPayeeAnchor><a (click)="seeOnlyMainPayee()">see main payee only <i class="fa fa-caret-down"></i></a></ng-template>
@@ -62,7 +62,7 @@
                       </div>
                       <div *ngFor="let payee of signedRequest.payeesIdAddress | slice:min:[max || 1]; let i = index;" class="my-1">
                         <div class="semi-bold">
-                          <ng-template [ngIf]="min === 0 && i === 0" [ngIfElse]="otherPayees">Main Payee</ng-template>
+                          <ng-template [ngIf]="min === 0 && i === 0" [ngIfElse]="otherPayees">{{ signedRequest.payeesPaymentAddress.length > 1 ? 'Main ' : '' }} Payee</ng-template>
                           <ng-template #otherPayees>Payee #{{ min+i+1 }}</ng-template>
                         </div>
 
