@@ -1,7 +1,7 @@
 import { Injectable, HostListener } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { UtilService } from './util.service';
-
+import { environment } from '../../environments/environment';
 import RequestNetwork, {
   Types,
   utils
@@ -205,6 +205,7 @@ export class Web3Service {
       this.requestNetwork = new RequestNetwork({
         provider: this.web3.currentProvider,
         ethNetworkId: this.networkIdObservable.value,
+        useIpfsPublic: environment.usePublicIpfs
         bitcoinNetworkId: this.networkIdObservable.value === 1 ? 0 : 3
       });
     } catch (err) {

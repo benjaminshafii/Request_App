@@ -18,3 +18,20 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 ## Build
 
 Run `npm run build:prod` to generate the build repository in /dist.
+
+## Test
+
+Run `ng test` for unit tests.
+
+
+To run end-to-end tests, you need a local instance of ganache running on port `8545`.
+You also need to have the `requestNetwork.js` smart-contracts deployed.
+
+On the `requestNetwork/packages/requestNetwork.js` directory:
+- Launch a ganache-cli instance on a terminal:
+
+  `npm run ganache`
+
+- In a second terminal, deploy the contracts:
+
+  `npm run testdeploy`.

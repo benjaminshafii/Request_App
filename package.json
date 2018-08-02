@@ -10,7 +10,7 @@
     "build:prod": "ng build --prod --aot --build-optimizer",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "node e2e/run.js"
   },
   "prettier": {
     "singleQuote": true
@@ -51,7 +51,12 @@
     "@types/jasmine": "~2.8.3",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^6.0.101",
+    "chai": "^4.1.2",
     "codelyzer": "~3.2.0",
+    "dappeteer": "^0.2.1",
+    "ganache-cli": "^6.1.6",
+    "go-ipfs-dep": "^0.4.17",
+    "ipfsd-ctl": "^0.39.0",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "~1.7.0",
@@ -60,8 +65,10 @@
     "karma-coverage-istanbul-reporter": "^1.2.1",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "portscanner": "^2.2.0",
     "prettier": "^1.12.1",
     "protractor": "~5.1.2",
+    "puppeteer": "^1.6.1",
     "ts-node": "~3.2.0",
     "tslint": "~5.7.0",
     "typescript": "2.5.3"

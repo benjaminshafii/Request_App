@@ -110,8 +110,12 @@ export class RequestComponent implements OnInit, OnDestroy {
     );
     if (result.request && result.request.requestId) {
       const blockNumber = await this.web3Service.getBlockNumber();
-      // wait 1 confirmation
-      if (blockNumber - result.transaction.blockNumber > 0) {
+      
+      // if not on local network, wait 1 block confirmation
+      if (
+        this.web3Service.networkIdObservable.value > 4 ||
+        blockNumber - result.transaction.blockNumber > 0
+      ) {
         return this.utilService.setSearchValue(result.request.requestId);
       }
     } else if (result.message === 'Contract is not supported by request') {

@@ -110,7 +110,7 @@
             <div class="d-flex">
               <div class="ml-auto d-inline-block semi-bold fc-primary px-5 py-3" style="background: #DFE5EC">
                 <div class="fs-14">AMOUNT</div>
-                <div class="fs-24">{{ web3Service.BNToAmount(request.payee.expectedAmount, request.currency) }} {{request.currency}}</div>
+                <div class="fs-24" id="request-expected-amount">{{ web3Service.BNToAmount(request.payee.expectedAmount, request.currency) }} {{request.currency}}</div>
               </div>
             </div>
             <div class="p-5">
