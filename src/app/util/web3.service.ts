@@ -205,7 +205,7 @@ export class Web3Service {
       this.requestNetwork = new RequestNetwork({
         provider: this.web3.currentProvider,
         ethNetworkId: this.networkIdObservable.value,
-        useIpfsPublic: environment.usePublicIpfs
+        useIpfsPublic: environment.usePublicIpfs,
         bitcoinNetworkId: this.networkIdObservable.value === 1 ? 0 : 3
       });
     } catch (err) {
@@ -594,9 +594,10 @@ export class Web3Service {
     ] of transaction.method.parameters._payeesIdAddress.slice(1).entries) {
       subPayee[index] = {
         address: subPayee,
-        balance:
-          this.amountToBN('0', this.currencyFromContractAddress(transaction.to))
-        ,
+        balance: this.amountToBN(
+          '0',
+          this.currencyFromContractAddress(transaction.to)
+        ),
         expectedAmount: this.BN(
           transaction.method.parameters._expectedAmounts[1 + index]
         )

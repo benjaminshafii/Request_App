@@ -24,8 +24,8 @@ Run `npm run build:prod` to generate the build repository in /dist.
 Run `ng test` for unit tests.
 
 
-To run end-to-end tests, you need a local instance of ganache running on port `8545`.
-You also need to have the `requestNetwork.js` smart-contracts deployed.
+To run end-to-end tests, you need the app running (`npm run start`).
+You also need a local instance of ganache running on port `8545`, with smart-contracts deployed.
 
 On the `requestNetwork/packages/requestNetwork.js` directory:
 - Launch a ganache-cli instance on a terminal:
