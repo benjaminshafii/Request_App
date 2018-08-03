@@ -1,12 +1,12 @@
 import { Injectable, HostListener } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { UtilService } from './util.service';
 import { environment } from '../../environments/environment';
 import RequestNetwork, {
   Types,
   utils
 } from '@requestnetwork/request-network.js';
-import * as Web3ProviderEngine from 'web3-provider-engine';
+const Web3ProviderEngine = require ('web3-provider-engine');
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
 

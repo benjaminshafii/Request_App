@@ -387,13 +387,13 @@ div.mat-input-prefix {
   color: $blue-grey;
 }
 
-.mat-input-placeholder.mat-form-field-placeholder,
-div.mat-hint,
-mat-hint.mat-hint {
+.mat-form-field-hint-wrapper > mat-hint.mat-hint,
+.mat-form-field-hint-wrapper > div.mat-hint,
+.mat-form-field-label-wrapper > label.mat-form-field-label {
   color: rgba($blue-grey, 0.6);
 }
 
-.mat-input-underline.mat-form-field-underline {
+.mat-form-field-wrapper > div.mat-form-field-underline {
   background-color: rgba($blue-grey, 0.2);
 }
 

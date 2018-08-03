@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Web3Service } from '../util/web3.service';
 import { BroadcastDialogComponent } from '../util/dialogs/broadcast-dialog.component';
