@@ -14,6 +14,14 @@ export class GasSelectorComponent implements OnInit {
   public currentGasCategory = 'safeLow';
   public gasPricesObservable = this.gasService.getGasPrices();
 
+  public gasCategoryLabels = {
+    safeLow: 'Low',
+    standard: 'Standard',
+    fast: 'Fast',
+    fastest: 'Fastest',
+    custom: 'Custom'
+  };
+
   ngOnInit() {
     this.gasPricesObservable.subscribe({
       next: prices => {

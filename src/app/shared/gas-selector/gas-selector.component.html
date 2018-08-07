@@ -9,7 +9,7 @@
 
 <ng-template [ngIf]="!noGasPrices">
   <button mat-button [matMenuTriggerFor]="gasMenu" *ngIf="gasPricesObservable | async as gasPrices; else loadingGasSelector">
-    <mat-icon>local_gas_station</mat-icon> Gas price: {{currentGasCategory}}
+    <mat-icon>local_gas_station</mat-icon> Gas price: {{gasCategoryLabels[currentGasCategory]}}
       ({{gasService.gasPrice | number : '1.0-2'}} Gwei)
     <mat-menu #gasMenu="matMenu" [overlapTrigger]="false">
       <button mat-menu-item class="gas-option" [class.selected]="currentGasCategory === 'safeLow'" (click)="selectGasCategory('safeLow', gasPrices.safeLow)">

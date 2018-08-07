@@ -7,7 +7,7 @@ import { retry, catchError, tap, shareReplay } from 'rxjs/operators';
 export class GasService {
   constructor(private http: HttpClient) {}
 
-  public gasStationEndpoint = 'https://ethgasstation.info/json/ethgasAPI.json';
+  // public gasStationEndpoint = 'https://ethgasstation.info/json/ethgasAPI.json';
   public etherchainGasOracleEndpoint = 'https://www.etherchain.org/api/gasPriceOracle';
   public gasPrice = 10; // In gwei
 
