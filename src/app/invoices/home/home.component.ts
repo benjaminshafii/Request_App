@@ -161,9 +161,7 @@ export class HomeComponent implements OnInit {
 
   watchAccount() {
     this.web3Service.accountObservable.subscribe(account => {
-      if (!this.account) {
-        this.payeePaymentAddressFormControl.setValue(account);
-      }
+      this.payeePaymentAddressFormControl.setValue(account);
       this.account = account;
       this.payeeIdAddressFormControl.setValue(this.account);
       this.payerAddressFormControl.updateValueAndValidity();

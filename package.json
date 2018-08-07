@@ -11,6 +11,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "postinstall": "node ./scripts/patch.js",
+    "dev:e2e": "ng serve --configuration=e2e",
     "e2e": "node e2e/run.js"
   },
   "prettier": {
