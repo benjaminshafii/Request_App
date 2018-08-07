@@ -1,12 +1,13 @@
 import { Injectable, HostListener } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { UtilService } from './util.service';
+import { GasService } from './gas.service';
 import { environment } from '../../environments/environment';
 import RequestNetwork, {
   Types,
   utils
 } from '@requestnetwork/request-network.js';
-const Web3ProviderEngine = require ('web3-provider-engine');
+const Web3ProviderEngine = require('web3-provider-engine');
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
 
@@ -26,7 +27,6 @@ export class Web3Service {
     1: 'https://mainnet.infura.io/BQBjfSi5EKSCQQpXebO',
     4: 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO'
   };
-  private defaultGasPrice = 10000000000; // 10 gwei
 
   public metamask = false;
   public ledgerConnected = false;
@@ -46,7 +46,10 @@ export class Web3Service {
   public isAddress;
   public getBlockNumber;
 
-  constructor(private utilService: UtilService) {
+  constructor(
+    private utilService: UtilService,
+    private gasService: GasService
+  ) {
     this.networkIdObservable.subscribe(networkId => {
       this.setEtherscanUrl();
     });
@@ -57,6 +60,10 @@ export class Web3Service {
       setInterval(async () => await this.refreshAccounts(), 1000);
       this.web3Ready = true;
     });
+  }
+
+  public getGasPrice() {
+    return this.gasService.gasPrice * 1000000000;
   }
 
   public amountToBN(amount, currency) {
@@ -309,7 +316,7 @@ export class Web3Service {
     }
 
     requestOptions.transactionOptions = {
-      gasPrice: this.defaultGasPrice
+      gasPrice: this.getGasPrice()
     };
 
     this.confirmTxOnLedgerMsg();
@@ -333,7 +340,7 @@ export class Web3Service {
 
   public cancel(
     requestObject: any,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+    transactionOptions: any = { gasPrice: this.getGasPrice() }
   ) {
     if (this.watchDog()) {
       return;
@@ -344,7 +351,7 @@ export class Web3Service {
 
   public accept(
     requestObject: any,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+    transactionOptions: any = { gasPrice: this.getGasPrice() }
   ) {
     if (this.watchDog()) {
       return;
@@ -356,7 +363,7 @@ export class Web3Service {
   public subtract(
     requestObject: any,
     amount: string,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+    transactionOptions: any = { gasPrice: this.getGasPrice() }
   ) {
     if (this.watchDog()) {
       return;
@@ -372,7 +379,7 @@ export class Web3Service {
   public additional(
     requestObject: any,
     amount: string,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+    transactionOptions: any = { gasPrice: this.getGasPrice() }
   ) {
     if (this.watchDog()) {
       return;
@@ -388,7 +395,7 @@ export class Web3Service {
     requestObject: any,
     amount: string,
     transactionOptions: any = {
-      gasPrice: this.defaultGasPrice,
+      gasPrice: this.getGasPrice(),
       skipERC20checkAllowance: true
     }
   ) {
@@ -397,7 +404,7 @@ export class Web3Service {
     }
     this.confirmTxOnLedgerMsg();
 
-    transactionOptions.gasPrice = this.defaultGasPrice;
+    transactionOptions.gasPrice = this.getGasPrice();
     return requestObject.pay(
       [this.amountToBN(amount, requestObject.currency)],
       null,
@@ -409,7 +416,7 @@ export class Web3Service {
     requestObject: any,
     amount: string,
     transactionOptions: any = {
-      gasPrice: this.defaultGasPrice,
+      gasPrice: this.getGasPrice(),
       skipERC20checkAllowance: true
     }
   ) {
@@ -426,7 +433,7 @@ export class Web3Service {
   public allowSignedRequest(
     signedRequest: any,
     amount: string,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+    transactionOptions: any = { gasPrice: this.getGasPrice() }
   ) {
     if (this.watchDog()) {
       return;
@@ -442,7 +449,7 @@ export class Web3Service {
   public allow(
     requestId: string,
     amount: string,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
+    transactionOptions: any = { gasPrice: this.getGasPrice() }
   ) {
     if (this.watchDog()) {
       return;
@@ -469,7 +476,7 @@ export class Web3Service {
     amountsToPay: any[],
     requestOptions: any = {
       transactionOptions: {
-        gasPrice: this.defaultGasPrice,
+        gasPrice: this.getGasPrice(),
         skipERC20checkAllowance: true
       }
     }

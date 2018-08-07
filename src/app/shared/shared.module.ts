@@ -24,12 +24,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSliderModule } from '@angular/material/slider';
 
 import { AccountComponent } from './account/account.component';
 import { RouterModule } from '@angular/router';
 import { BlockiesModule } from 'angular-blockies';
 import { PopoverModule } from 'ngx-popover';
 import { QRCodeModule } from 'angularx-qrcode';
+import { GasSelectorComponent } from './gas-selector/gas-selector.component';
 
 @NgModule({
   imports: [
@@ -63,9 +65,10 @@ import { QRCodeModule } from 'angularx-qrcode';
     MatSortModule,
     MatTableModule,
     MatToolbarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSliderModule
   ],
-  declarations: [AccountComponent],
+  declarations: [AccountComponent, GasSelectorComponent],
   exports: [
     FormsModule,
     ReactiveFormsModule,
@@ -75,6 +78,7 @@ import { QRCodeModule } from 'angularx-qrcode';
     QRCodeModule,
 
     AccountComponent,
+    GasSelectorComponent,
     MatButtonModule,
     MatCardModule,
     // MatCheckboxModule,
@@ -95,7 +99,8 @@ import { QRCodeModule } from 'angularx-qrcode';
     MatTableModule,
     // MatTabsModule,
     MatToolbarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSliderModule
   ]
 })
 export class SharedModule {}

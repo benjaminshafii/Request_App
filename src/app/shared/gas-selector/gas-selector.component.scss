@@ -1,0 +1,53 @@
+@import 'variables';
+
+.gas-option {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  width: 240px;
+  color: $blue-grey !important;
+  font-size: 14px;
+
+  .gas-price {
+    flex: 2;
+    text-align: right;
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+
+  }
+  .gas-unit {
+    font-size: 0.6em;
+    line-height: 1em;
+  }
+
+  .speed {
+    line-height: 24px;
+  }
+  .wait {
+    font-size: 10px;
+    line-height: 18px;
+  }
+
+  &.selected {
+    border-left: 6px solid $accent;
+    padding-left: 10px;
+    background: $grey-light;
+  }
+
+  &.custom-gas-option {
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .custom-gas-price {
+      display: flex;
+      align-items: center;
+    }
+
+    .custom-gas-slider {
+      flex: 2;
+      width: 100%;
+      top: -28px;
+    }
+  }
+}

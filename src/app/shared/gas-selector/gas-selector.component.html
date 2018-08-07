@@ -1,0 +1,82 @@
+<ng-template [ngIf]="noGasPrices">
+  <mat-form-field>
+    <input type="number" matInput required [(ngModel)]="gasService.gasPrice">
+    <mat-placeholder>
+      <small><mat-icon matPrefix>local_gas_station</mat-icon> Gas Price (Gwei/gas unit)</small>
+    </mat-placeholder>
+  </mat-form-field>
+</ng-template>
+
+<ng-template [ngIf]="!noGasPrices">
+  <button mat-button [matMenuTriggerFor]="gasMenu" *ngIf="gasPricesObservable | async as gasPrices; else loadingGasSelector">
+    <mat-icon>local_gas_station</mat-icon> Gas price: {{currentGasCategory}}
+      ({{gasService.gasPrice | number : '1.0-2'}} Gwei)
+    <mat-menu #gasMenu="matMenu" [overlapTrigger]="false">
+      <button mat-menu-item class="gas-option" [class.selected]="currentGasCategory === 'safeLow'" (click)="selectGasCategory('safeLow', gasPrices.safeLow)">
+        <div class="gas-label">
+          <div class="speed">LOW</div>
+          <div class="wait"> &lt;30 min</div>
+        </div>
+        <div class="gas-price">
+          {{gasPrices.safeLow | number : '1.0-2'}}
+          GWEI/
+          <span class="gas-unit">
+            gas<br>unit
+          </span>
+        </div>
+      </button>
+      <button mat-menu-item  class="gas-option" [class.selected]="currentGasCategory === 'standard'" (click)="selectGasCategory('standard', gasPrices.standard)">
+        <div class="gas-label">
+          <div class="speed">STANDARD</div>
+          <div class="wait"> &lt;5 min</div>
+        </div>
+        <div class="gas-price">
+          {{gasPrices.standard | number : '1.0-2'}}
+          GWEI/
+          <span class="gas-unit">
+            gas<br>unit
+          </span>
+        </div>
+      </button>
+      <button mat-menu-item  class="gas-option" [class.selected]="currentGasCategory === 'fast'" (click)="selectGasCategory('fast', gasPrices.fast)">
+        <div class="gas-label">
+          <div class="speed">FAST</div>
+          <div class="wait"> &lt;2 min</div>
+        </div>
+        <div class="gas-price">
+          {{gasPrices.fast | number : '1.0-2'}}
+          GWEI/
+          <span class="gas-unit">
+            gas<br>unit
+          </span>
+        </div>
+      </button>
+      <button mat-menu-item class="gas-option" [class.selected]="currentGasCategory === 'fastest'" (click)="selectGasCategory('fastest', gasPrices.fastest)">
+          <div class="gas-label">
+            <div class="speed">FASTEST</div>
+            <div class="wait"> 1-2 blocks</div>
+          </div>
+          <div class="gas-price">
+            {{gasPrices.fastest | number : '1.0-2'}}
+            GWEI/
+            <span class="gas-unit">
+              gas<br>unit
+            </span>
+          </div>
+        </button>
+      <div mat-menu-item class="gas-option mat-menu-item custom-gas-option" [class.selected]="currentGasCategory === 'custom'" (click)="customClick($event)">
+          <div>CUSTOM</div>
+          <div class="custom-gas-price">{{gasService.gasPrice}} GWEI/
+            <span class="gas-unit">
+              gas<br>
+              unit
+            </span>
+          </div>
+          <mat-slider class="custom-gas-slider" min="{{gasPrices.safeLow}}" max="{{gasPrices.fastest}}" (input)="sliderInput($event)" step="0.1" [(ngModel)]="gasService.gasPrice"></mat-slider>
+      </div>
+    </mat-menu>
+  </button>
+  <ng-template #loadingGasSelector>
+      <mat-icon>local_gas_station</mat-icon> <mat-spinner style="display:inline-block" [diameter]="20"></mat-spinner>
+  </ng-template>
+</ng-template>
