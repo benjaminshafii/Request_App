@@ -7,33 +7,36 @@ import { HomeComponent } from './home/home.component';
 import { RequestComponent } from './request/request.component';
 import { SearchComponent } from './search/search.component';
 
-const invoicesRoutes: Routes = [{
-  path: '',
-  component: InvoicesComponent,
-  children: [{
-      path: '',
-      component: HomeComponent
-    },
-    {
-      pathMatch: 'full',
-      path: 'request/txHash/:txHash',
-      component: RequestComponent
-    },
-    {
-      pathMatch: 'full',
-      path: 'request/requestId/:requestId',
-      component: RequestComponent
-    },
-    {
-      pathMatch: 'full',
-      path: 'search/:searchValue',
-      component: SearchComponent
-    }
-  ]
-}];
+const invoicesRoutes: Routes = [
+  {
+    path: '',
+    component: InvoicesComponent,
+    children: [
+      {
+        path: '',
+        component: HomeComponent,
+      },
+      {
+        pathMatch: 'full',
+        path: 'request/txHash/:txHash',
+        component: RequestComponent,
+      },
+      {
+        pathMatch: 'full',
+        path: 'request/requestId/:requestId',
+        component: RequestComponent,
+      },
+      {
+        pathMatch: 'full',
+        path: 'search/:searchValue',
+        component: SearchComponent,
+      },
+    ],
+  },
+];
 
 @NgModule({
   imports: [RouterModule.forChild(invoicesRoutes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class InvoicesRoutingModule {}

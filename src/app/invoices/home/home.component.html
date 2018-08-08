@@ -1,7 +1,8 @@
 <div class="fc-primary container">
   <div class="row my-5">
     <div class="col-md-5 py-3">
-      <h1>Send payment requests,<br/>the right way</h1>
+      <h1>Send payment requests,
+        <br/>the right way</h1>
       <p>A decentralized network to get paid in cryptocurrencies.</p>
       <div class="info-card p-3 fs-14">
         <div>What you can do with the BETA version Request:</div>
@@ -32,7 +33,8 @@
             <mat-form-field class="w-100">
               <input matInput type="text" name="ETHAddress" [placeholder]="'On which ' + getBlockchainSymbol() + ' address do you want to receive the funds?'" [formControl]="payeePaymentAddressFormControl">
               <mat-error *ngIf="payeePaymentAddressFormControl.hasError('required')">
-                Payment address is <strong>required</strong>
+                Payment address is
+                <strong>required</strong>
               </mat-error>
               <mat-error *ngIf="payeePaymentAddressFormControl.hasError('invalidAddress')">
                 <strong>Invalid</strong> {{ getBlockchainSymbol() }} address
@@ -42,10 +44,13 @@
               <mat-form-field class="w-100">
                 <input matInput type="text" name="expectedAmount" placeholder="Request amount" [formControl]="expectedAmountFormControl">
                 <mat-error *ngIf="expectedAmountFormControl.hasError('required')">
-                  amount is <strong>required</strong>
+                  amount is
+                  <strong>required</strong>
                 </mat-error>
                 <mat-error *ngIf="expectedAmountFormControl.hasError('pattern')">
-                  amount must be a <strong>positive number</strong> with maximum <strong>{{ this.web3Service.getDecimalsForCurrency(this.currencyFormControl.value) }} decimals</strong>
+                  amount must be a
+                  <strong>positive number</strong> with maximum
+                  <strong>{{ this.web3Service.getDecimalsForCurrency(this.currencyFormControl.value) }} decimals</strong>
                 </mat-error>
               </mat-form-field>
               <mat-form-field [style.width]="'80px'">
@@ -63,13 +68,16 @@
             <mat-form-field class="w-100">
               <input matInput type="text" name="payerETHAddress" placeholder="Payer's ETH address" [formControl]="payerAddressFormControl">
               <mat-error *ngIf="payerAddressFormControl.hasError('required')">
-                payer's address is <strong>required</strong>
+                payer's address is
+                <strong>required</strong>
               </mat-error>
               <mat-error *ngIf="!payerAddressFormControl.hasError('invalidAddress') && payerAddressFormControl.hasError('sameAddressAsPayeeAddress')">
-                payer's address must be <strong>different from yours</strong>
+                payer's address must be
+                <strong>different from yours</strong>
               </mat-error>
               <mat-error *ngIf="!payerAddressFormControl.hasError('invalidAddress') && payerAddressFormControl.hasError('sameAddressAsPaymentAddress')">
-                payer's address must be <strong>different from payment address</strong>
+                payer's address must be
+                <strong>different from payment address</strong>
               </mat-error>
               <mat-error *ngIf="payerAddressFormControl.hasError('invalidAddress')">
                 <strong>Invalid</strong> ETH address
@@ -78,10 +86,12 @@
             <mat-form-field class="w-100" [hidden]="currencyFormControl.value !== 'BTC'">
               <input matInput type="text" [name]="getBlockchainSymbol() + 'RefundAddress'" [placeholder]="'On which ' + getBlockchainSymbol() + ' address do you wish to refund the payer?'" [formControl]="payerRefundAddressFormControl" [required]="currencyFormControl.value === 'BTC'">
               <mat-error *ngIf="payerRefundAddressFormControl.hasError('required')">
-                payer's refund address is <strong>required</strong>
+                payer's refund address is
+                <strong>required</strong>
               </mat-error>
               <mat-error *ngIf="payerRefundAddressFormControl.hasError('sameAddressAsPaymentAddress')">
-                payer's address must be <strong>different from payment address</strong>
+                payer's address must be
+                <strong>different from payment address</strong>
               </mat-error>
               <mat-error *ngIf="payerRefundAddressFormControl.hasError('invalidAddress')">
                 <strong>Invalid</strong> {{ getBlockchainSymbol() }} address

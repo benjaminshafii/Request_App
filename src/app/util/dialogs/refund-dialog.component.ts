@@ -1,10 +1,15 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  FormBuilder,
+} from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
-  templateUrl: './refund-dialog.component.html'
+  templateUrl: './refund-dialog.component.html',
 })
 export class RefundDialogComponent implements OnInit {
   requestObject: any;
@@ -29,16 +34,18 @@ export class RefundDialogComponent implements OnInit {
     this.isAllowanceGranted = false;
 
     this.allowanceMode =
-      this.request.currency !== 'ETH' && this.request.currency !== 'BTC' ? true : false;
+      this.request.currency !== 'ETH' && this.request.currency !== 'BTC'
+        ? true
+        : false;
   }
 
   ngOnInit() {
     this.refundFormControl = new FormControl('', [
       Validators.required,
-      Validators.pattern('[0-9]*([.][0-9]{0,18})?$')
+      Validators.pattern('[0-9]*([.][0-9]{0,18})?$'),
     ]);
     this.refundForm = this.formBuilder.group({
-      refundFormControl: this.refundFormControl
+      refundFormControl: this.refundFormControl,
     });
   }
 
@@ -75,7 +82,7 @@ export class RefundDialogComponent implements OnInit {
     this.loading = true;
     this.web3Service
       .refund(this.requestObject, this.refundFormControl.value, {
-        skipERC20checkAllowance: true
+        skipERC20checkAllowance: true,
       })
       .on('broadcasted', response => {
         this.callbackTx(

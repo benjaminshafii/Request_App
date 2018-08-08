@@ -2,13 +2,13 @@ import {
   TestBed,
   ComponentFixture,
   fakeAsync,
-  tick
+  tick,
 } from '@angular/core/testing';
 import {
   MatTableModule,
   MatPaginatorModule,
   MatSnackBarModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
 } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SearchComponent } from './search.component';
@@ -31,12 +31,12 @@ describe('Component: Search', () => {
         RouterTestingModule.withRoutes([
           {
             path: '',
-            component: MockComponent
-          }
-        ])
+            component: MockComponent,
+          },
+        ]),
       ],
       declarations: [SearchComponent],
-      providers: [Web3Service, UtilService]
+      providers: [Web3Service, UtilService],
     });
 
     fixture = TestBed.createComponent(SearchComponent);
@@ -56,28 +56,28 @@ describe('Component: Search', () => {
 
       const resultsList = [
         {
-          requestId: '0'
+          requestId: '0',
         },
         {
-          requestId: '1'
+          requestId: '1',
         },
         {
-          requestId: '2'
-        }
+          requestId: '2',
+        },
       ];
       const resultsListWithRequest = [
         {
           requestId: '0',
-          request: { data: 'request-data' }
+          request: { data: 'request-data' },
         },
         {
           requestId: '1',
-          request: { data: 'request-data' }
+          request: { data: 'request-data' },
         },
         {
           requestId: '2',
-          request: { data: 'request-data' }
-        }
+          request: { data: 'request-data' },
+        },
       ];
       component.getRequestsFromIds(resultsList);
 

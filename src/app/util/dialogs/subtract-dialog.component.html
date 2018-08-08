@@ -3,25 +3,38 @@
   <mat-dialog-content>
     <p class="fs-14">As the payee of this request, you can reduce the expected amount of this request.</p>
     <div class="fs-12 d-flex justify-content-between mb-1">
-      <div><strong>Expected amount</strong></div>
-      <div>{{ web3Service.BNToAmount(request.payee.expectedAmount, request.currency) }}&nbsp;<small>{{ request.currency  }}</small></div>
+      <div>
+        <strong>Expected amount</strong>
+      </div>
+      <div>{{ web3Service.BNToAmount(request.payee.expectedAmount, request.currency) }}&nbsp;
+        <small>{{ request.currency }}</small>
+      </div>
     </div>
     <mat-form-field class="w-100">
       <input matInput type="text" formControlName="subtractAmountFormControl" placeholder="amount to subtract" autocomplete="off">
       <mat-error *ngIf="subtractAmountFormControl.hasError('required')">
-        amount to subtract is <strong>required</strong>
+        amount to subtract is
+        <strong>required</strong>
       </mat-error>
       <mat-error *ngIf="subtractAmountFormControl.hasError('pattern')">
-        must be a <strong>positive number</strong> with maximum <strong>18 decimals</strong>
+        must be a
+        <strong>positive number</strong> with maximum
+        <strong>18 decimals</strong>
       </mat-error>
       <mat-error *ngIf="subtractAmountFormControl.hasError('superiorNumber')">
-        must be <strong>inferior to expected amount</strong>
+        must be
+        <strong>inferior to expected amount</strong>
       </mat-error>
-      <span matSuffix><img class="currencyIcon" src="assets/img/cryptoIcons/{{ request.currency  }}.png">&nbsp;{{ request.currency }}</span>
+      <span matSuffix>
+        <img class="currencyIcon" src="assets/img/cryptoIcons/{{ request.currency  }}.png">&nbsp;{{ request.currency }}</span>
     </mat-form-field>
     <div class="fs-12 d-flex justify-content-between my-3">
-      <div><strong>New expected amount</strong></div>
-      <div>{{ subtractAmountFormControl.value && subtractAmountFormControl.valid ? web3Service.BNToAmount(request.payee.expectedAmount.sub(web3Service.amountToBN(subtractAmountFormControl.value, request.currency)), request.currency) : '...' }}&nbsp;<small>{{ request.currency }}</small></div>
+      <div>
+        <strong>New expected amount</strong>
+      </div>
+      <div>{{ subtractAmountFormControl.value && subtractAmountFormControl.valid ? web3Service.BNToAmount(request.payee.expectedAmount.sub(web3Service.amountToBN(subtractAmountFormControl.value, request.currency)), request.currency) : '...' }}&nbsp;
+        <small>{{ request.currency }}</small>
+      </div>
     </div>
   </mat-dialog-content>
   <mat-dialog-actions class="mt-3 d-flex justify-content-around w-100">

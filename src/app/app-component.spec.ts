@@ -12,10 +12,10 @@ describe('AppComponent', () => {
         RouterTestingModule.withRoutes([
           {
             path: '',
-            component: MockComponent
-          }
-        ])
-      ]
+            component: MockComponent,
+          },
+        ]),
+      ],
     }).compileComponents();
   }));
 

@@ -1,10 +1,15 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  FormBuilder,
+} from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
-  templateUrl: './pay-dialog.component.html'
+  templateUrl: './pay-dialog.component.html',
 })
 export class PayDialogComponent implements OnInit {
   requestObject: any;
@@ -29,11 +34,15 @@ export class PayDialogComponent implements OnInit {
     this.isAllowanceGranted = false;
 
     this.allowanceMode =
-      this.request.currency !== 'ETH' && this.request.currency !== 'BTC' ? true : false;
+      this.request.currency !== 'ETH' && this.request.currency !== 'BTC'
+        ? true
+        : false;
   }
 
   ngOnInit() {
-    const initialAmountValue = this.request.payee.expectedAmount.gt(this.request.payee.balance)
+    const initialAmountValue = this.request.payee.expectedAmount.gt(
+      this.request.payee.balance
+    )
       ? this.web3Service.BNToAmount(
           this.request.payee.expectedAmount.sub(this.request.payee.balance),
           this.request.currency
@@ -42,11 +51,11 @@ export class PayDialogComponent implements OnInit {
 
     this.amountFormControl = new FormControl(initialAmountValue, [
       Validators.required,
-      Validators.pattern('[0-9]*([.][0-9]{0,18})?$')
+      Validators.pattern('[0-9]*([.][0-9]{0,18})?$'),
     ]);
 
     this.payForm = this.formBuilder.group({
-      amountFormControl: this.amountFormControl
+      amountFormControl: this.amountFormControl,
     });
   }
 

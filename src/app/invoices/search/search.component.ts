@@ -3,7 +3,7 @@ import {
   ViewChild,
   OnInit,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Web3Service } from '../../util/web3.service';
@@ -13,7 +13,7 @@ import { UtilService } from '../../util/util.service';
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss']
+  styleUrls: ['./search.component.scss'],
 })
 export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   searchValue: string;
@@ -25,13 +25,15 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     'request.payer',
     'request.payee.expectedAmount',
     'request.payee.balance',
-    'request.status'
+    'request.status',
   ];
   dataSource = new MatTableDataSource();
   loading = true;
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator)
+  paginator: MatPaginator;
+  @ViewChild(MatSort)
+  sort: MatSort;
 
   constructor(
     private web3Service: Web3Service,

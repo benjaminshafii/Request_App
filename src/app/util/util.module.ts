@@ -6,6 +6,6 @@ import { UtilService } from './util.service';
 @NgModule({
   imports: [],
   providers: [GasService, Web3Service, UtilService],
-  declarations: []
+  declarations: [],
 })
 export class UtilModule {}

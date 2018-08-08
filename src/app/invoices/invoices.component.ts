@@ -7,7 +7,5 @@ import { Router } from '@angular/router';
   styleUrls: ['./invoices.component.scss'],
 })
 export class InvoicesComponent {
-
   constructor(public router: Router) {}
-
 }

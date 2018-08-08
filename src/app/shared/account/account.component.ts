@@ -8,12 +8,14 @@ import { LedgerDialogComponent } from '../../util/dialogs/ledger-dialog.componen
 @Component({
   selector: 'app-account',
   templateUrl: './account.component.html',
-  styleUrls: ['./account.component.scss']
+  styleUrls: ['./account.component.scss'],
 })
 export class AccountComponent {
-
-  constructor(public web3Service: Web3Service, private dialog: MatDialog, private utilService: UtilService) {}
-
+  constructor(
+    public web3Service: Web3Service,
+    private dialog: MatDialog,
+    private utilService: UtilService
+  ) {}
 
   openLedgerDialog() {
     this.dialog.open(LedgerDialogComponent, {
@@ -21,5 +23,4 @@ export class AccountComponent {
       width: '500px',
     });
   }
-
 }

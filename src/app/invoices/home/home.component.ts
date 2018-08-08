@@ -5,7 +5,7 @@ import {
   FormControl,
   Validators,
   FormBuilder,
-  ValidationErrors
+  ValidationErrors,
 } from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
 import * as WAValidator from 'wallet-address-validator';
@@ -14,7 +14,7 @@ import { UtilService } from '../../util/util.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
   date: number = new Date().getTime();
@@ -105,20 +105,20 @@ export class HomeComponent implements OnInit {
     this.payeeIdAddressFormControl = new FormControl('', [Validators.required]);
     this.payeePaymentAddressFormControl = new FormControl('', [
       Validators.required,
-      this.isAddressValidator().bind(this)
+      this.isAddressValidator().bind(this),
     ]);
     this.expectedAmountFormControl = new FormControl('', [
       Validators.required,
-      this.decimalValidator.bind(this)
+      this.decimalValidator.bind(this),
     ]);
     this.payerAddressFormControl = new FormControl('', [
       Validators.required,
       this.sameAddressValidator.bind(this),
-      this.isAddressValidator('ETH').bind(this)
+      this.isAddressValidator('ETH').bind(this),
     ]);
     this.payerRefundAddressFormControl = new FormControl('', [
       this.isAddressValidator().bind(this),
-      this.sameAddressValidator.bind(this)
+      this.sameAddressValidator.bind(this),
     ]);
     this.dateFormControl = new FormControl('');
     this.reasonFormControl = new FormControl('');
@@ -135,7 +135,7 @@ export class HomeComponent implements OnInit {
       payerAddress: this.payerAddressFormControl,
       payerRefundAddress: this.payerRefundAddressFormControl,
       date: this.dateFormControl,
-      reason: this.reasonFormControl
+      reason: this.reasonFormControl,
     });
   }
 
@@ -213,7 +213,7 @@ export class HomeComponent implements OnInit {
           'payeePaymentAddress',
           'payeeIdAddress',
           'payerRefundAddress',
-          'currency'
+          'currency',
         ].includes(key) &&
         value &&
         value !== ''
@@ -235,18 +235,18 @@ export class HomeComponent implements OnInit {
           payee: {
             address: this.payeeIdAddressFormControl.value,
             balance: this.expectedAmountFormControl.value,
-            expectedAmount: this.expectedAmountFormControl.value
+            expectedAmount: this.expectedAmountFormControl.value,
           },
           currencyContract: {
             payeePaymentAddress:
               this.payeePaymentAddressFormControl.value &&
               this.payeePaymentAddressFormControl.value !== this.account
                 ? this.payeePaymentAddressFormControl.value
-                : null
+                : null,
           },
           currency: this.currencyFormControl.value,
           payer: this.payerAddressFormControl.value,
-          data: { data: {} }
+          data: { data: {} },
         };
 
         for (const key of Object.keys(data)) {
@@ -255,7 +255,7 @@ export class HomeComponent implements OnInit {
         return this.router.navigate(
           ['/request/txHash', response.transaction.hash],
           {
-            queryParams: { request: btoa(JSON.stringify(request)) }
+            queryParams: { request: btoa(JSON.stringify(request)) },
           }
         );
       } else if (response.message) {

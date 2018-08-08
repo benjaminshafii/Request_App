@@ -4,12 +4,12 @@ import {
   FormGroup,
   FormControl,
   Validators,
-  FormBuilder
+  FormBuilder,
 } from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
-  templateUrl: './broadcast-dialog.component.html'
+  templateUrl: './broadcast-dialog.component.html',
 })
 export class BroadcastDialogComponent implements OnInit {
   signedRequestObject: any;

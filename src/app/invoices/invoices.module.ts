@@ -13,19 +13,13 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
 import { ClipboardModule } from 'ngx-clipboard';
 
 @NgModule({
-  imports: [
-    SharedModule,
-
-    ClipboardModule,
-
-    InvoicesRoutingModule
-  ],
+  imports: [SharedModule, ClipboardModule, InvoicesRoutingModule],
   declarations: [
     InvoicesComponent,
     HomeComponent,
     RequestComponent,
     SearchComponent,
-    SearchBarComponent
-  ]
+    SearchBarComponent,
+  ],
 })
 export class InvoicesModule {}

@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <!-- General meta -->
   <title>Request Beta</title>
@@ -28,69 +29,78 @@
     <h1>To use this website, please enable JavaScript.</h1>
   </noscript>
   <style type="text/css">
-  body,
-  html {
-    height: 100%;
-  }
-  .app-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-  }
-  .app-loading .spinner {
-    height: 200px;
-    width: 200px;
-    animation: rotate 2s linear infinite;
-    transform-origin: center center;
-  }
-  .app-loading .spinner .path {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
-    animation: dash 1.5s ease-in-out infinite;
-    stroke-linecap: round;
-    stroke: #103B56;
-  }
-  .app-loading .logo-flex-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 5rem;
-  }
-  .app-loading .logo {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    background-size: 45% !important;
-    background: url(./assets/img/request-logo.png) center center no-repeat;
-  }
-  #redirection {
-    color: #103B56;
-    text-align: center;
-  }
-  @keyframes rotate {
-    100% {
-      transform: rotate(360deg);
+    body,
+    html {
+      height: 100%;
     }
-  }
-  @keyframes dash {
-    0% {
+
+    .app-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .app-loading .spinner {
+      height: 200px;
+      width: 200px;
+      animation: rotate 2s linear infinite;
+      transform-origin: center center;
+    }
+
+    .app-loading .spinner .path {
       stroke-dasharray: 1, 200;
       stroke-dashoffset: 0;
+      animation: dash 1.5s ease-in-out infinite;
+      stroke-linecap: round;
+      stroke: #103B56;
     }
-    50% {
-      stroke-dasharray: 89, 200;
-      stroke-dashoffset: -35px;
+
+    .app-loading .logo-flex-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 5rem;
     }
-    100% {
-      stroke-dasharray: 89, 200;
-      stroke-dashoffset: -124px;
+
+    .app-loading .logo {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background-size: 45% !important;
+      background: url(./assets/img/request-logo.png) center center no-repeat;
     }
-  }
-</style>
+
+    #redirection {
+      color: #103B56;
+      text-align: center;
+    }
+
+    @keyframes rotate {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes dash {
+      0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+      }
+      50% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -35px;
+      }
+      100% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -124px;
+      }
+    }
+  </style>
 </head>
+
 <body>
   <app-root>
     <div class="app-loading">
@@ -110,4 +120,5 @@
     </script>
   </app-root>
 </body>
+
 </html>

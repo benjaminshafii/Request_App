@@ -5,7 +5,7 @@ import { MatSliderChange } from '@angular/material/slider';
 @Component({
   selector: 'app-gas-selector',
   templateUrl: './gas-selector.component.html',
-  styleUrls: ['./gas-selector.component.scss']
+  styleUrls: ['./gas-selector.component.scss'],
 })
 export class GasSelectorComponent implements OnInit {
   constructor(private gasService: GasService) {}
@@ -19,7 +19,7 @@ export class GasSelectorComponent implements OnInit {
     standard: 'Standard',
     fast: 'Fast',
     fastest: 'Fastest',
-    custom: 'Custom'
+    custom: 'Custom',
   };
 
   ngOnInit() {
@@ -29,7 +29,7 @@ export class GasSelectorComponent implements OnInit {
       },
       error: err => {
         this.noGasPrices = true;
-      }
+      },
     });
   }
 

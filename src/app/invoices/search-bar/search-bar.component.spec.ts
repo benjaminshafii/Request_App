@@ -23,16 +23,16 @@ describe('Component: SearchBar', () => {
         RouterTestingModule.withRoutes([
           {
             path: 'search',
-            component: MockComponent
+            component: MockComponent,
           },
           {
             path: 'request/requestId',
-            component: MockComponent
-          }
-        ])
+            component: MockComponent,
+          },
+        ]),
       ],
       declarations: [SearchBarComponent],
-      providers: [Web3Service, UtilService]
+      providers: [Web3Service, UtilService],
     });
 
     fixture = TestBed.createComponent(SearchBarComponent);

@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Web3Service } from '../../util/web3.service';
 
 @Component({
-  templateUrl: './display-pay-dialog.component.html'
+  templateUrl: './display-pay-dialog.component.html',
 })
 export class DisplayPayDialogComponent {
   requestObject: any;

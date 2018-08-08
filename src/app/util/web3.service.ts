@@ -5,7 +5,7 @@ import { GasService } from './gas.service';
 import { environment } from '../../environments/environment';
 import RequestNetwork, {
   Types,
-  utils
+  utils,
 } from '@requestnetwork/request-network.js';
 const Web3ProviderEngine = require('web3-provider-engine');
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
@@ -13,7 +13,7 @@ import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
 
 import {
   ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
-  LedgerSubprovider
+  LedgerSubprovider,
 } from '@0xproject/subproviders';
 
 const Web3 = require('web3');
@@ -25,7 +25,7 @@ export class Web3Service {
   private requestNetwork;
   public infuraNodeUrl = {
     1: 'https://mainnet.infura.io/BQBjfSi5EKSCQQpXebO',
-    4: 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO'
+    4: 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO',
   };
 
   public metamask = false;
@@ -38,8 +38,10 @@ export class Web3Service {
   public networkIdObservable = new BehaviorSubject<number>(null);
 
   private web3NotReadyMsg = 'Error when trying to instanciate web3.';
-  private requestNetworkNotReadyMsg = 'Request Network smart contracts are not deployed on this network. Please use Mainnet or Rinkeby Testnet.';
-  private walletNotReadyMsg = 'Connect your Metamask or Ledger wallet to create or interact with a Request.';
+  private requestNetworkNotReadyMsg =
+    'Request Network smart contracts are not deployed on this network. Please use Mainnet or Rinkeby Testnet.';
+  private walletNotReadyMsg =
+    'Connect your Metamask or Ledger wallet to create or interact with a Request.';
 
   private BN;
   private hexToAscii;
@@ -130,7 +132,7 @@ export class Web3Service {
   ) {
     const ledgerSubprovider = new LedgerSubprovider({
       ledgerEthereumClientFactoryAsync,
-      networkId
+      networkId,
     });
     ledgerSubprovider.setPath(derivationPath || `44'/60'/0'`);
     ledgerSubprovider.setPathIndex(derivationPathIndex || 0);
@@ -139,7 +141,7 @@ export class Web3Service {
       const accounts = await ledgerSubprovider.getAccountsAsync();
       return accounts.map(acc => ({
         address: acc,
-        index: (derivationPathIndex || 0) + accounts.indexOf(acc)
+        index: (derivationPathIndex || 0) + accounts.indexOf(acc),
       }));
     } catch (err) {
       if (err.message === 'invalid transport instance') {
@@ -159,7 +161,7 @@ export class Web3Service {
   ) {
     const ledgerSubprovider = new LedgerSubprovider({
       ledgerEthereumClientFactoryAsync,
-      networkId
+      networkId,
     });
     ledgerSubprovider.setPath(derivationPath || `44'/60'/0'`);
     ledgerSubprovider.setPathIndex(derivationPathIndex || 0);
@@ -213,7 +215,7 @@ export class Web3Service {
         provider: this.web3.currentProvider,
         ethNetworkId: this.networkIdObservable.value,
         useIpfsPublic: environment.usePublicIpfs,
-        bitcoinNetworkId: this.networkIdObservable.value === 1 ? 0 : 3
+        bitcoinNetworkId: this.networkIdObservable.value === 1 ? 0 : 3,
       });
     } catch (err) {
       this.utilService.openSnackBar(this.requestNetworkNotReadyMsg);
@@ -316,7 +318,7 @@ export class Web3Service {
     }
 
     requestOptions.transactionOptions = {
-      gasPrice: this.getGasPrice()
+      gasPrice: this.getGasPrice(),
     };
 
     this.confirmTxOnLedgerMsg();
@@ -327,12 +329,12 @@ export class Web3Service {
         {
           idAddress: this.accountObservable.value,
           paymentAddress,
-          expectedAmount: this.amountToBN(expectedAmount, currency)
-        }
+          expectedAmount: this.amountToBN(expectedAmount, currency),
+        },
       ],
       {
         idAddress: payerAddress,
-        bitcoinRefundAddresses: refundAddress ? [refundAddress] : undefined
+        bitcoinRefundAddresses: refundAddress ? [refundAddress] : undefined,
       },
       requestOptions
     );
@@ -396,7 +398,7 @@ export class Web3Service {
     amount: string,
     transactionOptions: any = {
       gasPrice: this.getGasPrice(),
-      skipERC20checkAllowance: true
+      skipERC20checkAllowance: true,
     }
   ) {
     if (this.watchDog()) {
@@ -417,7 +419,7 @@ export class Web3Service {
     amount: string,
     transactionOptions: any = {
       gasPrice: this.getGasPrice(),
-      skipERC20checkAllowance: true
+      skipERC20checkAllowance: true,
     }
   ) {
     if (this.watchDog()) {
@@ -477,8 +479,8 @@ export class Web3Service {
     requestOptions: any = {
       transactionOptions: {
         gasPrice: this.getGasPrice(),
-        skipERC20checkAllowance: true
-      }
+        skipERC20checkAllowance: true,
+      },
     }
   ) {
     if (this.watchDog()) {
@@ -489,7 +491,7 @@ export class Web3Service {
     return this.requestNetwork.broadcastSignedRequest(
       signedRequestObject,
       {
-        idAddress: this.accountObservable.value
+        idAddress: this.accountObservable.value,
       },
       null,
       { amountsToPayAtCreation: amountsToPay },
@@ -575,11 +577,11 @@ export class Web3Service {
         payerRefundAddress: transaction.method.parameters._payerRefundAddress,
         subPayeesPaymentAddress: transaction.method.parameters._payeesPaymentAddress.slice(
           1
-        )
+        ),
       },
       data: {
         data: await this.getIpfsData(transaction.method.parameters._data),
-        hash: transaction.method.parameters._data
+        hash: transaction.method.parameters._data,
       },
       payee: {
         address: transaction.method.parameters._payeesIdAddress[0],
@@ -589,15 +591,15 @@ export class Web3Service {
         ),
         expectedAmount: this.BN(
           transaction.method.parameters._expectedAmounts[0]
-        )
+        ),
       },
       payer: transaction.method.parameters._payer,
-      subPayees: []
+      subPayees: [],
     };
 
     for (const [
       index,
-      subPayee
+      subPayee,
     ] of transaction.method.parameters._payeesIdAddress.slice(1).entries) {
       subPayee[index] = {
         address: subPayee,
@@ -607,7 +609,7 @@ export class Web3Service {
         ),
         expectedAmount: this.BN(
           transaction.method.parameters._expectedAmounts[1 + index]
-        )
+        ),
       };
     }
     return request;

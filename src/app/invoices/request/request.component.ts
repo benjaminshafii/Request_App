@@ -12,7 +12,7 @@ import { DisplayPayDialogComponent } from '../../util/dialogs/display-pay-dialog
 @Component({
   selector: 'app-request',
   templateUrl: './request.component.html',
-  styleUrls: ['./request.component.scss']
+  styleUrls: ['./request.component.scss'],
 })
 export class RequestComponent implements OnInit, OnDestroy {
   objectKeys = Object.keys;
@@ -110,7 +110,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     );
     if (result.request && result.request.requestId) {
       const blockNumber = await this.web3Service.getBlockNumber();
-      
+
       // if not on local network, wait 1 block confirmation
       if (
         this.web3Service.networkIdObservable.value > 4 ||
@@ -121,7 +121,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     } else if (result.message === 'Contract is not supported by request') {
       return await this.setRequest({
         errorTxHash:
-          'Sorry, we are unable to locate any request matching this transaction hash'
+          'Sorry, we are unable to locate any request matching this transaction hash',
       });
     } else if (result.transaction) {
       const request = await this.web3Service.buildRequestFromCreateRequestTransactionParams(
@@ -154,7 +154,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       }
     } else {
       return await this.setRequest({
-        errorTxHash: 'Sorry, we are unable to locate this transaction hash'
+        errorTxHash: 'Sorry, we are unable to locate this transaction hash',
       });
     }
     await new Promise(resolve => this.timeOuts.push(setTimeout(resolve, 5000)));
@@ -199,7 +199,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.getRequestMode();
     if (request && request.payee) {
       this.progress =
-        100 * this.request.payee.balance / this.request.payee.expectedAmount;
+        (100 * this.request.payee.balance) / this.request.payee.expectedAmount;
     }
   }
 
@@ -309,8 +309,8 @@ export class RequestComponent implements OnInit, OnDestroy {
       width: '350px',
       data: {
         callbackTx: this.callbackTx.bind(this),
-        requestObject: this.requestObject
-      }
+        requestObject: this.requestObject,
+      },
     });
   }
 
@@ -320,8 +320,8 @@ export class RequestComponent implements OnInit, OnDestroy {
       width: '350px',
       data: {
         callbackTx: this.callbackTx.bind(this),
-        requestObject: this.requestObject
-      }
+        requestObject: this.requestObject,
+      },
     });
   }
 
@@ -333,8 +333,8 @@ export class RequestComponent implements OnInit, OnDestroy {
         autoFocus: false,
         data: {
           callbackTx: this.callbackTx.bind(this),
-          requestObject: this.requestObject
-        }
+          requestObject: this.requestObject,
+        },
       });
     } else {
       this.dialog.open(DisplayPayDialogComponent, {
@@ -343,8 +343,8 @@ export class RequestComponent implements OnInit, OnDestroy {
         autoFocus: false,
         data: {
           mode: 'pay',
-          requestObject: this.requestObject
-        }
+          requestObject: this.requestObject,
+        },
       });
     }
   }
@@ -356,8 +356,8 @@ export class RequestComponent implements OnInit, OnDestroy {
         width: '350px',
         data: {
           callbackTx: this.callbackTx.bind(this),
-          requestObject: this.requestObject
-        }
+          requestObject: this.requestObject,
+        },
       });
     } else {
       this.dialog.open(DisplayPayDialogComponent, {
@@ -366,8 +366,8 @@ export class RequestComponent implements OnInit, OnDestroy {
         autoFocus: false,
         data: {
           mode: 'refund',
-          requestObject: this.requestObject
-        }
+          requestObject: this.requestObject,
+        },
       });
     }
   }

@@ -7,10 +7,9 @@ import { UtilService } from '../../util/util.service';
 @Component({
   selector: 'app-search-bar',
   templateUrl: './search-bar.component.html',
-  styleUrls: ['./search-bar.component.scss']
+  styleUrls: ['./search-bar.component.scss'],
 })
 export class SearchBarComponent implements OnInit {
-
   searchForm: FormGroup;
   searchValueFormControl: FormControl;
 
@@ -22,18 +21,16 @@ export class SearchBarComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-
   ngOnInit() {
     this.searchValueFormControl = new FormControl('');
     this.searchForm = this.formBuilder.group({
-      searchValueFormControl: this.searchValueFormControl
+      searchValueFormControl: this.searchValueFormControl,
     });
 
     this.utilService.searchValue.subscribe(searchValue => {
       this.searchValueFormControl.setValue(searchValue);
     });
   }
-
 
   search(searchValue) {
     searchValue = searchValue.split(' ').join('');
@@ -57,5 +54,4 @@ export class SearchBarComponent implements OnInit {
       }
     }
   }
-
 }

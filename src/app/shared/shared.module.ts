@@ -66,7 +66,7 @@ import { GasSelectorComponent } from './gas-selector/gas-selector.component';
     MatTableModule,
     MatToolbarModule,
     MatTooltipModule,
-    MatSliderModule
+    MatSliderModule,
   ],
   declarations: [AccountComponent, GasSelectorComponent],
   exports: [
@@ -100,7 +100,7 @@ import { GasSelectorComponent } from './gas-selector/gas-selector.component';
     // MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    MatSliderModule
-  ]
+    MatSliderModule,
+  ],
 })
 export class SharedModule {}

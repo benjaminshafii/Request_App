@@ -10,7 +10,9 @@
         <div *ngIf="request.errorTxHash; else errorRequestIdBlock" class="">
           <p>{{ request.errorTxHash }}</p>
           <p>
-            <a style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{txHash}}" target="_blank"><i>{{ web3Service.etherscanUrl}}tx/{{txHash.substring(0, 10) }}...{{ txHash.substring(txHash.length-5, txHash.length) }}</i></a>
+            <a style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{txHash}}" target="_blank">
+              <i>{{ web3Service.etherscanUrl}}tx/{{txHash.substring(0, 10) }}...{{ txHash.substring(txHash.length-5, txHash.length) }}</i>
+            </a>
           </p>
           <div>
             <button mat-raised-button routerLink="/" class="mx-3 px-5 my-5" color="accent">Back home</button>
@@ -48,14 +50,17 @@
                 <h4 class="semi-bold fs-18">
                   <span *ngIf="request.requestId; else waitingTemplate" popover="{{request.requestId}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">Request Id: {{request.requestId.substring(0, 5)}}...{{request.requestId.substring(56, 66)}}</span>
                   <ng-template #waitingTemplate>
-                    <span><i class="fa {{request.errorMsg ? 'fa-warning fc-warn' : 'fa-circle-o-notch fa-spin'}}"></i>&nbsp;{{ request.errorMsg || request.waitingMsg || 'searching for blockchain information...' }}</span>
+                    <span>
+                      <i class="fa {{request.errorMsg ? 'fa-warning fc-warn' : 'fa-circle-o-notch fa-spin'}}"></i>&nbsp;{{ request.errorMsg || request.waitingMsg || 'searching for blockchain information...' }}</span>
                   </ng-template>
                 </h4>
                 <div *ngIf="request.data && request.data.data && request.data.data.date" class="fs-14" [style.opacity]="'0.5'">
                   <i>{{request.data.data.date | date: 'fullDate'}}</i>
                 </div>
                 <div class="mt-1">
-                  <a *ngIf="txHash" class="fs-14" style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{txHash}}" target="_blank"><i>{{ web3Service.etherscanUrl}}tx/{{txHash.substring(0, 10) }}...{{ txHash.substring(txHash.length-5, txHash.length) }}</i></a>
+                  <a *ngIf="txHash" class="fs-14" style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{txHash}}" target="_blank">
+                    <i>{{ web3Service.etherscanUrl}}tx/{{txHash.substring(0, 10) }}...{{ txHash.substring(txHash.length-5, txHash.length) }}</i>
+                  </a>
                   <span *ngIf="request.status" class="status-{{request.status.replace(' ','-')}} fs-12">{{request.status}}</span>
                 </div>
               </div>
@@ -115,12 +120,15 @@
             </div>
             <div class="p-5">
               <div *ngIf="request.status" class="fc-blue-grey fs-12 mx-auto w-50 text-center progress-bar-{{request.status.replace(' ','-')}}">
-                <div><strong>{{progress | number: '1.0-2'}}%</strong> of the request has been paid</div>
+                <div>
+                  <strong>{{progress | number: '1.0-2'}}%</strong> of the request has been paid</div>
                 <mat-progress-bar class="my-1" mode="determinate" [value]="progress"></mat-progress-bar>
                 <div [ngSwitch]="request.status">
-                  <span *ngSwitchCase="'overpaid'"><strong>{{ web3Service.BNToAmount(request.payee.expectedAmount.sub(request.payee.balance).abs(), request.currency) }} {{ request.currency }}</strong> overpaid</span>
+                  <span *ngSwitchCase="'overpaid'">
+                    <strong>{{ web3Service.BNToAmount(request.payee.expectedAmount.sub(request.payee.balance).abs(), request.currency) }} {{ request.currency }}</strong> overpaid</span>
                   <span *ngSwitchCase="'complete'">&nbsp;</span>
-                  <span *ngSwitchDefault><strong>{{ web3Service.BNToAmount(request.payee.expectedAmount.sub(request.payee.balance), request.currency) }} {{ request.currency }}</strong> remains to be paid</span>
+                  <span *ngSwitchDefault>
+                    <strong>{{ web3Service.BNToAmount(request.payee.expectedAmount.sub(request.payee.balance), request.currency) }} {{ request.currency }}</strong> remains to be paid</span>
                 </div>
               </div>
             </div>
@@ -130,7 +138,8 @@
                 <div *ngIf="!request.errorMsg; else errorBlock">
                   <mat-icon class="mx-auto mt-3" color="accent">remove_red_eye</mat-icon>
                   <div class="fc-primary semi-bold">
-                    <i>You are in view mode.<br/> Synchronizing the request with the blockchain can take between 1sec and a couple of minutes.</i>
+                    <i>You are in view mode.
+                      <br/> Synchronizing the request with the blockchain can take between 1sec and a couple of minutes.</i>
                   </div>
                 </div>
                 <ng-template #errorBlock>
@@ -144,7 +153,10 @@
                 <!-- STATE == CANCELED -->
                 <div *ngIf="request.state == 2; else ctaBlock" class="text-center fs-12 lh-14 h-100">
                   <mat-icon class="mx-auto mt-3" color="warn">lock</mat-icon>
-                  <div class="semi-bold fc-warn"><i>This request has been cancelled.<br/>You can’t interact with it anymore.</i></div>
+                  <div class="semi-bold fc-warn">
+                    <i>This request has been cancelled.
+                      <br/>You can’t interact with it anymore.</i>
+                  </div>
                 </div>
                 <!-- NORMAL STATES -->
                 <ng-template #ctaBlock>
@@ -191,7 +203,8 @@
                     <div *ngSwitchDefault class="text-center fs-12 lh-14 h-100">
                       <mat-icon class="mx-auto mt-3" color="accent">remove_red_eye</mat-icon>
                       <div class="fc-primary semi-bold">
-                        <i>You are in view mode.<br/> Connect your metamask account as the payer or payee to interact with this Request.</i>
+                        <i>You are in view mode.
+                          <br/> Connect your metamask account as the payer or payee to interact with this Request.</i>
                       </div>
                     </div>
                   </div>
@@ -201,7 +214,10 @@
                       <div class="text-center fs-12 lh-14 h-100">
                         <mat-spinner class="mx-auto mt-3" [diameter]="20"></mat-spinner>
                         <div class="fc-primary semi-bold">
-                          <i>Waiting for transaction to be mined...<br/><a style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{loading}}" target="_blank">{{ web3Service.etherscanUrl}}tx/{{loading.substring(0, 10) }}...{{ loading.substring(loading.length-5, loading.length) }}</a></i>
+                          <i>Waiting for transaction to be mined...
+                            <br/>
+                            <a style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{loading}}" target="_blank">{{ web3Service.etherscanUrl}}tx/{{loading.substring(0, 10) }}...{{ loading.substring(loading.length-5, loading.length) }}</a>
+                          </i>
                         </div>
                       </div>
                     </div>

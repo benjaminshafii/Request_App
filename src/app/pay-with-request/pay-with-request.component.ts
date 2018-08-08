@@ -10,7 +10,7 @@ import { UtilService } from '../util/util.service';
 @Component({
   selector: 'app-pay-with-request',
   templateUrl: './pay-with-request.component.html',
-  styleUrls: ['./pay-with-request.component.scss']
+  styleUrls: ['./pay-with-request.component.scss'],
 })
 export class PayWithRequestComponent implements OnInit {
   Object = Object;
@@ -115,7 +115,7 @@ export class PayWithRequestComponent implements OnInit {
   getLastPayees() {
     this.min = this.min - 5;
     if (this.max % 5 !== 0) {
-      this.max = this.max - this.max % 5;
+      this.max = this.max - (this.max % 5);
     } else {
       this.max = this.max - 5;
     }
@@ -166,8 +166,8 @@ export class PayWithRequestComponent implements OnInit {
         autoFocus: false,
         data: {
           callbackTx,
-          signedRequestObject: this.signedRequestObject
-        }
+          signedRequestObject: this.signedRequestObject,
+        },
       })
       .afterClosed()
       .subscribe(txHash => {

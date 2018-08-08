@@ -40,7 +40,7 @@ export class UtilService {
       duration: duration || 7000,
       horizontalPosition: 'right',
       verticalPosition: 'top',
-      panelClass: panelClass || 'warning-snackbar'
+      panelClass: panelClass || 'warning-snackbar',
     });
   }
 }
