@@ -9,6 +9,7 @@
     "build": "ng build",
     "build:prod": "ng build --prod --aot",
     "test": "ng test",
+    "lint": "ng lint",
     "prettier": "prettier --write \"src/**/*.{ts, js, json}\"",
     "postinstall": "node ./scripts/patch.js",
     "dev:e2e": "ng serve --configuration=e2e",
