@@ -61,10 +61,24 @@ a {
   }
 }
 
+@media (max-width: 768px) {
+  .hidden-md-down {
+    display: none !important;
+  }
+}
+
 @media (min-width: 577px) {
   .hidden-sm-up {
     display: none !important;
   }
+}
+
+.flex-1 {
+  flex: 1 0 auto;
+}
+
+.flex-inf {
+  flex: 1000 0 auto;
 }
 
 // related to  expansion pannel on payment dialog
@@ -225,7 +239,7 @@ button.account-menu-button {
   max-width: 100%;
 }
 
-.account-menu {
+.mat-menu-custom {
   box-shadow: 2px 2px 18px 0px rgba(212, 227, 255, 0.5) !important;
   max-width: 100% !important;
   button {

@@ -1,5 +1,5 @@
 <form [formGroup]="searchForm" (ngSubmit)="search(searchValueFormControl.value)">
-  <mat-form-field class="mx-3 searchBar">
+  <mat-form-field class="searchBar">
     <input matInput type="text" formControlName="searchValueFormControl" name="searchValueFormControl">
     <button type="submit" matSuffix mat-icon-button [disabled]="!searchValueFormControl.value">
       <small>

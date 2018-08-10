@@ -26,7 +26,7 @@
       <mat-icon class="hidden-xs-down">expand_more</mat-icon>
     </div>
   </ng-template>
-  <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="account-menu">
+  <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" class="mat-menu-custom">
     <div *ngIf="web3Service.accountObservable | async as account">
       <a routerLink="/search/{{ account }}" (click)="utilService.setSearchValue(account)" mat-menu-item>
         <i class="fa fa-search" aria-hidden="true"></i>

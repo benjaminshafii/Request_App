@@ -5,7 +5,6 @@
   align-items: center;
   height: 60px;
   width: 240px;
-  color: $blue-grey !important;
   font-size: 14px;
 
   .gas-price {
@@ -14,16 +13,12 @@
     align-items: center;
     display: flex;
     justify-content: flex-end;
-
-  }
-  .gas-unit {
-    font-size: 0.6em;
-    line-height: 1em;
   }
 
   .speed {
     line-height: 24px;
   }
+
   .wait {
     font-size: 10px;
     line-height: 18px;

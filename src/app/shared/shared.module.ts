@@ -27,11 +27,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSliderModule } from '@angular/material/slider';
 
 import { AccountComponent } from './account/account.component';
+import { GasSelectorComponent } from './gas-selector/gas-selector.component';
 import { RouterModule } from '@angular/router';
 import { BlockiesModule } from 'angular-blockies';
 import { PopoverModule } from 'ngx-popover';
 import { QRCodeModule } from 'angularx-qrcode';
-import { GasSelectorComponent } from './gas-selector/gas-selector.component';
 
 @NgModule({
   imports: [

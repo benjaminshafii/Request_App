@@ -31,9 +31,7 @@
           <button mat-button class="w-100 fs-16 bor-accent my-3" style="height: 50px" color="accent" type="button" ngxClipboard [cbContent]="url" (cbOnSuccess)="copyToClipboard()">{{copyUrlTxt}}</button>
           <hr style="border-top: 1px solid #617B9F; opacity: 0.2">
           <div class="fc-blue-grey" *ngIf="request.events">
-            <p class="semi-bold mb-2 fs-14">
-              History
-            </p>
+            <p class="semi-bold mb-2 fs-14">History</p>
             <div *ngIf="request && request.events && request.events.length > 0">
               <div *ngFor="let e of request.events" class="fs-12 d-flex justify-content-between">
                 <span>{{ spaceBeforeCapital(e.name) }} </span>
