@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "dev:https": "ng serve --ssl 1 --ssl-key 'ssl/local.app.request.network.key' --ssl-cert 'ssl/local.app.request.network.crt' --port 8080",
+    "dev:https": "ng serve --ssl",
     "build": "ng build",
     "build:prod": "ng build --prod --aot",
     "test": "ng test",
@@ -35,7 +35,7 @@
     "@angular/platform-browser-dynamic": "^6.1.0",
     "@angular/platform-server": "^6.1.0",
     "@angular/router": "^6.1.0",
-    "@requestnetwork/request-network.js": "^0.7.4",
+    "@requestnetwork/request-network.js": "0.7.5",
     "angular-blockies": "1.1.1",
     "angularx-qrcode": "^1.2.2",
     "bootstrap": "^4.1.3",
