@@ -11,7 +11,7 @@ export class GasSelectorComponent implements OnInit {
   constructor(private gasService: GasService) {}
 
   public noGasPrices = false;
-  public currentGasCategory = 'safeLow';
+  public currentGasCategory = 'standard';
   public gasPricesObservable = this.gasService.getGasPrices();
 
   public gasCategoryLabels = {
@@ -25,7 +25,7 @@ export class GasSelectorComponent implements OnInit {
   ngOnInit() {
     this.gasPricesObservable.subscribe({
       next: prices => {
-        this.gasService.gasPrice = prices.safeLow;
+        this.gasService.gasPrice = prices.standard;
       },
       error: err => {
         this.noGasPrices = true;
