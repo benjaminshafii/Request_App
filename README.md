@@ -21,7 +21,7 @@ Run `npm run build:prod` to generate the build repository in /dist.
 
 #### Prerequisites
 
-To run end-to-end tests, you need the app running (`npm run start`).
+To run end-to-end tests, you need the app running with e2e configuration: `npm run dev:e2e`.
 You also need a local instance of ganache running on port `8545`, with smart-contracts deployed.
 
 On the `requestNetwork/packages/requestNetwork.js` directory:

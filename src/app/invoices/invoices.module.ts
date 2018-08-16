@@ -9,6 +9,7 @@ import { HomeComponent } from './home/home.component';
 import { RequestComponent } from './request/request.component';
 import { SearchComponent } from './search/search.component';
 import { SearchBarComponent } from './search-bar/search-bar.component';
+import { CurrencySelectorComponent } from './currency-selector/currency-selector.component';
 
 import { ClipboardModule } from 'ngx-clipboard';
 
@@ -20,6 +21,7 @@ import { ClipboardModule } from 'ngx-clipboard';
     RequestComponent,
     SearchComponent,
     SearchBarComponent,
+    CurrencySelectorComponent,
   ],
 })
 export class InvoicesModule {}

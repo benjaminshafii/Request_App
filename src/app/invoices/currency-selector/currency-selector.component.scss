@@ -1,0 +1,18 @@
+:host {
+  display: inline-flex;
+  width: 100%;
+}
+
+.prefix-icon {
+  display: block;
+  margin-right: 4px;
+  max-height: 18px;
+}
+
+.currency-selector {
+  display: block;
+  position: relative;
+  flex: auto;
+  min-width: 0;
+  width: 180px;
+}

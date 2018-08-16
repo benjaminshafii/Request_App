@@ -29,7 +29,6 @@ export class HomeComponent implements OnInit {
   reasonFormControl: FormControl;
   dateFormControl: FormControl;
   currencyFormControl: FormControl;
-  currencies: String[];
   BTCRefundAddress;
 
   isAddressValidator(curr?: string) {
@@ -156,7 +155,6 @@ export class HomeComponent implements OnInit {
       return this.ngOnInit();
     }
     this.watchAccount();
-    this.watchNetworkId();
   }
 
   watchAccount() {
@@ -165,22 +163,6 @@ export class HomeComponent implements OnInit {
       this.account = account;
       this.payeeIdAddressFormControl.setValue(this.account);
       this.payerAddressFormControl.updateValueAndValidity();
-    });
-  }
-
-  watchNetworkId() {
-    this.web3Service.networkIdObservable.subscribe(networkId => {
-      switch (networkId) {
-        case 1:
-          this.currencies = ['ETH', 'REQ', 'KNC', 'DGX', 'DAI', 'OMG'];
-          break;
-        default:
-          this.currencies = ['ETH'];
-          break;
-      }
-      if (!this.currencies.includes(this.currencyFormControl.value)) {
-        this.currencyFormControl.setValue('ETH');
-      }
     });
   }
 
