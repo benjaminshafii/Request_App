@@ -9,7 +9,6 @@ import { PayWithRequestComponent } from './pay-with-request/pay-with-request.com
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { UtilModule } from './util/util.module';
-import { InvoicesModule } from './invoices/invoices.module';
 
 import { LedgerDialogComponent } from './util/dialogs/ledger-dialog.component';
 import { PayDialogComponent } from './util/dialogs/pay-dialog.component';
@@ -26,9 +25,7 @@ import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
     HttpClientModule,
 
     SharedModule,
-
     UtilModule,
-    InvoicesModule,
 
     AppRoutingModule,
   ],
