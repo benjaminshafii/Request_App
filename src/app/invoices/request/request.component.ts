@@ -182,7 +182,7 @@ export class RequestComponent implements OnInit, OnDestroy {
         window.location.host
       }/#/request/requestId/${request.requestId}`;
     }
-    if (request && request.state !== undefined) {
+    if (request && !request.status && request.state !== undefined) {
       this.web3Service.setRequestStatus(request);
     }
     if (request && request.requestId && !request.events) {

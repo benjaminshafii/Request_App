@@ -6,10 +6,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { PayWithRequestComponent } from './pay-with-request/pay-with-request.component';
 
-import { SharedModule } from './shared/shared.module';
-import { AppRoutingModule } from './app-routing.module';
-import { UtilModule } from './util/util.module';
-
 import { LedgerDialogComponent } from './util/dialogs/ledger-dialog.component';
 import { PayDialogComponent } from './util/dialogs/pay-dialog.component';
 import { DisplayPayDialogComponent } from './util/dialogs/display-pay-dialog.component';
@@ -17,6 +13,10 @@ import { BroadcastDialogComponent } from './util/dialogs/broadcast-dialog.compon
 import { SubtractDialogComponent } from './util/dialogs/subtract-dialog.component';
 import { AdditionalDialogComponent } from './util/dialogs/additional-dialog.component';
 import { RefundDialogComponent } from './util/dialogs/refund-dialog.component';
+
+import { SharedModule } from './shared/shared.module';
+import { UtilModule } from './util/util.module';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   imports: [
