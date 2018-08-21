@@ -14,7 +14,7 @@
   </mat-form-field>
 </ng-template>
 <ng-template [ngIf]="!noGasPrices">
-  <button mat-button class="no-focus-overlay" [matMenuTriggerFor]="gasMenu" *ngIf="gasPricesObservable | async as gasPrices; else loadingGasSelector">
+  <button mat-button class="no-focus-overlay" [matMenuTriggerFor]="gasMenu" *ngIf="gasService.gasPricesObservable | async as gasPrices; else loadingGasSelector">
     <mat-icon>local_gas_station</mat-icon>
     <span class="hidden-md-down">Gas price: {{gasCategoryLabels[currentGasCategory]}} ({{gasService.gasPrice | number : '1.0-2'}} Gwei)</span>
     <mat-menu class="mat-menu-custom" #gasMenu="matMenu" [overlapTrigger]="false">
@@ -27,13 +27,13 @@
           {{gasPrices.safeLow | number : '1.0-2'}} Gwei
         </div>
       </button>
-      <button mat-menu-item class="gas-option" [class.selected]="currentGasCategory === 'standard'" (click)="selectGasCategory('standard', gasPrices.standard)">
+      <button mat-menu-item class="gas-option" [class.selected]="currentGasCategory === 'average'" (click)="selectGasCategory('average', gasPrices.average)">
         <div>
           <div class="speed">STANDARD</div>
           <div class="wait"> &lt;5 min</div>
         </div>
         <div class="gas-price">
-          {{gasPrices.standard | number : '1.0-2'}} Gwei
+          {{gasPrices.average | number : '1.0-2'}} Gwei
         </div>
       </button>
       <button mat-menu-item class="gas-option" [class.selected]="currentGasCategory === 'fast'" (click)="selectGasCategory('fast', gasPrices.fast)">

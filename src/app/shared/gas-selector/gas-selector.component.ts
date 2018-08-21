@@ -8,24 +8,23 @@ import { MatSliderChange } from '@angular/material/slider';
   styleUrls: ['./gas-selector.component.scss'],
 })
 export class GasSelectorComponent implements OnInit {
-  constructor(private gasService: GasService) {}
-
   public noGasPrices = false;
-  public currentGasCategory = 'standard';
-  public gasPricesObservable = this.gasService.getGasPrices();
+  public currentGasCategory = 'average';
 
   public gasCategoryLabels = {
     safeLow: 'Low',
-    standard: 'Standard',
+    average: 'Standard',
     fast: 'Fast',
     fastest: 'Fastest',
     custom: 'Custom',
   };
 
+  constructor(private gasService: GasService) {}
+
   ngOnInit() {
-    this.gasPricesObservable.subscribe({
+    this.gasService.gasPricesObservable.subscribe({
       next: prices => {
-        this.gasService.gasPrice = prices.standard;
+        this.gasService.gasPrice = prices.average;
       },
       error: err => {
         this.noGasPrices = true;

@@ -104,7 +104,7 @@ export class CurrencySelectorComponent
   @HostBinding('attr.aria-describedby')
   describedBy = '';
 
-  private currencies: String[];
+  public currencies: String[];
   public controlType = 'currency-selector';
   public stateChanges = new Subject<void>();
   public focused: boolean;
@@ -126,7 +126,7 @@ export class CurrencySelectorComponent
     });
   }
 
-  private onCurrencyChange(event) {
+  public onCurrencyChange(event) {
     this.selectionChange.emit(event);
   }
 
