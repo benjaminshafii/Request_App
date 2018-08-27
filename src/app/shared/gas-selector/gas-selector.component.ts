@@ -26,7 +26,7 @@ export class GasSelectorComponent implements OnInit {
       next: prices => {
         this.gasService.gasPrice = prices.average;
       },
-      error: err => {
+      error: _ => {
         this.noGasPrices = true;
       },
     });
