@@ -24,7 +24,7 @@ export class RequestComponent implements OnInit, OnDestroy {
   url = window.location.href;
   copyUrlTxt = 'Copy url';
   txHash: string;
-  subscription: any;
+  searchValueSubscription: any;
   timerInterval: any;
   timeOuts = [];
   loading = false;
@@ -45,7 +45,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     }
     this.watchAccount();
 
-    this.subscription = this.utilService.searchValue.subscribe(
+    this.searchValueSubscription = this.utilService.searchValue.subscribe(
       async searchValue => {
         if (searchValue && searchValue.length > 42) {
           this.request = null;
@@ -185,11 +185,6 @@ export class RequestComponent implements OnInit, OnDestroy {
     if (request && !request.status && request.state !== undefined) {
       this.web3Service.setRequestStatus(request);
     }
-    if (request && request.requestId && !request.events) {
-      request.events = await this.web3Service.getRequestEvents(
-        request.requestId
-      );
-    }
     if (request && request.currencyContract && !request.currency) {
       request.currency = this.web3Service.currencyFromContractAddress(
         request.currencyContract.address
@@ -200,6 +195,11 @@ export class RequestComponent implements OnInit, OnDestroy {
     if (request && request.payee) {
       this.progress =
         (100 * this.request.payee.balance) / this.request.payee.expectedAmount;
+    }
+    if (request && request.requestId && !request.events) {
+      request.events = await this.web3Service.getRequestEvents(
+        request.requestId
+      );
     }
   }
 
@@ -373,8 +373,8 @@ export class RequestComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+    if (this.searchValueSubscription) {
+      this.searchValueSubscription.unsubscribe();
     }
     if (this.timerInterval) {
       clearInterval(this.timerInterval);

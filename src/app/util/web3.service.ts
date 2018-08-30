@@ -7,13 +7,13 @@ import RequestNetwork, {
   Types,
   utils,
 } from '@requestnetwork/request-network.js';
+
 const Web3ProviderEngine = require('web3-provider-engine');
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
-
 import {
   ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
-  LedgerSubprovider,
+  LedgerSubprovider
 } from '@0xproject/subproviders';
 
 const Web3 = require('web3');
@@ -22,6 +22,7 @@ declare let window: any;
 @Injectable()
 export class Web3Service {
   private web3;
+  private LedgerEthereumClientFactoryAsync = ledgerEthereumClientFactoryAsync;
   private requestNetwork;
   public infuraNodeUrl = {
     1: 'https://mainnet.infura.io/BQBjfSi5EKSCQQpXebO',
@@ -43,8 +44,7 @@ export class Web3Service {
   private walletNotReadyMsg =
     'Connect your Metamask or Ledger wallet to create or interact with a Request.';
 
-  private BN;
-  private hexToAscii;
+  public BN;
   public isAddress;
   public getBlockNumber;
 
@@ -52,7 +52,7 @@ export class Web3Service {
     private utilService: UtilService,
     private gasService: GasService
   ) {
-    this.networkIdObservable.subscribe(networkId => {
+    this.networkIdObservable.subscribe(_ => {
       this.setEtherscanUrl();
     });
 
@@ -131,7 +131,7 @@ export class Web3Service {
     derivationPathIndex?: number
   ) {
     const ledgerSubprovider = new LedgerSubprovider({
-      ledgerEthereumClientFactoryAsync,
+      ledgerEthereumClientFactoryAsync: this.LedgerEthereumClientFactoryAsync,
       networkId,
     });
     ledgerSubprovider.setPath(derivationPath || `44'/60'/0'`);
@@ -160,7 +160,7 @@ export class Web3Service {
     derivationPathIndex?: number
   ) {
     const ledgerSubprovider = new LedgerSubprovider({
-      ledgerEthereumClientFactoryAsync,
+      ledgerEthereumClientFactoryAsync: this.LedgerEthereumClientFactoryAsync,
       networkId,
     });
     ledgerSubprovider.setPath(derivationPath || `44'/60'/0'`);
@@ -168,8 +168,8 @@ export class Web3Service {
 
     const engine = new Web3ProviderEngine();
     engine.setMaxListeners(200);
-    engine.addProvider(ledgerSubprovider);
     engine.addProvider(new FilterSubprovider());
+    engine.addProvider(ledgerSubprovider);
     engine.addProvider(
       new FetchSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] })
     );
@@ -224,7 +224,6 @@ export class Web3Service {
 
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
-    this.hexToAscii = this.web3.utils.hexToAscii;
     this.getBlockNumber = this.web3.eth.getBlockNumber;
   }
 
