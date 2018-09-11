@@ -16,7 +16,7 @@ import * as WAValidator from 'wallet-address-validator';
 
 import {
   ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
-  LedgerSubprovider
+  LedgerSubprovider,
 } from '@0xproject/subproviders';
 
 const Web3 = require('web3');

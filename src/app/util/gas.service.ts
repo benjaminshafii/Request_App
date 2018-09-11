@@ -5,8 +5,7 @@ import { Subject } from 'rxjs';
 
 @Injectable()
 export class GasService {
-  private gasStationEndpoint =
-    'https://ethgasstation.info/json/ethgasAPI.json';
+  private gasStationEndpoint = 'https://ethgasstation.info/json/ethgasAPI.json';
   public gasPricesObservable = new Subject<GasStationResponse>();
   public gasPrice = 10; // In gwei
 
