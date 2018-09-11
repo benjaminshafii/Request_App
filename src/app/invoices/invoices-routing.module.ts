@@ -6,6 +6,7 @@ import { InvoicesComponent } from './invoices.component';
 import { HomeComponent } from './home/home.component';
 import { RequestComponent } from './request/request.component';
 import { SearchComponent } from './search/search.component';
+import { AdvancedInvoiceComponent } from './advanced-invoice/advanced-invoice.component';
 
 const invoicesRoutes: Routes = [
   {
@@ -30,6 +31,11 @@ const invoicesRoutes: Routes = [
         pathMatch: 'full',
         path: 'search/:searchValue',
         component: SearchComponent,
+      },
+      {
+        pathMatch: 'full',
+        path: 'invoice',
+        component: AdvancedInvoiceComponent,
       },
     ],
   },

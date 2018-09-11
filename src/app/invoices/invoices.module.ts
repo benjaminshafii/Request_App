@@ -12,6 +12,7 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
 import { CurrencySelectorComponent } from './currency-selector/currency-selector.component';
 
 import { ClipboardModule } from 'ngx-clipboard';
+import { AdvancedInvoiceComponent } from './advanced-invoice/advanced-invoice.component';
 
 @NgModule({
   imports: [SharedModule, ClipboardModule, InvoicesRoutingModule],
@@ -22,6 +23,7 @@ import { ClipboardModule } from 'ngx-clipboard';
     SearchComponent,
     SearchBarComponent,
     CurrencySelectorComponent,
+    AdvancedInvoiceComponent,
   ],
 })
 export class InvoicesModule {}

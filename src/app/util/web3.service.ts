@@ -1,4 +1,5 @@
 import { Injectable, HostListener } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { UtilService } from './util.service';
 import { GasService } from './gas.service';
@@ -11,6 +12,8 @@ import RequestNetwork, {
 const Web3ProviderEngine = require('web3-provider-engine');
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
+import * as WAValidator from 'wallet-address-validator';
+
 import {
   ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
   LedgerSubprovider
@@ -68,7 +71,7 @@ export class Web3Service {
     return this.gasService.gasPrice * 1000000000;
   }
 
-  public amountToBN(amount, currency) {
+  public amountToBN(amount: string, currency: string | number) {
     const comps = amount.split('.');
     currency =
       typeof currency === 'string' ? currency : Types.Currency[currency];
@@ -83,10 +86,10 @@ export class Web3Service {
     while (comps[1].length < base) {
       comps[1] += '0';
     }
-    comps[0] = this.BN(comps[0]);
-    comps[1] = this.BN(comps[1]);
+    const integer = this.BN(comps[0]);
+    const fractional = this.BN(comps[1]);
 
-    return comps[0].mul(this.BN(10).pow(this.BN(base))).add(comps[1]);
+    return integer.mul(this.BN(10).pow(this.BN(base))).add(fractional);
   }
 
   public BNToAmount(bignumber, currency) {
@@ -612,5 +615,45 @@ export class Web3Service {
       };
     }
     return request;
+  }
+
+  isAddressValidator(curr: string | FormControl) {
+    return (control: FormControl) => {
+      if (control.value) {
+        const currency =
+          typeof curr === 'string'
+            ? curr
+            : curr.value === 'BTC'
+              ? 'BTC'
+              : 'ETH';
+        if (
+          (currency === 'ETH' &&
+            this.web3Ready &&
+            !this.isAddress(control.value.toLowerCase())) ||
+          (currency !== 'ETH' &&
+            !WAValidator.validate(
+              control.value,
+              currency,
+              this.networkIdObservable.value !== 1 ? 'testnet' : ''
+            ))
+        ) {
+          return { invalidAddress: true };
+        }
+      }
+      return null;
+    };
+  }
+
+  isSameAddressValidator(other: FormControl) {
+    return (control: FormControl) => {
+      if (
+        control.value &&
+        other.value &&
+        control.value.toLowerCase() === other.value.toLowerCase()
+      ) {
+        return { sameAddress: true };
+      }
+      return null;
+    };
   }
 }

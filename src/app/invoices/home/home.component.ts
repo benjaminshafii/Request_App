@@ -8,7 +8,6 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { Web3Service } from '../../util/web3.service';
-import * as WAValidator from 'wallet-address-validator';
 import { UtilService } from '../../util/util.service';
 
 @Component({
@@ -30,32 +29,6 @@ export class HomeComponent implements OnInit {
   dateFormControl: FormControl;
   currencyFormControl: FormControl;
   BTCRefundAddress;
-
-  isAddressValidator(curr?: string) {
-    return (control: FormControl) => {
-      if (control.value) {
-        const currency = curr
-          ? curr
-          : this.currencyFormControl.value === 'BTC'
-            ? 'BTC'
-            : 'ETH';
-        if (
-          (currency === 'ETH' &&
-            this.web3Service.web3Ready &&
-            !this.web3Service.isAddress(control.value.toLowerCase())) ||
-          (currency !== 'ETH' &&
-            !WAValidator.validate(
-              control.value,
-              currency,
-              this.web3Service.networkIdObservable.value !== 1 ? 'testnet' : ''
-            ))
-        ) {
-          return { invalidAddress: true };
-        }
-      }
-      return null;
-    };
-  }
 
   decimalValidator(control: FormControl) {
     if (this.web3Service.web3Ready && control.value) {
@@ -104,7 +77,7 @@ export class HomeComponent implements OnInit {
     this.payeeIdAddressFormControl = new FormControl('', [Validators.required]);
     this.payeePaymentAddressFormControl = new FormControl('', [
       Validators.required,
-      this.isAddressValidator().bind(this),
+      this.web3Service.isAddressValidator(this.currencyFormControl),
     ]);
     this.expectedAmountFormControl = new FormControl('', [
       Validators.required,
@@ -113,10 +86,10 @@ export class HomeComponent implements OnInit {
     this.payerAddressFormControl = new FormControl('', [
       Validators.required,
       this.sameAddressValidator.bind(this),
-      this.isAddressValidator('ETH').bind(this),
+      this.web3Service.isAddressValidator('ETH'),
     ]);
     this.payerRefundAddressFormControl = new FormControl('', [
-      this.isAddressValidator().bind(this),
+      this.web3Service.isAddressValidator(this.currencyFormControl),
       this.sameAddressValidator.bind(this),
     ]);
     this.dateFormControl = new FormControl('');

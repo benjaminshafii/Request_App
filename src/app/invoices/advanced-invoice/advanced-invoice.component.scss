@@ -1,0 +1,164 @@
+@import 'variables';
+
+:host {
+  font-size: 14px;
+}
+
+label {
+  color: $primary;
+
+  &.warn {
+    color: $warn;
+  }
+}
+
+input {
+  color: $blue-grey;
+  border: 1px solid #DBE1E8;
+  padding: 13px;
+  margin-bottom: 20px;
+  height: 42px;
+
+  &.ng-touched.ng-invalid {
+    border-color: $warn;
+    color: $warn;
+
+    &::placeholder {
+      color: $warn;
+    }
+  }
+}
+
+textarea {
+  color: $blue-grey;
+  border: 1px solid #DBE1E8;
+  padding: 13px;
+  margin-bottom: 20px;
+}
+
+.invoice-item-table {
+  box-shadow: none;
+}
+
+.invoice-item-table-header {
+  height: 26px;
+  th {
+    font-size: 14px;
+    padding-left: 0;
+    border-style: none;
+  }
+}
+
+.invoice-item-table-row {
+  height: 40px;
+  td {
+    padding: 10px;
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+    position: relative;
+
+    &:last-of-type {
+      border-right: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    &.invoice-item-amount {
+      background: #DBE1E8;
+      white-space: nowrap;
+      min-width: 150px;
+    }
+
+    &.right-align {
+      text-align: right;
+    }
+
+    &.warn {
+      border-bottom-color: $warn;
+      ::placeholder {
+        color: $warn;
+      }
+    }
+
+    input {
+      border: none;
+      padding: 0;
+      margin: 0;
+      height: auto;
+    }
+
+    .currency-row {
+      display: flex;
+      justify-content: space-between;
+      white-space: nowrap;
+
+      input {
+        min-width: 30px;
+      }
+    }
+
+    .delete-icon {
+      opacity: 0;
+      position: absolute;
+      font-size: 21px;
+      left: -23px;
+      top: 11px;
+      transition: 0.3s ease-in-out;
+      cursor: pointer;
+    }
+    &:hover .delete-icon {
+      opacity: 0.6;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  &:first-of-type td{
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+mat-datepicker-toggle {
+  top: -10px;
+  position: relative;
+}
+
+app-currency-selector {
+  display: inline-flex;
+  width: 130px;
+  border: 1px solid #DBE1E8;
+  padding: 6px;
+  margin-left: 10px;
+}
+
+::placeholder {
+  color: $blue-grey;
+  opacity: 0.6;
+}
+
+.suffixed-input {
+  height: 42px;
+  border: 1px solid #DBE1E8;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+
+  &.warn {
+    border-color: $warn;
+  }
+
+  input {
+    border: none;
+    margin: 0;
+    padding: 0 5px 0 13px;
+    min-width: 100px;
+  }
+
+  mat-datepicker-toggle {
+    top: 0px;
+    margin-right: 2px;
+  }
+
+  .input-suffix {
+    padding: 13px 13px 0 0;
+    line-height: 17px;
+  }
+}
