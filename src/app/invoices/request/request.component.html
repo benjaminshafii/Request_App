@@ -46,7 +46,13 @@
               <img class="px-3" style="max-height: 75px;" src="assets/img/request-logo.png">
               <div class="ml-auto text-right px-3 fc-white">
                 <h4 class="semi-bold fs-18">
-                  <span *ngIf="request.requestId; else waitingTemplate" popover="{{request.requestId}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">Request Id: {{request.requestId.substring(0, 5)}}...{{request.requestId.substring(56, 66)}}</span>
+                  <ng-container *ngIf="request.requestId; else waitingTemplate">
+                    <span popover="{{request.requestId}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">Request Id: {{request.requestId.substring(0, 5)}}...{{request.requestId.substring(56, 66)}}</span>
+                    <div *ngIf="isInvoiceRequest()">
+                      Invoice #{{this.request.data.data.invoiceNumber}}
+                      <div class="fs-14 font-weight-light font-italic" style="opacity:0.5">{{this.request.data.data.creationDate | date: 'fullDate' }}</div>
+                    </div>
+                  </ng-container>
                   <ng-template #waitingTemplate>
                     <span>
                       <i class="fa {{request.errorMsg ? 'fa-warning fc-warn' : 'fa-circle-o-notch fa-spin'}}"></i>&nbsp;{{ request.errorMsg || request.waitingMsg || 'searching for blockchain information...' }}</span>
@@ -63,59 +69,67 @@
                 </div>
               </div>
             </div>
-            <div class="bg-grey-whiter fc-blue-grey p-4 d-flex flex-wrap">
-              <div class="d-flex mb-3 m-lg-0" style="flex: 1">
-                <div class="fs-14 lh-18">
-                  <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYEE</div>
-                  <div class="d-flex align-items-end">
-                    <div class="px-3" [style.width]="'64px'">
-                      <angular-blockies *ngIf="request.payee.address" [options]="{ seed: request.payee.address.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+            <app-rnf-invoice-request
+              [request]='request'
+              [blockchainName]='getBlockchainName()'
+              *ngIf='isInvoiceRequest()
+                     else genericRequest'>
+            </app-rnf-invoice-request>
+            <ng-template #genericRequest>
+              <div class="bg-grey-whiter fc-blue-grey p-4 d-flex flex-wrap">
+                <div class="d-flex mb-3 m-lg-0" style="flex: 1">
+                  <div class="fs-14 lh-18">
+                    <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYEE</div>
+                    <div class="d-flex align-items-end">
+                      <div class="px-3" [style.width]="'64px'">
+                        <angular-blockies *ngIf="request.payee.address" [options]="{ seed: request.payee.address.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+                      </div>
+                      <div>
+                        <div class="semi-bold">{{ request.currencyContract.payeePaymentAddress && request.currencyContract.payeePaymentAddress.toLowerCase() !== request.payee.address.toLowerCase() ? 'ETH ID address' : 'ETH address' }}</div>
+                        <div popover="{{request.payee.address}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payee.address.substring(0, 10)}}...{{request.payee.address.substring(request.payee.address.length - 5, request.payee.address.length)}}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div class="semi-bold">{{ request.currencyContract.payeePaymentAddress && request.currencyContract.payeePaymentAddress.toLowerCase() !== request.payee.address.toLowerCase() ? 'ETH ID address' : 'ETH address' }}</div>
-                      <div popover="{{request.payee.address}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payee.address.substring(0, 10)}}...{{request.payee.address.substring(request.payee.address.length - 5, request.payee.address.length)}}</div>
+                    <div class="d-flex align-items-end mt-1" *ngIf="request.currencyContract.payeePaymentAddress && request.currencyContract.payeePaymentAddress.toLowerCase() !== request.payee.address.toLowerCase()">
+                      <div class="px-3" [style.width]="'64px'">
+                        <angular-blockies *ngIf="getBlockchainName() === 'ETH'" [options]="{ seed: request.currencyContract.payeePaymentAddress.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+                      </div>
+                      <div>
+                        <div class="semi-bold">{{ getBlockchainName() }} Payment address</div>
+                        <div popover="{{request.currencyContract.payeePaymentAddress}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.currencyContract.payeePaymentAddress.substring(0, 10)}}...{{request.currencyContract.payeePaymentAddress.substring(request.currencyContract.payeePaymentAddress.length - 5, request.currencyContract.payeePaymentAddress.length)}}</div>
+                      </div>
                     </div>
                   </div>
-                  <div class="d-flex align-items-end mt-1" *ngIf="request.currencyContract.payeePaymentAddress && request.currencyContract.payeePaymentAddress.toLowerCase() !== request.payee.address.toLowerCase()">
-                    <div class="px-3" [style.width]="'64px'">
-                      <angular-blockies *ngIf="getBlockchainName() === 'ETH'" [options]="{ seed: request.currencyContract.payeePaymentAddress.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
-                    </div>
-                    <div>
-                      <div class="semi-bold">{{ getBlockchainName() }} Payment address</div>
-                      <div popover="{{request.currencyContract.payeePaymentAddress}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.currencyContract.payeePaymentAddress.substring(0, 10)}}...{{request.currencyContract.payeePaymentAddress.substring(request.currencyContract.payeePaymentAddress.length - 5, request.currencyContract.payeePaymentAddress.length)}}</div>
+                </div>
+                <div class="d-flex" style="flex: 1">
+                  <div class="fs-14 lh-18">
+                    <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYER</div>
+                    <div class="d-flex align-items-end">
+                      <div class="px-3" [style.width]="'64px'">
+                        <angular-blockies *ngIf="request.payer" [options]="{ seed: request.payer.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+                      </div>
+                      <div>
+                        <div class="semi-bold">ETH address</div>
+                        <div popover="{{request.payer}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payer.substring(0, 10)}}...{{request.payer.substring(32, 42)}}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="d-flex" style="flex: 1">
-                <div class="fs-14 lh-18">
-                  <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYER</div>
-                  <div class="d-flex align-items-end">
-                    <div class="px-3" [style.width]="'64px'">
-                      <angular-blockies *ngIf="request.payer" [options]="{ seed: request.payer.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
-                    </div>
-                    <div>
-                      <div class="semi-bold">ETH address</div>
-                      <div popover="{{request.payer}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payer.substring(0, 10)}}...{{request.payer.substring(32, 42)}}</div>
-                    </div>
+              <div class="fc-blue-grey p-4" style="border-bottom: 1px solid #DFE5EC">
+                <div *ngIf="request.data && request.data.data">
+                  <div class="px-3" *ngFor="let data of objectKeys(request.data.data)" [hidden]="data == 'date'">
+                    <div class="semi-bold">{{data}}</div>
+                    <div>{{request.data.data[data]}}</div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="fc-blue-grey p-4" style="border-bottom: 1px solid #DFE5EC">
-              <div *ngIf="request.data && request.data.data">
-                <div class="px-3" *ngFor="let data of objectKeys(request.data.data)" [hidden]="data == 'date'">
-                  <div class="semi-bold">{{data}}</div>
-                  <div>{{request.data.data[data]}}</div>
+              <div class="d-flex">
+                <div class="ml-auto d-inline-block semi-bold fc-primary px-5 py-3" style="background: #DFE5EC">
+                  <div class="fs-14">AMOUNT</div>
+                  <div class="fs-24" id="request-expected-amount">{{ web3Service.BNToAmount(request.payee.expectedAmount, request.currency) }} {{request.currency}}</div>
                 </div>
               </div>
-            </div>
-            <div class="d-flex">
-              <div class="ml-auto d-inline-block semi-bold fc-primary px-5 py-3" style="background: #DFE5EC">
-                <div class="fs-14">AMOUNT</div>
-                <div class="fs-24" id="request-expected-amount">{{ web3Service.BNToAmount(request.payee.expectedAmount, request.currency) }} {{request.currency}}</div>
-              </div>
-            </div>
+            </ng-template>
             <div class="p-5">
               <div *ngIf="request.status" class="fc-blue-grey fs-12 mx-auto w-50 text-center progress-bar-{{request.status.replace(' ','-')}}">
                 <div>

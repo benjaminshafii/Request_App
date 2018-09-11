@@ -383,4 +383,13 @@ export class RequestComponent implements OnInit, OnDestroy {
       this.timeOuts.forEach(id => clearTimeout(id));
     }
   }
+
+  isInvoiceRequest() {
+    return (
+      this.request.data &&
+      this.request.data.data &&
+      this.request.data.data.meta &&
+      this.request.data.data.meta.format === 'rnf_invoice'
+    );
+  }
 }

@@ -1,0 +1,163 @@
+<div class="bg-grey-whiter fc-blue-grey p-4 d-flex flex-wrap">
+  <div class="d-flex mb-3 m-lg-0" style="flex: 1">
+    <div class="fs-14 lh-18">
+      <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYEE</div>
+      <div class="d-flex align-items-end">
+        <div class="px-3" [style.width]="'64px'">
+          <angular-blockies *ngIf="request.payee.address" [options]="{ seed: request.payee.address.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+        </div>
+        <div>
+          <ng-container *ngIf="data.sellerInfo">
+            <div *ngIf="data.sellerInfo.businessName" class="fs-12">{{data.sellerInfo.businessName}}</div>
+            <div *ngIf="data.sellerInfo.firstName || data.sellerInfo.lastName" class="fs-12">
+              {{data.sellerInfo.firstName}} {{data.sellerInfo.lastName}}
+            </div>
+            <div *ngIf="data.sellerInfo.address" class="fs-12">
+              <div *ngIf="data.sellerInfo.address.streetAddress">{{data.sellerInfo.address.streetAddress}}</div>
+              <div *ngIf="data.sellerInfo.address.extendedAddress">{{data.sellerInfo.address.extendedAddress}}</div>
+              <div *ngIf="data.sellerInfo.address.postalCode || data.sellerInfo.address.locality">
+                  {{data.sellerInfo.address.postalCode}} {{data.sellerInfo.address.locality}}
+              </div>
+            </div>
+            <div *ngIf="data.sellerInfo.companyRegistration">Company registration: {{data.sellerInfo.companyRegistration}}</div>
+            <div *ngIf="data.sellerInfo.taxRegistration">VAT Number: {{data.sellerInfo.taxRegistration}}</div>
+          </ng-container>
+          <div class="semi-bold">{{ request.currencyContract.payeePaymentAddress && request.currencyContract.payeePaymentAddress.toLowerCase() !== request.payee.address.toLowerCase() ? 'ETH ID address' : 'ETH address' }}</div>
+          <div popover="{{request.payee.address}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payee.address.substring(0, 10)}}...{{request.payee.address.substring(request.payee.address.length - 5, request.payee.address.length)}}</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-end mt-1" *ngIf="request.currencyContract.payeePaymentAddress && request.currencyContract.payeePaymentAddress.toLowerCase() !== request.payee.address.toLowerCase()">
+        <div class="px-3" [style.width]="'64px'">
+          <angular-blockies *ngIf="blockchainName === 'ETH'" [options]="{ seed: request.currencyContract.payeePaymentAddress.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+        </div>
+        <div>
+          <ng-container *ngIf="data.sellerInfo">
+            <div *ngIf="data.sellerInfo.businessName" class="fs-12">{{data.sellerInfo.businessName}}</div>
+            <div *ngIf="data.sellerInfo.firstName || data.sellerInfo.lastName" class="fs-12">
+              {{data.sellerInfo.firstName}} {{data.sellerInfo.lastName}}
+            </div>
+            <div *ngIf="data.sellerInfo.address" class="fs-12">
+              <div *ngIf="data.sellerInfo.address.streetAddress">{{data.sellerInfo.address.streetAddress}}</div>
+              <div *ngIf="data.sellerInfo.address.extendedAddress">{{data.sellerInfo.address.extendedAddress}}</div>
+              <div *ngIf="data.sellerInfo.address.postalCode || data.sellerInfo.address.locality">
+                  {{data.sellerInfo.address.postalCode}} {{data.sellerInfo.address.locality}}
+              </div>
+            </div>
+            <div *ngIf="data.sellerInfo.companyRegistration">Company registration: {{data.sellerInfo.companyRegistration}}</div>
+            <div *ngIf="data.sellerInfo.taxRegistration">VAT Number: {{data.sellerInfo.taxRegistration}}</div>
+          </ng-container>
+          <div class="semi-bold">{{ blockchainName }} Payment address</div>
+          <div popover="{{request.currencyContract.payeePaymentAddress}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.currencyContract.payeePaymentAddress.substring(0, 10)}}...{{request.currencyContract.payeePaymentAddress.substring(request.currencyContract.payeePaymentAddress.length - 5, request.currencyContract.payeePaymentAddress.length)}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex" style="flex: 1">
+    <div class="fs-14 lh-18">
+      <div class="mb-1" [style.marginLeft]="'4rem'" [style.opacity]="'0.5'">PAYER</div>
+      <div class="d-flex align-items-end">
+        <div class="px-3" [style.width]="'64px'">
+          <angular-blockies *ngIf="request.payer" [options]="{ seed: request.payer.toLowerCase() }" class="blockies" style="width: 32px; height: 32px;"></angular-blockies>
+        </div>
+        <div>
+            <ng-container *ngIf="data.buyerInfo">
+                <div *ngIf="data.buyerInfo.businessName" class="fs-12">{{data.buyerInfo.businessName}}</div>
+                <div *ngIf="data.buyerInfo.firstName || data.buyerInfo.lastName" class="fs-12">
+                  {{data.buyerInfo.firstName}} {{data.buyerInfo.lastName}}
+                </div>
+                <div *ngIf="data.buyerInfo.address" class="fs-12">
+                  <div *ngIf="data.buyerInfo.address.streetAddress">{{data.buyerInfo.address.streetAddress}}</div>
+                  <div *ngIf="data.buyerInfo.address.extendedAddress">{{data.buyerInfo.address.extendedAddress}}</div>
+                  <div *ngIf="data.buyerInfo.address.postalCode || data.buyerInfo.address.locality">
+                      {{data.buyerInfo.address.postalCode}} {{data.buyerInfo.address.locality}}
+                  </div>
+                </div>
+                <div *ngIf="data.buyerInfo.companyRegistration">Company registration: {{data.buyerInfo.companyRegistration}}</div>
+                <div *ngIf="data.buyerInfo.taxRegistration">VAT Number: {{data.buyerInfo.taxRegistration}}</div>
+              </ng-container>
+          <div class="semi-bold">ETH address</div>
+          <div popover="{{request.payer}}" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">{{request.payer.substring(0, 10)}}...{{request.payer.substring(32, 42)}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fc-blue-grey p-4" style="border-bottom: 1px solid #DFE5EC">
+  <span class="order-id">ORDER #{{data.purchaseOrderId}}</span>
+  <table mat-table #itemsTable [dataSource]="data.invoiceItems" class="w-100 invoice-items-table">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef class="item-description-header col-3"> Description </th>
+        <td mat-cell *matCellDef="let invoiceItem" class="col-3">
+          {{invoiceItem.name}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef class="col-1"> Qty </th>
+        <td mat-cell *matCellDef="let invoiceItem" class="col-1">
+          {{invoiceItem.quantity}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="unitPrice">
+        <th mat-header-cell *matHeaderCellDef class="col-2"> Price <span class="font-italic">(tax free)</span> </th>
+        <td mat-cell *matCellDef="let invoiceItem" class="col-2">
+          {{invoiceItem.unitPrice}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="discount">
+        <th mat-header-cell *matHeaderCellDef class="col-2"> Discount </th>
+        <td mat-cell *matCellDef="let invoiceItem" class="col-2">
+          {{invoiceItem.discount || '/'}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="taxPercent">
+        <th mat-header-cell *matHeaderCellDef class="col-2"> VAT </th>
+        <td mat-cell *matCellDef="let invoiceItem" class="col-2">
+          {{invoiceItem.taxPercent}}%
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef class="col-2"> Amount <span class="font-italic">(tax free)</span> </th>
+        <td mat-cell *matCellDef="let invoiceItem" class="col-2">
+          {{invoiceItem.quantity * (invoiceItem.unitPrice - (invoiceItem.discount || 0)) | number : '1.0-7'}}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="invoiceItemsColumns" class="d-flex"></tr>
+      <tr mat-row *matRowDef="let row; columns: invoiceItemsColumns;" class="d-flex"></tr>
+  </table>
+</div>
+<div class="d-flex flex-wrap">
+  <div class="d-inline-block semi-bold fc-primary p-3 pl-4">
+    <div class="fs-14">TOTAL WITHOUT TAX</div>
+    <div class="fs-24" id="request-expected-amount">{{ taxFreeTotal | number : '1.0-7'}} {{request.currency}}</div>
+  </div>
+  <div class="ml-auto d-inline-block semi-bold fc-primary px-3 py-4">
+    <div class="fs-24" id="request-expected-amount">+</div>
+  </div>
+  <div class="ml-auto d-inline-block semi-bold fc-primary p-3">
+    <div class="fs-14">TAX</div>
+    <div class="fs-24" id="request-expected-amount">{{ vatTotal | number : '1.0-7'}} {{request.currency}}</div>
+  </div>
+  <div class="ml-auto d-inline-block semi-bold fc-primary p-3 pr-4" style="background: #DFE5EC;">
+    <div class="fs-14">AMOUNT</div>
+    <div class="fs-24" id="request-expected-amount">{{ web3Service.BNToAmount(request.payee.expectedAmount, request.currency) | number : '1.0-7' }} {{request.currency}}</div>
+  </div>
+</div>
+<div *ngIf="data.paymentTerms" class="fc-blue-grey px-4 pt-4 fs-14">
+  <div class="font-weight-bold">Terms & Conditions</div>
+  <div *ngIf="data.paymentTerms.dueDate">Due date: {{data.paymentTerms.dueDate | date: 'longDate'}}</div>
+  <div *ngIf="data.paymentTerms.lateFeesPercent">{{data.paymentTerms.lateFeesPercent}}% of interest per month after the payment due date</div>
+  <div *ngIf="data.paymentTerms.lateFeesFix">{{data.paymentTerms.lateFeesFix}} {{request.currency}} of late fees after the payment due date</div>
+  <div *ngIf="data.terms">{{data.terms}}</div>
+</div>
+
+<div *ngIf="data.note" class="fc-blue-grey px-4 pt-4 fs-14">
+  <div class="font-weight-bold">Note</div>
+  {{data.note}}
+</div>
