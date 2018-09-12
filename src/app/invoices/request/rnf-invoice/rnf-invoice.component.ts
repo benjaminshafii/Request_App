@@ -14,7 +14,7 @@ export class RnfInvoiceComponent implements OnInit {
   @Input()
   blockchainName: string;
 
-  private invoiceItemsColumns = [
+  public invoiceItemsColumns = [
     'name',
     'quantity',
     'unitPrice',
@@ -23,12 +23,12 @@ export class RnfInvoiceComponent implements OnInit {
     'amount',
   ];
 
-  data: object;
+  data: any;
   taxFreeTotal: number;
   vatTotal: number;
   totalWithTax: number;
 
-  constructor(private web3Service: Web3Service) {}
+  constructor(public web3Service: Web3Service) {}
 
   ngOnInit() {
     this.data = this.request.data.data;

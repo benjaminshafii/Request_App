@@ -190,16 +190,16 @@ export class RequestComponent implements OnInit, OnDestroy {
         request.currencyContract.address
       );
     }
+    if (request && request.requestId && !request.events) {
+      request.events = await this.web3Service.getRequestEvents(
+        request.requestId
+      );
+    }
     this.request = request;
     this.getRequestMode();
     if (request && request.payee) {
       this.progress =
         (100 * this.request.payee.balance) / this.request.payee.expectedAmount;
-    }
-    if (request && request.requestId && !request.events) {
-      request.events = await this.web3Service.getRequestEvents(
-        request.requestId
-      );
     }
   }
 

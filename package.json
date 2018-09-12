@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "dev:aot": "ng serve --aot",
     "dev:https": "ng serve --ssl",
     "build": "ng build",
     "build:prod": "ng build --prod --aot",

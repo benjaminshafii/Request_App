@@ -62,7 +62,7 @@
                   <i>{{request.data.data.date | date: 'fullDate'}}</i>
                 </div>
                 <div class="mt-1">
-                  <a *ngIf="txHash" class="fs-14" style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{txHash}}" target="_blank">
+                  <a *ngIf="txHash" class="fs-14 pr-1" style="opacity: 0.8; color: #5392ff !important;" href="{{web3Service.etherscanUrl}}tx/{{txHash}}" target="_blank">
                     <i>{{ web3Service.etherscanUrl}}tx/{{txHash.substring(0, 10) }}...{{ txHash.substring(txHash.length-5, txHash.length) }}</i>
                   </a>
                   <span *ngIf="request.status" class="status-{{request.status.replace(' ','-')}} fs-12">{{request.status}}</span>

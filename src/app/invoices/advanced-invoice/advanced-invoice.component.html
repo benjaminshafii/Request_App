@@ -1,6 +1,6 @@
-<div class="container fc-primary">
+<div class="container fc-primary my-5">
   <form [formGroup]="invoiceData" (ngSubmit)="sendInvoice()">
-    <div class="row mt-5 mb-3">
+    <div class="row mb-3">
       <div class="col-3">
         <h2>Create a new invoice</h2>
       </div>
@@ -12,7 +12,7 @@
         <button mat-raised-button color="accent" type="submit">Create the invoice</button>
       </div>
     </div>
-    <mat-card>
+    <mat-card class="sh-blue">
       <h3>Your company information</h3>
       <div class="row" formGroupName="sellerInfo">
         <div class="col-5">
@@ -46,16 +46,16 @@
           <input matInput type="text" name="extendedAddress" placeholder="Apartment, suite, unit, building, floor, etc." formControlName="extendedAddress">
           <div class="row">
             <div class="col-6">
-                <label for="locality">City</label>
-                <input matInput type="text" name="locality" placeholder="City" formControlName="locality">
-                <label for="postalCode">Postal code</label>
-                <input matInput type="text" name="postalCode" placeholder="Postal code" formControlName="postalCode">
+              <label for="locality">City</label>
+              <input matInput type="text" name="locality" placeholder="City" formControlName="locality">
+              <label for="postalCode">Postal code</label>
+              <input matInput type="text" name="postalCode" placeholder="Postal code" formControlName="postalCode">
             </div>
             <div class="col-6">
-                <label for="region">State/Region</label>
-                <input matInput type="text" name="region" placeholder="State, Region, Province" formControlName="region">
-                <label for="country">Country</label>
-                <input matInput type="text" name="country" placeholder="Country" formControlName="country">
+              <label for="region">State/Region</label>
+              <input matInput type="text" name="region" placeholder="State, Region, Province" formControlName="region">
+              <label for="country">Country</label>
+              <input matInput type="text" name="country" placeholder="Country" formControlName="country">
             </div>
           </div>
         </div>
@@ -89,16 +89,16 @@
             <input matInput type="text" name="extendedAddress" placeholder="Apartment, suite, unit, building, floor, etc." formControlName="extendedAddress">
             <div class="row">
               <div class="col-6">
-                  <label for="locality">City</label>
-                  <input matInput type="text" name="locality" placeholder="City" formControlName="locality">
-                  <label for="postalCode">Postal code</label>
-                  <input matInput type="text" name="postalCode" placeholder="Postal code" formControlName="postalCode">
+                <label for="locality">City</label>
+                <input matInput type="text" name="locality" placeholder="City" formControlName="locality">
+                <label for="postalCode">Postal code</label>
+                <input matInput type="text" name="postalCode" placeholder="Postal code" formControlName="postalCode">
               </div>
               <div class="col-6">
-                  <label for="region">State/Region</label>
-                  <input matInput type="text" name="region" placeholder="State, Region, Province" formControlName="region">
-                  <label for="country">Country</label>
-                  <input matInput type="text" name="country" placeholder="Country" formControlName="country">
+                <label for="region">State/Region</label>
+                <input matInput type="text" name="region" placeholder="State, Region, Province" formControlName="region">
+                <label for="country">Country</label>
+                <input matInput type="text" name="country" placeholder="Country" formControlName="country">
               </div>
             </div>
           </div>
@@ -106,12 +106,12 @@
         <div class="col-5 offset-2">
           <div class="row">
             <div class="col-6">
-                <label for="creationDate" [ngClass]="{'warn': creationDate.invalid && creationDate.touched }">Invoice date *</label>
-                <div class="suffixed-input" [ngClass]="{'warn': creationDate.invalid && creationDate.touched }">
-                  <input matInput [formControl]="creationDate" name="creationDate" [matDatepicker]="creationDatePicker" placeholder="MM/DD/YYYY">
-                  <mat-datepicker-toggle matSuffix [for]="creationDatePicker"></mat-datepicker-toggle>
-                  <mat-datepicker #creationDatePicker></mat-datepicker>
-                </div>
+              <label for="creationDate" [ngClass]="{'warn': creationDate.invalid && creationDate.touched }">Invoice date *</label>
+              <div class="suffixed-input" [ngClass]="{'warn': creationDate.invalid && creationDate.touched }">
+                <input matInput [formControl]="creationDate" name="creationDate" [matDatepicker]="creationDatePicker" placeholder="MM/DD/YYYY">
+                <mat-datepicker-toggle matSuffix [for]="creationDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #creationDatePicker></mat-datepicker>
+              </div>
             </div>
             <div class="col-6">
               <label for="paymentTerms.dueDate" [ngClass]="{'warn': paymentTerms.controls.dueDate.invalid && paymentTerms.controls.dueDate.touched }">Due date</label>
@@ -140,8 +140,7 @@
         <div class="col-3">
           <label for="deliveryDate">Delivery date</label>
           <div class="suffixed-input" [ngClass]="{'warn': deliveryDate.invalid && deliveryDate.touched }">
-            <input matInput [formControl]="deliveryDate" name="deliveryDate" [matDatepicker]="deliveryDatePicker"
-              placeholder="05/20/2018">
+            <input matInput [formControl]="deliveryDate" name="deliveryDate" [matDatepicker]="deliveryDatePicker" placeholder="05/20/2018">
             <mat-datepicker-toggle matSuffix [for]="deliveryDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #deliveryDatePicker></mat-datepicker>
           </div>
@@ -173,10 +172,10 @@
               <th mat-header-cell *matHeaderCellDef class="col-2"> Price (tax free) *</th>
               <td mat-cell *matCellDef="let invoiceItem" [ngClass]="{'warn': invoiceItem.controls.unitPrice.invalid && invoiceItem.controls.unitPrice.touched }" class="col-2">
                 <div class="currency-row">
-                  <input matInput  type="number" [formControl]="invoiceItem.controls.unitPrice" placeholder="0">
+                  <input matInput type="number" [formControl]="invoiceItem.controls.unitPrice" placeholder="0">
                   <div class="currency-display">
-                      <img class="currencyIcon" src="assets/img/cryptoIcons/{{currency.value}}.png">
-                      <span> {{currency.value}}</span>
+                    <img class="currencyIcon" src="assets/img/cryptoIcons/{{currency.value}}.png">
+                    <span> {{currency.value}}</span>
                   </div>
                 </div>
               </td>
@@ -202,7 +201,7 @@
             <ng-container matColumnDef="amount">
               <th mat-header-cell *matHeaderCellDef class="col-2"> Amount (tax free) </th>
               <td mat-cell *matCellDef="let invoiceItem" class="invoice-item-amount right-align col-2">
-                {{invoiceItem.controls.quantity.value * (invoiceItem.controls.unitPrice.value - invoiceItem.controls.discount.value)  | number : '1.0-7'}} {{currency.value}}
+                {{invoiceItem.controls.quantity.value * (invoiceItem.controls.unitPrice.value - invoiceItem.controls.discount.value) | number : '1.0-7'}} {{currency.value}}
               </td>
             </ng-container>
 

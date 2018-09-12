@@ -5,14 +5,12 @@ import {
   FormControl,
   Validators,
   FormBuilder,
-  ValidationErrors,
   FormArray,
-  ValidatorFn,
 } from '@angular/forms';
 import { trigger, style, transition, animate } from '@angular/animations';
 import * as moment from 'moment';
-import RequestNetworkDataFormat from 'requestnetwork-data-format';
-import rnf_invoice from 'requestnetwork-data-format/format/rnf_invoice/rnf_invoice-0.0.1.json';
+// import RequestNetworkDataFormat from 'requestnetwork-data-format';
+// import rnf_invoice from 'requestnetwork-data-format/format/rnf_invoice/rnf_invoice-0.0.1.json';
 import { Web3Service } from '../../util/web3.service';
 import { UtilService } from '../../util/util.service';
 
@@ -47,21 +45,21 @@ export class AdvancedInvoiceComponent implements OnInit {
   @ViewChild('itemsTable')
   itemsTable;
 
-  private currency = new FormControl('');
-  private deliveryDate = new FormControl('');
-  private payeeETHAddress = new FormControl('');
-  private payerETHAddress = new FormControl('');
+  public currency = new FormControl('');
+  public deliveryDate = new FormControl('');
+  public payeeETHAddress = new FormControl('');
+  public payerETHAddress = new FormControl('');
 
   private form: FormGroup;
-  private invoiceData: FormGroup;
+  public invoiceData: FormGroup;
 
-  private creationDate = new FormControl('', Validators.required);
-  private invoiceNumber = new FormControl('', Validators.required);
-  private note = new FormControl('');
-  private purchaseOrderId = new FormControl('');
-  private terms = new FormControl('');
+  public creationDate = new FormControl('', Validators.required);
+  public invoiceNumber = new FormControl('', Validators.required);
+  public note = new FormControl('');
+  public purchaseOrderId = new FormControl('');
+  public terms = new FormControl('');
 
-  private sellerInfo = this.formBuilder.group({
+  public sellerInfo = this.formBuilder.group({
     businessName: [null],
     address: this.formBuilder.group({
       streetAddress: [null],
@@ -75,7 +73,7 @@ export class AdvancedInvoiceComponent implements OnInit {
     taxRegistration: [null],
   });
 
-  private buyerInfo = this.formBuilder.group({
+  public buyerInfo = this.formBuilder.group({
     firstName: [null],
     lastName: [null],
     businessName: [null],
@@ -89,7 +87,7 @@ export class AdvancedInvoiceComponent implements OnInit {
     }),
   });
 
-  private paymentTerms = this.formBuilder.group({
+  public paymentTerms = this.formBuilder.group({
     dueDate: [null],
     lateFeesFix: [null, Validators.min(0)],
     lateFeesPercent: [null, Validators.min(0)],
@@ -97,7 +95,7 @@ export class AdvancedInvoiceComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private web3Service: Web3Service,
+    public web3Service: Web3Service,
     private utilService: UtilService,
     private router: Router
   ) {
@@ -145,8 +143,8 @@ export class AdvancedInvoiceComponent implements OnInit {
     });
   }
 
-  private invoiceItems = new FormArray([], Validators.required);
-  private invoiceItemsColumns = [
+  public invoiceItems = new FormArray([], Validators.required);
+  public invoiceItemsColumns = [
     'name',
     'quantity',
     'unitPrice',
@@ -157,15 +155,15 @@ export class AdvancedInvoiceComponent implements OnInit {
 
   private account;
 
-  private shouldShowSellerDetails = false;
-  private shouldShowBuyerDetails = false;
+  public shouldShowSellerDetails = false;
+  public shouldShowBuyerDetails = false;
   private sendingInvoice = false;
 
-  private taxFreeTotal;
-  private vatTotal;
-  private totalWithTax;
+  public taxFreeTotal;
+  public vatTotal;
+  public totalWithTax;
 
-  private addInvoiceItem(rerender = true) {
+  public addInvoiceItem(rerender = true) {
     this.invoiceItems.push(
       this.formBuilder.group({
         name: [null, Validators.required],
@@ -389,7 +387,7 @@ export class AdvancedInvoiceComponent implements OnInit {
     }
     this.watchAccount();
 
-    this.invoiceItems.valueChanges.subscribe(change => {
+    this.invoiceItems.valueChanges.subscribe(_ => {
       this.updateTotals();
     });
     this.updateTotals();
@@ -404,13 +402,13 @@ export class AdvancedInvoiceComponent implements OnInit {
   }
 }
 
-interface InvoiceItems {
-  name: string;
-  reference?: string;
-  quantity: number;
-  unitPrice: number;
-  discount?: number;
-  taxPercent: number;
-  deliveryDate?: Date;
-  deliveryPeriod?: string;
-}
+// interface InvoiceItems {
+//   name: string;
+//   reference?: string;
+//   quantity: number;
+//   unitPrice: number;
+//   discount?: number;
+//   taxPercent: number;
+//   deliveryDate?: Date;
+//   deliveryPeriod?: string;
+// }
