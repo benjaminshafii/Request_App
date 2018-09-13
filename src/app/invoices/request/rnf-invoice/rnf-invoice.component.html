@@ -149,7 +149,8 @@
     <div class="fs-24" id="request-expected-amount">{{ web3Service.BNToAmount(request.payee.expectedAmount, request.currency) | number : '1.0-7' }} {{request.currency}}</div>
   </div>
 </div>
-<div *ngIf="data.paymentTerms" class="fc-blue-grey px-4 pt-4 fs-14">
+<div *ngIf="data.paymentTerms.dueDate || data.paymentTerms.lateFeesPercent || data.paymentTerms.lateFeesFix || data.terms"
+  class="fc-blue-grey px-4 pt-4 fs-14">
   <div class="font-weight-bold">Terms & Conditions</div>
   <div *ngIf="data.paymentTerms.dueDate">Due date: {{data.paymentTerms.dueDate | date: 'longDate'}}</div>
   <div *ngIf="data.paymentTerms.lateFeesPercent">{{data.paymentTerms.lateFeesPercent}}% of interest per month after the payment due date</div>

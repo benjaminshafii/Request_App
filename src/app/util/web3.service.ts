@@ -629,7 +629,7 @@ export class Web3Service {
         if (
           (currency === 'ETH' &&
             this.web3Ready &&
-            !this.isAddress(control.value.toLowerCase())) ||
+            !this.isAddress(control.value)) ||
           (currency !== 'ETH' &&
             !WAValidator.validate(
               control.value,
@@ -652,6 +652,20 @@ export class Web3Service {
         control.value.toLowerCase() === other.value.toLowerCase()
       ) {
         return { sameAddress: true };
+      }
+      return null;
+    };
+  }
+
+  decimalValidator(curr: string | FormControl) {
+    return (control: FormControl) => {
+      if (this.web3Ready && control.value) {
+        const currency = typeof curr === 'string' ? curr : curr.value;
+        const decimal = this.getDecimalsForCurrency(currency);
+        const regexp = new RegExp(`^[0-9]*([.][0-9]{0,${decimal}})?$`);
+        if (!regexp.test(control.value)) {
+          return { pattern: true };
+        }
       }
       return null;
     };

@@ -30,19 +30,6 @@ export class HomeComponent implements OnInit {
   currencyFormControl: FormControl;
   BTCRefundAddress;
 
-  decimalValidator(control: FormControl) {
-    if (this.web3Service.web3Ready && control.value) {
-      const decimal = this.web3Service.getDecimalsForCurrency(
-        this.currencyFormControl.value
-      );
-      const regexp = new RegExp(`^[0-9]*([.][0-9]{0,${decimal}})?$`);
-      if (!regexp.test(control.value)) {
-        return { pattern: true };
-      }
-    }
-    return null;
-  }
-
   sameAddressValidator(control: FormControl) {
     if (control.value) {
       if (
@@ -81,7 +68,7 @@ export class HomeComponent implements OnInit {
     ]);
     this.expectedAmountFormControl = new FormControl('', [
       Validators.required,
-      this.decimalValidator.bind(this),
+      this.web3Service.decimalValidator(this.currencyFormControl),
     ]);
     this.payerAddressFormControl = new FormControl('', [
       Validators.required,

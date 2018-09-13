@@ -89,7 +89,10 @@ export class AdvancedInvoiceComponent implements OnInit {
 
   public paymentTerms = this.formBuilder.group({
     dueDate: [null],
-    lateFeesFix: [null, Validators.min(0)],
+    lateFeesFix: [
+      null,
+      [Validators.min(0), this.web3Service.decimalValidator(this.currency)],
+    ],
     lateFeesPercent: [null, Validators.min(0)],
   });
 
@@ -173,10 +176,19 @@ export class AdvancedInvoiceComponent implements OnInit {
         ],
         unitPrice: [
           null,
-          Validators.compose([Validators.required, Validators.min(0)]),
+          Validators.compose([
+            Validators.required,
+            this.web3Service.decimalValidator(this.currency),
+          ]),
         ],
-        discount: [null],
-        taxPercent: [null, Validators.required],
+        discount: [null, this.web3Service.decimalValidator(this.currency)],
+        taxPercent: [
+          null,
+          Validators.compose([
+            Validators.required,
+            this.web3Service.decimalValidator(this.currency),
+          ]),
+        ],
       })
     );
     if (rerender) {
@@ -401,14 +413,3 @@ export class AdvancedInvoiceComponent implements OnInit {
     });
   }
 }
-
-// interface InvoiceItems {
-//   name: string;
-//   reference?: string;
-//   quantity: number;
-//   unitPrice: number;
-//   discount?: number;
-//   taxPercent: number;
-//   deliveryDate?: Date;
-//   deliveryPeriod?: string;
-// }
