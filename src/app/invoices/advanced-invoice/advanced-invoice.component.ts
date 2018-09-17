@@ -204,26 +204,52 @@ export class AdvancedInvoiceComponent implements OnInit {
   getTaxFreeTotal() {
     return this.invoiceItems.value.reduce(
       (acc, item) =>
-        acc + item.quantity * (item.unitPrice - (item.discount || 0)),
-      0
+        acc.add(
+          this.web3Service
+            .amountToBN(item.unitPrice, this.currency.value)
+            .sub(
+              this.web3Service.amountToBN(item.discount, this.currency.value)
+            )
+            .mul(this.web3Service.BN(item.quantity || 0))
+        ),
+      this.web3Service.BN()
     );
   }
 
   getVatTotal() {
     return this.invoiceItems.value.reduce(
       (acc, item) =>
-        acc +
-        item.quantity *
-          (item.unitPrice - (item.discount || 0)) *
-          (item.taxPercent * 0.01),
-      0
+        acc.add(
+          this.web3Service
+            .amountToBN(item.unitPrice, this.currency.value)
+            .sub(
+              this.web3Service.amountToBN(item.discount, this.currency.value)
+            )
+            .mul(this.web3Service.BN(item.quantity || 0))
+            .mul(this.web3Service.BN(Math.round(item.taxPercent * 100)))
+            .div(this.web3Service.BN(10000))
+        ),
+      this.web3Service.BN()
     );
   }
 
   updateTotals() {
     this.taxFreeTotal = this.getTaxFreeTotal();
     this.vatTotal = this.getVatTotal();
-    this.totalWithTax = this.taxFreeTotal + this.vatTotal;
+    this.totalWithTax = this.taxFreeTotal.add(this.vatTotal);
+  }
+
+  itemAmount(unitPrice, discount, quantity) {
+    if (!this.web3Service.web3Ready) {
+      return '0';
+    }
+    return this.web3Service.BNToAmount(
+      this.web3Service
+        .amountToBN(unitPrice, this.currency.value)
+        .sub(this.web3Service.amountToBN(discount, this.currency.value))
+        .mul(this.web3Service.BN(quantity || 0)),
+      this.currency.value
+    );
   }
 
   sendInvoice() {

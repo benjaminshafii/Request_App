@@ -72,6 +72,9 @@ export class Web3Service {
   }
 
   public amountToBN(amount: string, currency: string | number) {
+    if (!amount) {
+      return this.BN(0);
+    }
     const comps = amount.split('.');
     currency =
       typeof currency === 'string' ? currency : Types.Currency[currency];
@@ -92,7 +95,11 @@ export class Web3Service {
     return integer.mul(this.BN(10).pow(this.BN(base))).add(fractional);
   }
 
-  public BNToAmount(bignumber, currency) {
+  public BNToAmount(bignumber, currency: string | number) {
+    if (!bignumber) {
+      return '0';
+    }
+
     currency =
       typeof currency === 'string' ? currency : Types.Currency[currency];
     const base = this.getDecimalsForCurrency(currency);

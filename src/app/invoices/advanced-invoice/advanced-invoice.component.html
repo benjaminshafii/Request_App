@@ -201,7 +201,7 @@
             <ng-container matColumnDef="amount">
               <th mat-header-cell *matHeaderCellDef class="col-2"> Amount (tax free) </th>
               <td mat-cell *matCellDef="let invoiceItem" class="invoice-item-amount right-align col-2">
-                {{invoiceItem.controls.quantity.value * (invoiceItem.controls.unitPrice.value - invoiceItem.controls.discount.value) | number : '1.0-7'}} {{currency.value}}
+                {{itemAmount(invoiceItem.controls.unitPrice.value, invoiceItem.controls.discount.value, invoiceItem.controls.quantity.value) | slice: 0:13}} {{currency.value}}
               </td>
             </ng-container>
 
@@ -223,7 +223,7 @@
               Tax free total:
             </div>
             <div class="col-4">
-              {{taxFreeTotal | number : '1.0-7'}} {{currency.value}}
+              {{web3Service.BNToAmount(taxFreeTotal, currency.value) | slice: 0:13}} {{currency.value}}
             </div>
           </div>
           <div class="row my-2">
@@ -231,7 +231,7 @@
               VAT
             </div>
             <div class="col-4">
-              {{vatTotal | number : '1.0-7'}} {{currency.value}}
+              {{web3Service.BNToAmount(vatTotal, currency.value) | slice: 0:13}} {{currency.value}}
             </div>
           </div>
 
@@ -240,7 +240,7 @@
               Total (VAT included)
             </div>
             <div class="col-4">
-              {{totalWithTax | number : '1.0-7'}} {{currency.value}}
+              {{web3Service.BNToAmount(totalWithTax, currency.value) | slice: 0:13}} {{currency.value}}
             </div>
           </div>
         </div>
