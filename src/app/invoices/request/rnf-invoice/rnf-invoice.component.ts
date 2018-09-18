@@ -56,8 +56,14 @@ export class RnfInvoiceComponent implements OnInit {
   }
 
   updateTotals() {
-    this.taxFreeTotal = this.getTaxFreeTotal();
-    this.vatTotal = this.getVatTotal();
-    this.totalWithTax = this.taxFreeTotal + this.vatTotal;
+    if (!this.data['invoiceItems']) {
+      this.taxFreeTotal = null;
+      this.vatTotal = null;
+      this.totalWithTax = null;
+    } else {
+      this.taxFreeTotal = this.getTaxFreeTotal();
+      this.vatTotal = this.getVatTotal();
+      this.totalWithTax = this.taxFreeTotal + this.vatTotal;
+    }
   }
 }
