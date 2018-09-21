@@ -10,7 +10,6 @@ import {
 import { trigger, style, transition, animate } from '@angular/animations';
 import * as moment from 'moment';
 // import RequestNetworkDataFormat from 'requestnetwork-data-format';
-// import rnf_invoice from 'requestnetwork-data-format/format/rnf_invoice/rnf_invoice-0.0.1.json';
 import { Web3Service } from '../../util/web3.service';
 import { UtilService } from '../../util/util.service';
 
@@ -124,7 +123,7 @@ export class AdvancedInvoiceComponent implements OnInit {
     this.invoiceData = this.formBuilder.group({
       meta: {
         format: 'rnf_invoice',
-        version: '0.0.1',
+        version: '0.0.2',
       },
       creationDate: this.creationDate,
       invoiceNumber: this.invoiceNumber,
@@ -297,12 +296,28 @@ export class AdvancedInvoiceComponent implements OnInit {
         ? this.deliveryDate.value.toISOString()
         : null;
 
+    this.updateTotals();
+
     data['invoiceItems'].forEach(item => {
       item['currency'] = this.currency.value;
+      item['unitPrice'] = this.web3Service
+        .amountToBN(item['unitPrice'], this.currency.value)
+        .toString();
+      if (item['discount']) {
+        item['discount'] = this.web3Service
+          .amountToBN(item['discount'], this.currency.value)
+          .toString();
+      }
       if (deliveryDate) {
         item['deliveryDate'] = deliveryDate;
       }
     });
+
+    if (data['paymentTerms']['lateFeesFix']) {
+      data['paymentTerms']['lateFeesFix'] = this.web3Service
+        .amountToBN(data['paymentTerms']['lateFeesFix'], this.currency.value)
+        .toString();
+    }
 
     if (data['creationDate'] && moment.isMoment(data['creationDate'])) {
       data['creationDate'] = data['creationDate'].toISOString();
@@ -338,8 +353,8 @@ export class AdvancedInvoiceComponent implements OnInit {
         const request = {
           payee: {
             address: this.payeeETHAddress.value,
-            balance: this.totalWithTax,
-            expectedAmount: this.totalWithTax,
+            balance: this.totalWithTax.toString(),
+            expectedAmount: this.totalWithTax.toString(),
           },
           currencyContract: {
             payeePaymentAddress:
@@ -381,13 +396,11 @@ export class AdvancedInvoiceComponent implements OnInit {
       }
     };
 
-    this.updateTotals();
-
     this.web3Service
       .createRequest(
         'Payee',
         this.payerETHAddress.value,
-        this.totalWithTax.toString(),
+        this.web3Service.BNToAmount(this.totalWithTax, this.currency.value),
         this.currency.value,
         this.payeeETHAddress.value,
         { data },
