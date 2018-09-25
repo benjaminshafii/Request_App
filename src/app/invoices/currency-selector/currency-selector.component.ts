@@ -134,7 +134,19 @@ export class CurrencySelectorComponent
     this.web3Service.networkIdObservable.subscribe(networkId => {
       switch (networkId) {
         case 1:
-          this.currencies = ['ETH', 'REQ', 'KNC', 'DGX', 'DAI', 'OMG'];
+          this.currencies = [
+            'ETH',
+            'BAT',
+            'BNB',
+            'DAI',
+            'DGX',
+            'KIN',
+            'KNC',
+            'LINK',
+            'OMG',
+            'REQ',
+            'ZRX',
+          ];
           break;
         default:
           this.currencies = ['ETH'];

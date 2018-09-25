@@ -101,8 +101,8 @@ export class HomeComponent implements OnInit {
   onCurrencyChange(event) {
     this.payerRefundAddressFormControl.setValue('');
     this.payerRefundAddressFormControl.updateValueAndValidity();
-    this.payeePaymentAddressFormControl.markAsTouched();
     this.payeePaymentAddressFormControl.updateValueAndValidity();
+    this.expectedAmountFormControl.updateValueAndValidity();
   }
 
   getBlockchainSymbol() {

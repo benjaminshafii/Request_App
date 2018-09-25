@@ -2,7 +2,7 @@
   <img *ngIf="currencies && formControl.value" class="currencyIcon" src="assets/img/cryptoIcons/{{formControl.value}}.png">
 </div>
 <div class="currency-selector">
-  <mat-select [formControl]="formControl" ngDefaultControl panelClass="currencySelect" (selectionChange)="onCurrencyChange($event)">
+  <mat-select [formControl]="formControl" ngDefaultControl panelClass="currency-select" (selectionChange)="onCurrencyChange($event)">
     <mat-option *ngFor="let c of currencies" [value]="c">
       <img class="currencyIcon" src="assets/img/cryptoIcons/{{c}}.png">
       <span>&nbsp;{{ c }}</span>

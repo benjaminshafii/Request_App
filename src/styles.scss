@@ -166,7 +166,8 @@ header {
   background-color: $orange;
 }
 
-.currencySelect {
+.currency-select {
+  overflow:visible !important;
   .mat-option {
     height: 2rem !important;
     color: #617b9f !important;

@@ -12,7 +12,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "prettier:format": "prettier --write \"src/**/*.{ts, js, json}\"",
-    "prettier:lint": "prettier  --list-different \"src/**/*.{ts, js, json}\"",
+    "prettier:lint": "prettier --list-different \"src/**/*.{ts, js, json}\"",
     "postinstall": "node ./scripts/patch.js",
     "dev:e2e": "ng serve --configuration=e2e",
     "e2e": "node e2e/run.js"
@@ -38,7 +38,7 @@
     "@angular/platform-browser-dynamic": "^6.1.4",
     "@angular/platform-server": "^6.1.4",
     "@angular/router": "^6.1.4",
-    "@requestnetwork/request-network.js": "0.7.5",
+    "@requestnetwork/request-network.js": "0.8.0",
     "angular-blockies": "1.1.1",
     "angularx-qrcode": "^1.2.2",
     "bootstrap": "^4.1.3",
