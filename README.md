@@ -5,9 +5,15 @@
 
 A basic angular dapp using web3.js and RequestNetwork.js for interacting with Request Network Smart-Contract.
 
-## Install Dependencies
+## Dependencies
 
-You need at least node v8.9.0 and npm 5.5.1 to run this project. Run `npm i` to install all the dependencies listed in package.json
+Required dependencies:
+- `node` v8.9.0+
+- `npm` 5.5.1+
+- `make`
+- `gcc`
+
+Run `npm i` to install all the dependencies listed in package.json.
 
 ## Development server
 
