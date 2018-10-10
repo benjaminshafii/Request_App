@@ -225,6 +225,7 @@ export class Web3Service {
         provider: this.web3.currentProvider,
         ethNetworkId: this.networkIdObservable.value,
         useIpfsPublic: environment.usePublicIpfs,
+        ipfsCustomNode: environment.ipfsCustomNode,
         bitcoinNetworkId: this.networkIdObservable.value === 1 ? 0 : 3,
       });
     } catch (err) {
