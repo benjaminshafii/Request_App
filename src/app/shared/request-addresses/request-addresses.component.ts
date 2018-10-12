@@ -8,12 +8,12 @@ import { Component, OnInit, Input } from '@angular/core';
 export class RequestAddressesComponent implements OnInit {
   @Input()
   request: any;
-  private payer: string;
-  private currency: string;
-  private max: number = 0;
-  private min: number = 0;
+  payer: string;
+  currency: string;
+  max: number = 0;
+  min: number = 0;
 
-  private payees: any;
+  payees: any;
   constructor() {}
 
   ngOnInit() {
