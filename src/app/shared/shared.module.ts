@@ -28,6 +28,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { MatTreeModule } from '@angular/material/tree';
 
 import { AccountComponent } from './account/account.component';
 import { GasSelectorComponent } from './gas-selector/gas-selector.component';
@@ -35,6 +36,14 @@ import { RouterModule } from '@angular/router';
 import { BlockiesModule } from 'angular-blockies';
 import { PopoverModule } from 'ngx-popover';
 import { QRCodeModule } from 'angularx-qrcode';
+
+import { CurrencyConverterComponent } from './currency-converter/currency-converter.component';
+import { RequestMetadataComponent } from './request-metadata/request-metadata.component';
+import { RequestAddressesComponent } from './request-addresses/request-addresses.component';
+import { ShortAddressPipe } from './short-address.pipe';
+import { BlockiesComponent } from './blockies/blockies.component';
+import { RequestAmountComponent } from './request-amount/request-amount.component';
+import { RequestAddressComponent } from './request-address/request-address.component';
 
 @NgModule({
   imports: [
@@ -73,8 +82,19 @@ import { QRCodeModule } from 'angularx-qrcode';
     MatDividerModule,
     MatDatepickerModule,
     MatMomentDateModule,
+    MatTreeModule,
   ],
-  declarations: [AccountComponent, GasSelectorComponent],
+  declarations: [
+    AccountComponent,
+    GasSelectorComponent,
+    RequestMetadataComponent,
+    CurrencyConverterComponent,
+    RequestAddressesComponent,
+    ShortAddressPipe,
+    BlockiesComponent,
+    RequestAmountComponent,
+    RequestAddressComponent,
+  ],
   exports: [
     FormsModule,
     ReactiveFormsModule,
@@ -85,6 +105,12 @@ import { QRCodeModule } from 'angularx-qrcode';
 
     AccountComponent,
     GasSelectorComponent,
+    RequestMetadataComponent,
+    RequestAmountComponent,
+    BlockiesComponent,
+    RequestAddressComponent,
+    CurrencyConverterComponent,
+    RequestAddressesComponent,
     MatButtonModule,
     MatCardModule,
     // MatCheckboxModule,
@@ -110,6 +136,7 @@ import { QRCodeModule } from 'angularx-qrcode';
     MatDividerModule,
     MatDatepickerModule,
     MatMomentDateModule,
+    MatTreeModule,
   ],
 })
 export class SharedModule {}

@@ -16,14 +16,12 @@ export class PayWithRequestComponent implements OnInit {
   Object = Object;
   signedRequestObject: any;
   signedRequest: any;
-  currency: string;
   ipfsData: any;
   callbackUrl: string;
   requestNetworkId: number;
   queryParamError: boolean;
   redirectUrl: string;
-  max: number;
-  min: number;
+
   date = new Date();
 
   constructor(
@@ -33,10 +31,7 @@ export class PayWithRequestComponent implements OnInit {
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private utilService: UtilService
-  ) {
-    this.min = 0;
-    this.max = 0;
-  }
+  ) {}
 
   async ngOnInit() {
     if (!this.web3Service || !this.web3Service.web3Ready) {
@@ -66,9 +61,7 @@ export class PayWithRequestComponent implements OnInit {
     this.signedRequest.currency = this.web3Service.currencyFromContractAddress(
       this.signedRequest.currencyContract
     );
-    this.ipfsData = queryParams.signedRequest.data
-      ? await this.web3Service.getIpfsData(queryParams.signedRequest.data)
-      : null;
+    this.loadIpfsData(queryParams.signedRequest.data);
 
     this.web3Service.networkIdObservable.subscribe(networkId => {
       if (networkId !== this.requestNetworkId) {
@@ -82,42 +75,30 @@ export class PayWithRequestComponent implements OnInit {
     });
   }
 
+  get amount() {
+    return this.web3Service.BNToAmount(
+      this.web3Service.getTotalBNFromAmounts(
+        this.signedRequest.expectedAmounts
+      ),
+      this.signedRequest.currency
+    );
+  }
+
+  get currency() {
+    return this.signedRequest.currency;
+  }
+
+  async loadIpfsData(data: any) {
+    if (!data) return;
+    this.ipfsData = await this.web3Service.getIpfsData(data);
+  }
+
   getNetworkName(networkId) {
     switch (networkId) {
       case 1:
         return 'Mainnet';
       case 4:
         return 'Rinkeby testnet';
-    }
-  }
-
-  getNextPayees(init) {
-    if (init) {
-      this.max = 0;
-    }
-    if (this.signedRequest.payeesIdAddress.length <= 5) {
-      this.max += this.signedRequest.payeesIdAddress.length;
-    } else {
-      this.min = this.max;
-      if (this.signedRequest.payeesIdAddress.length - this.max >= 5) {
-        this.max += 5;
-      } else {
-        this.max += this.signedRequest.payeesIdAddress.length - this.max;
-      }
-    }
-  }
-
-  seeOnlyMainPayee() {
-    this.min = 0;
-    this.max = 0;
-  }
-
-  getLastPayees() {
-    this.min = this.min - 5;
-    if (this.max % 5 !== 0) {
-      this.max = this.max - (this.max % 5);
-    } else {
-      this.max = this.max - 5;
     }
   }
 

@@ -1,0 +1,9 @@
+<div class="px-3" [style.width]="'64px'">
+  <app-blockies [address]="address"></app-blockies>
+</div>
+<div>
+  <div class="semi-bold">{{ title }}</div>
+  <div [popover]="address" popoverPlacement="bottom" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">
+    {{address | shortAddress}}
+  </div>
+</div>

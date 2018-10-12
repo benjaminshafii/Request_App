@@ -2,7 +2,7 @@
   <div class="app-loading">
     <div id="redirection">
       <span>Transaction broadcasted, redirecting to</span>
-      <br/>
+      <br />
       <a [href]="redirectUrl">{{ redirectUrl }}</a>
     </div>
     <div class="logo-flex-box">
@@ -48,7 +48,7 @@
             <ng-template #requestTemplate>
               <mat-card class="p-0 br-7 sh-blue">
                 <div class="d-flex bg-primary p-4 btr-7">
-                  <img class="px-3" style="max-height: 75px;" src="assets/img/request-logo.png">
+                  <img class="px-3" style="max-height: 75px;padding:0!important;" src="assets/img/request-logo.png">
                   <div class="ml-auto text-right px-3 fc-white">
                     <h4 class="semi-bold fs-18">Payment Request</h4>
                     <div class="fs-14" [style.opacity]="'0.5'">
@@ -57,68 +57,11 @@
                     </div>
                   </div>
                 </div>
-                <div class="bg-grey-whiter fc-blue-grey p-4 d-flex flex-wrap">
-                  <div class="d-flex mb-3 m-lg-0" style="flex: 1">
-                    <div class="px-3">
-                      <angular-blockies [options]="{ seed: signedRequest.payeesIdAddress[0].toLowerCase() }" class="blockies" style="width: 50px; height: 50px;"></angular-blockies>
-                    </div>
-                    <div class="fs-14 lh-18">
-                      <div *ngIf="signedRequest.payeesPaymentAddress.length > 1">
-                        <span>PAYEES - </span>
-                        <span [style.textDecoration]="'underline'" *ngIf="signedRequest.payeesPaymentAddress.length > 1">
-                          <ng-template [ngIf]="max === 0" [ngIfElse]="seeOnlyMainPayeeAnchor">
-                            <a (click)="getNextPayees(true)">see all the payees
-                              <i class="fa fa-caret-right"></i>
-                            </a>
-                          </ng-template>
-                          <ng-template #seeOnlyMainPayeeAnchor>
-                            <a (click)="seeOnlyMainPayee()">see main payee only
-                              <i class="fa fa-caret-down"></i>
-                            </a>
-                          </ng-template>
-                        </span>
-                      </div>
-                      <div *ngFor="let payee of signedRequest.payeesIdAddress | slice:min:[max || 1]; let i = index;" class="my-1">
-                        <div class="semi-bold">
-                          <ng-template [ngIf]="min === 0 && i === 0" [ngIfElse]="otherPayees">{{ signedRequest.payeesPaymentAddress.length > 1 ? 'Main ' : '' }} Payee</ng-template>
-                          <ng-template #otherPayees>Payee #{{ min+i+1 }}</ng-template>
-                        </div>
-
-                        <ng-template [ngIf]="signedRequest.payeesPaymentAddress[min+i] && payee !== signedRequest.payeesPaymentAddress[min+i]" [ngIfElse]="samePaymentAddress">
-                          <div>ID address: {{ payee }}</div>
-                          <div>Payment address: {{ signedRequest.payeesPaymentAddress[min+i] }}</div>
-                        </ng-template>
-                        <ng-template #samePaymentAddress>
-                          <div>Address: {{ payee }}</div>
-                        </ng-template>
-                      </div>
-                      <div class="my-1">
-                        <a [style.textDecoration]="'underline'" (click)="getNextPayees()" *ngIf="max !== 0 && signedRequest.payeesIdAddress.length - max > 0" class="pull-right">see the {{ signedRequest.payeesIdAddress.length - max }} next payees
-                          <i class="fa fa-caret-right"></i>
-                        </a>
-                        <a [style.textDecoration]="'underline'" (click)="getLastPayees()" *ngIf="max !== 0 && max > 5">
-                          <i class="fa fa-caret-left"></i> see the 5 previous payees</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <request-addresses [request]="signedRequest"></request-addresses>
                 <!-- request ipfs data -->
-                <div class="fc-blue-grey p-4" style="border-bottom: 1px solid #DFE5EC">
-                  <div *ngIf="ipfsData">
-                    <div class="px-3" *ngFor="let e of Object.entries(ipfsData)">
-                      <div class="semi-bold">{{ e[0] }}:</div>
-                      <div>{{ e[1] }}</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex">
-                  <div class="ml-auto d-inline-block semi-bold fc-primary px-5 py-3" style="background: #DFE5EC">
-                    <div class="fs-14">AMOUNT</div>
-                    <div class="fs-24">{{ web3Service.BNToAmount(web3Service.getTotalBNFromAmounts(this.signedRequest.expectedAmounts), signedRequest.currency) }} {{ this.signedRequest.currency }}</div>
-                  </div>
-                </div>
-                <div class="p-5">
-                </div>
+                <request-metadata *ngIf="ipfsData" [data]="ipfsData" title="Details"></request-metadata>
+                <request-amount [amount]="amount" [currency]="currency" convertTo="USD"></request-amount>
+                <div class="p-4"></div>
                 <mat-toolbar class="p-0 bbr-7 cta-toolbar" [style.height]="'90px'">
                   <button class="fs-18 no-focus-overlay w-100" mat-raised-button color="accent" (click)="acceptAndPay()">
                     <span>Accept & Pay</span>
@@ -127,7 +70,7 @@
               </mat-card>
               <div class="mt-3 fs-12 fc-blue-grey">
                 <i class="fa fa-lock"></i>&nbsp;
-                <span>Request.Network - 2018 -</span>
+                <span>Request.Network - 2018 - </span>
                 <a (click)="cancelRequest()" [style.textDecoration]="'underline'">Cancel & go back to merchant</a>
               </div>
             </ng-template>

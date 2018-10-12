@@ -36,6 +36,16 @@ export class RequestComponent implements OnInit, OnDestroy {
     private utilService: UtilService
   ) {}
 
+  get amount() {
+    return this.web3Service.BNToAmount(
+      this.request.payee.expectedAmount,
+      this.request.currency
+    );
+  }
+  get currency() {
+    return this.request.currency;
+  }
+
   async ngOnInit() {
     if (!this.web3Service || !this.web3Service.web3Ready) {
       await new Promise(resolve =>
