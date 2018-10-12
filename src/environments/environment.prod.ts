@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  usePublicIpfs: true,
+  usePublicIpfs: undefined,
   ipfsCustomNode: {
     host: 'ipfs.infura.io',
     port: 443,
