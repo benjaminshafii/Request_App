@@ -4,6 +4,10 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
+    "commit": "git-cz",
+    "commit:ci": "commitlint --from 546deb8e676cb4a3",
+    "format": "prettier --write \"src/**/*.{ts, js, json}\"",
+    "format:ci": "prettier --list-different \"src/**/*.{ts, js, json}\"",
     "start": "ng serve",
     "dev:aot": "ng serve --aot",
     "dev:https": "ng serve --ssl",
@@ -11,8 +15,6 @@
     "build:prod": "ng build --prod --aot",
     "test": "ng test",
     "lint": "ng lint",
-    "prettier:format": "prettier --write \"src/**/*.{ts, js, json}\"",
-    "prettier:lint": "prettier --list-different \"src/**/*.{ts, js, json}\"",
     "postinstall": "node ./scripts/patch.js",
     "dev:e2e": "ng serve --configuration=e2e",
     "e2e": "node e2e/run.js"
@@ -59,11 +61,14 @@
     "@angular-devkit/build-angular": "^0.7.1",
     "@angular/compiler-cli": "^6.1.4",
     "@angular/language-service": "^6.1.4",
+    "@commitlint/cli": "^7.2.0",
+    "@commitlint/config-conventional": "^7.1.2",
     "@types/jasmine": "^2.8.8",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^10.5.5",
     "chai": "^4.1.2",
     "codelyzer": "^4.4.2",
+    "commitizen": "^3.0.2",
     "dappeteer": "^0.2.1",
     "ganache-cli": "^6.1.6",
     "go-ipfs-dep": "^0.4.17",
@@ -83,5 +88,8 @@
     "ts-node": "~3.2.0",
     "tslint": "^5.11.0",
     "typescript": "^2.9.2"
+  },
+  "czConfig": {
+    "path": "node_modules/cz-conventional-changelog"
   }
 }
