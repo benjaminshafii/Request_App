@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "commit": "git-cz",
-    "commit:ci": "commitlint --from d8fa92b844d2c239",
+    "commit:ci": "commitlint --from fafb6dd8bfa434b9",
     "format": "prettier --write \"src/**/*.{ts, js, json}\"",
     "format:ci": "prettier --list-different \"src/**/*.{ts, js, json}\"",
     "start": "ng serve",
