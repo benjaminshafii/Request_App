@@ -1,0 +1,30 @@
+version: 2
+
+jobs:
+  build:
+    docker: 
+      - image: 'circleci/node:8'
+    working_directory: '~/repo'
+    steps:
+      - checkout
+      - run:
+          name: 'Install node modules'
+          command: 'yarn'
+      - run:
+          name: 'Build service'
+          command: 'yarn build'
+      - run:
+          name: 'Install pip'
+          command: 'sudo apt-get install -y python-pip'
+      - run:
+          name: 'Install awscli'
+          command: 'sudo pip install awscli'
+      - deploy:
+          name: 'Deploy to S3'
+          command: 'aws s3 sync ./dist s3://baguette-app.request.network --acl public-read --delete'
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build

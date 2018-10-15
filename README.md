@@ -1,6 +1,7 @@
 <img src="https://request.network/assets/img/request-logo.png" width="50px" >
 
 ---
+
 # Request_App
 
 A basic angular dapp using web3.js and RequestNetwork.js for interacting with Request Network Smart-Contract.
@@ -8,6 +9,7 @@ A basic angular dapp using web3.js and RequestNetwork.js for interacting with Re
 ## Dependencies
 
 Required dependencies:
+
 - `node` v8.9.0+
 - `npm` 5.5.1+
 - `make`
@@ -21,7 +23,7 @@ Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app 
 
 ## Build
 
-Run `npm run build:prod` to generate the build repository in /dist.
+Run `npm run build` to generate the build repository in /dist.
 
 ## Test
 
@@ -31,6 +33,7 @@ To run end-to-end tests, you need the app running with e2e configuration: `npm r
 You also need a local instance of ganache running on port `8545`, with smart-contracts deployed.
 
 On the `requestNetwork/packages/requestNetwork.js` directory:
+
 - Launch a ganache-cli instance on a terminal:
 
   `npm run ganache`
@@ -42,4 +45,3 @@ On the `requestNetwork/packages/requestNetwork.js` directory:
 #### End-to-end test
 
 Run `npm run e2e` for end-to-end tests.
-

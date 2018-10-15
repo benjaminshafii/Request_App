@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "commit": "git-cz",
-    "commit:ci": "commitlint --from 546deb8e676cb4a3",
+    "commit:ci": "commitlint --from d8fa92b844d2c239",
     "format": "prettier --write \"src/**/*.{ts, js, json}\"",
     "format:ci": "prettier --list-different \"src/**/*.{ts, js, json}\"",
     "start": "ng serve",
@@ -88,7 +88,9 @@
     "tslint": "^5.11.0",
     "typescript": "^2.9.2"
   },
-  "czConfig": {
-    "path": "node_modules/cz-conventional-changelog"
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
   }
 }
