@@ -77,7 +77,7 @@
             </app-rnf-invoice-request>
             <ng-template #genericRequest>
               <request-addresses [request]="request"></request-addresses>
-              <request-metadata [data]="request.data.data" title="Details"></request-metadata>
+              <request-metadata *ngIf="request.data" [data]="request.data.data" title="Details"></request-metadata>
               <request-amount [amount]="amount" [currency]="currency"></request-amount>
             </ng-template>
             <div class="p-4">
