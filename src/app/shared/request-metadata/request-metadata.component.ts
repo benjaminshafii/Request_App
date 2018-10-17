@@ -5,6 +5,7 @@ import {
   MatTreeFlatDataSource,
 } from '@angular/material/tree';
 import { Observable, of } from 'rxjs';
+import moment from 'moment';
 
 class Node {
   children: Node[];
@@ -87,8 +88,11 @@ export class RequestMetadataComponent implements OnInit {
       } else if (typeof v === 'object') {
         node.children = this.buildFileTree(v, level + 1);
       } else {
-        if (Date.parse(v)) {
-          node.value = new Date(v).toLocaleString();
+        if (
+          node.text.toLowerCase().indexOf('date') >= 0 &&
+          moment(v).isValid()
+        ) {
+          node.value = moment(v).format('dddd, MMMM Do YYYY, h:mm:ss a UTCZ');
         } else {
           node.value = v;
         }
