@@ -202,6 +202,7 @@ export class Web3Service {
         this.ledgerConnected = true;
         this.refreshAccounts(true);
       } else {
+        await this.enableWeb3();
         // if Web3 has been injected by the browser (Mist/MetaMask)
         this.ledgerConnected = false;
         this.metamask = window.web3.currentProvider.isMetaMask;
@@ -236,6 +237,22 @@ export class Web3Service {
     this.isAddress = this.web3.utils.isAddress;
     this.BN = mixed => new this.web3.utils.BN(mixed);
     this.getBlockNumber = this.web3.eth.getBlockNumber;
+  }
+
+  private async enableWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      try {
+        await window.ethereum.enable();
+      } catch (error) {
+        this.utilService.openSnackBar('Web3 not enabled');
+        console.error(error);
+      }
+    }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider);
+    }
   }
 
   private async refreshAccounts(force?: boolean) {
