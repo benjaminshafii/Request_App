@@ -10,8 +10,8 @@ A basic angular dapp using web3.js and RequestNetwork.js for interacting with Re
 
 Required dependencies:
 
-- `node` v8.9.0+
-- `npm` 5.5.1+
+- `node` v9.11.2+
+- `npm` 5.6.0+
 - `make`
 - `gcc`
 

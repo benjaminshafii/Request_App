@@ -248,9 +248,8 @@ export class Web3Service {
         this.utilService.openSnackBar('Web3 not enabled');
         console.error(error);
       }
-    }
-    // Legacy dapp browsers...
-    else if (window.web3) {
+    } else if (window.web3) {
+      // Legacy dapp browsers...
       window.web3 = new Web3(window.web3.currentProvider);
     }
   }
