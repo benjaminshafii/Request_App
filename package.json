@@ -74,8 +74,10 @@
     "codelyzer": "^4.4.2",
     "commitizen": "^3.0.2",
     "dappeteer": "^0.2.1",
+    "eth-lightwallet": "^3.0.1",
     "ganache-cli": "^6.1.6",
     "go-ipfs-dep": "^0.4.17",
+    "hooked-web3-provider": "^1.0.0",
     "husky": "^1.1.2",
     "ipfsd-ctl": "^0.39.0",
     "jasmine-core": "^3.1.0",
@@ -92,7 +94,8 @@
     "puppeteer": "^1.6.1",
     "ts-node": "~3.2.0",
     "tslint": "^5.11.0",
-    "typescript": "^2.9.2"
+    "typescript": "^2.9.2",
+    "web3-hdwallet-provider": "^0.1.4"
   },
   "config": {
     "commitizen": {

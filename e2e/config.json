@@ -1,0 +1,6 @@
+{
+  "IPFS_PORT": 5001,
+  "GANACHE_PORT": 8545,
+  "mnemonic": "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",
+  "debug": false
+}
